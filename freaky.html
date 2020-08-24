@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Freaky-Overlay</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="css.css">
+
+    <script src="dp.js"></script>
+</head>
+<body>
+<div id="songInfo">
+    <div class="textBottom">
+        <div id="previousBSRWrapper">
+            <div id="previousBSR" class="line backGroundColor borderRadiusTopLeft borderRadiusTopRight">PREVIOUS BSR</div>
+        </div>
+        <div id="beatMapCover" class="backGroundColor borderRadiusBottomRight borderRadiusTopRight">
+            <div id="cover" class="borderRadiusTopLeft borderRadiusBottomLeft borderRadiusBottomRight borderRadiusTopRight"></div>
+        </div>
+        <div id="infoText">
+            <div id="bsr" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft">BSR</div>
+            <div id="mapper" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft">MAPPER</div>
+            <div id="difficulty" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft">DIFFICULTY</div>
+            <div id="artist" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft">ARTIST</div>
+            <div id="mapName" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft">SONGNAME</div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+<div id="downSection" class="borderRadiusTopRight borderRadiusBottomRight borderRadiusTopLeft borderRadiusBottomLeft backGroundColor">
+    <div class="holders rightText">
+        <div class="line">
+            <div id="combo">COMBO</div>
+        </div>
+        <div class="line" id="score">SCORE</div>
+        <div class="line">
+            <div id="njs">NJS</div>
+            <div id="bpm">BPM</div>
+        </div>
+    </div>
+    <div class="barHolder" id="timerHolder"></div>
+    <div class="barHolder" id="healthHolder"></div>
+    <div class="barHolder" id="accuracyHolder"></div>
+</div>
+
+<div id="modifiers" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
+    <div id="IF">IF</div>
+    <div id="BE">BE</div>
+    <div id="DA">DA</div>
+    <div id="GN">GN</div>
+    <div id="FS">FS</div>
+    <div id="SS">SS</div>
+    <div id="NF">NF</div>
+    <div id="NO">NO</div>
+    <div id="NB">NB</div>
+    <div id="NA">NA</div>
+    <div id="PM">PM</div>
+    <div id="songSpeed">100%</div>
+</div>
+
+<div id="options" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
+    <div>
+        <div>Background Color</div>
+        <div id="bgcolor"></div>
+    </div>
+    <div>
+        <div>Text Color</div>
+        <div id="color"></div>
+    </div>
+    <hr>
+    <div>
+        <input type="checkbox" id="shortModifierNames">
+        <label for="shortModifierNames">Short Modifiers</label>
+    </div>
+    <div>
+        <input type="checkbox" id="showPrevBsr">
+        <label for="showPrevBsr">Show previous BSR</label>
+    </div><hr>
+    <div>
+        <input type="checkbox" id="testBg">
+        <label for="testBg">Test with Background Image</label>
+    </div><hr>
+    <div>
+        <label for="urlText">URL:</label><br>
+        <textarea readonly="readonly" id="urlText" style="width: 97%; height: 50px; resize: none;"></textarea>
+    </div>
+</div>
+
+</body>
+</html>

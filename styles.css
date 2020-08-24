@@ -1,0 +1,217 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.textBottom {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.clear {
+    clear: both;
+}
+
+.rightText {
+    text-align: right;
+}
+
+.backGroundColor {
+}
+
+.borderRadiusTopLeft {
+    border-top-left-radius: 10px;
+}
+
+.borderRadiusTopRight {
+    border-top-right-radius: 10px;
+}
+
+.borderRadiusBottomLeft {
+    border-bottom-left-radius: 10px;
+}
+
+.borderRadiusBottomRight {
+    border-bottom-right-radius: 10px;
+}
+
+/** bottom right **/
+#songInfo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 50%;
+    width: 50%;
+    text-align: right;
+    vertical-align: text-bottom;
+    opacity: 1;
+    transition: 1s all;
+}
+
+#songInfo.inactive {
+    opacity: 0;
+}
+
+#beatMapCover {
+    padding: 5px;
+    float: right;
+}
+
+#cover {
+    height: 150px;
+    width: 150px;
+    background-image: url("tyGQRx5x_400x400.jpg");
+    background-size: contain;
+}
+
+#previousBSR {
+    display: inline-block;
+}
+
+#infoText {
+    float: left;
+}
+
+#previousBSRWrapper .line,
+#infoText .line {
+    padding: 3px 2px 3px 10px;
+    width: fit-content;
+    margin-left: auto;
+    font-size: 18px;
+    max-width: 520px;
+}
+
+#mapName {
+    word-wrap: break-word;
+    font-size: 34px !important;
+}
+
+#mapName.small {
+    padding: 5px 2px 5px 5px;
+    font-size: 16px !important;
+}
+
+/** svgs **/
+.roundBar {
+    background: transparent;
+    transform: rotate(-90deg);
+}
+
+.roundBar > circle {
+    fill: transparent;
+    stroke-linecap: round;
+}
+
+.roundBar .remaining {
+    opacity: .25;
+    stroke-width: 2px;
+}
+
+.roundBar .progress {
+    stroke-width: 8px;
+    transition: .2s all;
+}
+
+/** modifiers **/
+#modifiers {
+    position: absolute;
+    right: 10px;
+    bottom: 200px;
+    text-align: center;
+    font-size: 14px;
+    transition: 1s all;
+}
+
+#modifiers.inactive {
+    right: -250px;
+}
+
+#modifiers > div {
+    margin: 5px;
+}
+
+/** down **/
+#downSection {
+    position: absolute;
+    height: 90px;
+    width: 500px;
+    bottom: 5px;
+    left: 50%;
+    margin-left: -250px;
+    transition: 1s all;
+}
+
+#downSection.inactive {
+    bottom: -100px;
+}
+
+#downSection > div {
+    float: left;
+}
+
+#downSection .holders {
+    width: 230px;
+}
+
+#downSection .barHolder {
+    width: 90px;
+}
+
+#downSection .holders .line {
+    margin: 8px 0;
+    font-size: 17px;
+    line-height: 19px;
+    text-align: center;
+}
+
+#downSection .holders .line#score {
+    font-size: 24px;
+}
+
+#downSection .holders .line > div {
+    display: inline-block;
+    width: 60px;
+    font-size: 14px;
+}
+
+#downSection .holders .line > div > span {
+    font-size: 10px;
+    margin-right: 10px;
+}
+
+#downSection .progressInfo {
+    position: absolute;
+    font-size: 14px;
+    text-align: center;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/** options **/
+#options {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    margin-left: -155px;
+    margin-top: -155px;
+    padding: 10px;
+}
