@@ -422,9 +422,7 @@ class UI {
 
         document.body.ondblclick = () => {
             this.options.previewMode = !this.options.previewMode;
-            if (this.options.previewMode) {
-                this.appendNewStyles();
-            }
+            this.appendNewStyles();
         };
 
         let oBGC = new ColorInput(this.options.backgroundColor, c => {
