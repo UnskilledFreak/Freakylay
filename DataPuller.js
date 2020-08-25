@@ -60,6 +60,8 @@ class StaticData {
 
         this.PreviousRecord = Helper.isset(data, 'PreviousRecord', 0);
         this.PreviousBSR = Helper.isset(data, 'PreviousBSR', 0);
+
+        this.PracticeModeModifiers.songSpeedMul = Math.round(this.PracticeModeModifiers.songSpeedMul * 100) / 100;
     }
 
     difficultyString() {
@@ -644,6 +646,10 @@ class UI {
         return minutes < 0 ? seconds : minutes + ':' + seconds;
     }
 
+    getTimeElapsed() {
+        return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul) - 1;
+    }
+
     updateLive(liveData) {
         this.liveData = liveData;
         // toggle ui
@@ -654,16 +660,20 @@ class UI {
             Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
             this.uiShown = true;
-            this.internalTimer = Math.round(this.liveData.TimeElapsed - 1);
+            this.timerAdjusted = false;
+            this.internalTimer = this.getTimeElapsed();
 
             if (this.options.previewMode) {
                 this.setTime(this.mapLength / 2, this.mapLength)
             } else {
                 this.internalInterval = window.setInterval(() => {
-                    if (this.uiShown && !this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
-                        this.internalTimer++;
-                    } else if (this.liveData.TimeElapsed > this.internalTimer) {
-                        this.internalTimer = this.liveData.TimeElapsed - 1;
+                    if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
+                        if (!this.timerAdjusted && this.getTimeElapsed() !== this.internalTimer) {
+                            this.internalTimer = this.getTimeElapsed();
+                            this.timerAdjusted = true;
+                        } else {
+                            this.internalTimer++;
+                        }
                     }
                     this.setTime(this.internalTimer, this.mapLength);
                 }, 1000);
@@ -693,7 +703,7 @@ class UI {
 
     updateStatic(staticData) {
         this.staticData = staticData;
-        //console.log(this.staticData);
+
         // calculate map length
         this.mapLength = this.staticData.Length;
         if (this.staticData.Modifiers.practiceMode) {
@@ -811,15 +821,11 @@ window.onload = () => {
 
     connection = new MultiConnection('127.0.0.1', 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
-        console.log(data);
         data = new LiveData(data);
-        console.log(data);
         ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
-        //console.log(data);
         data = new StaticData(data);
-        //console.log(data);
         ui.updateStatic(data);
     });
 }
