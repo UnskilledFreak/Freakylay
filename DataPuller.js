@@ -1,37 +1,41 @@
-class GameData {
+class LiveData {
     constructor(data) {
-        data = JSON.parse(data);
-
-        //Level
+        // Level
         this.InLevel = Helper.isset(data, 'InLevel', false);
         this.LevelPaused = Helper.isset(data, 'LevelPaused', false);
         this.LevelFinished = Helper.isset(data, 'LevelFinished', false);
         this.LevelFailed = Helper.isset(data, 'LevelFailed', false);
         this.LevelQuit = Helper.isset(data, 'LevelQuit', false);
 
-        //Map
+        // Points
+        this.Score = Helper.isset(data, 'Score', 0);
+        this.FullCombo = Helper.isset(data, 'FullCombo', false);
+        this.Combo = Helper.isset(data, 'Combo', 0);
+        this.Misses = Helper.isset(data, 'Misses', 0);
+        this.Accuracy = Helper.isset(data, 'Accuracy', 0.0);
+        this.BlockHitScores = Helper.isset(data, 'BlockHitScores', []);
+        this.PlayerHealth = Helper.isset(data, 'PlayerHealth', 0);
+
+        // time
+        this.Timer = Helper.isset(data, 'Timer', 0);
+    }
+}
+
+class StaticData {
+    constructor(data) {
+        // Map
         this.SongName = Helper.isset(data, 'SongName', 'SongName');
         this.SongSubName = Helper.isset(data, 'SongSubName', 'SongSubName');
         this.SongAuthor = Helper.isset(data, 'SongAuthor', 'SongAuthor');
         this.Mapper = Helper.isset(data, 'Mapper', 'Mapper');
         this.BSRKey = Helper.isset(data, 'BSRKey', 'BSRKey');
-        this.BPM = Helper.isset(data, 'BPM', 0);
-        this.coverImage = Helper.isset(data, 'coverImage', 'tyGQRx5x_400x400.jpg');
-        this.Length = Helper.isset(data, 'Length', 0);
-        this.PreviousRecord = Helper.isset(data, 'PreviousRecord', 0);
+        this.coverImage = Helper.isset(data, 'coverImage', 'img/tyGQRx5x_400x400.jpg');
+        this.Length = Helper.isset(data, 'Length', 1);
 
-        //Difficulty
+        // Difficulty
         this.Difficulty = Helper.isset(data, 'Difficulty', 0);
+        this.BPM = Helper.isset(data, 'BPM', 0);
         this.NJS = Helper.isset(data, 'NJS', 0.0);
-
-        //Score
-        this.FullCombo = Helper.isset(data, 'FullCombo', false);
-        this.Score = Helper.isset(data, 'Score', 0);
-        this.Combo = Helper.isset(data, 'Combo', 0);
-        this.Misses = Helper.isset(data, 'Misses', 0);
-        this.Accuracy = Helper.isset(data, 'Accuracy', 0.0);
-        this.BlockHitScores = Helper.isset(data, 'BlockHitScores', []);
-        this.PlayerHealth = Helper.isset(data, 'PlayerHealth', 0.0);
 
         //Modifiers
         let modifiers = Helper.isset(data, 'Modifiers', {});
@@ -46,18 +50,15 @@ class GameData {
             noBombs: Helper.isset(modifiers, 'noBombs', false),
             slowerSong: Helper.isset(modifiers, 'slowerSong', false),
             noArrows: Helper.isset(modifiers, 'noArrows', false),
-            practiceMode: Helper.isset(data, 'PraticeMode', false)
+            practiceMode: Helper.isset(data, 'PracticeMode', false)
         };
-
-        // Practice Mode
-        let practiceModeModifiers = Helper.isset(data, 'PraticeModeModifiers', {});
+        let practiceModeModifiers = Helper.isset(data, 'PracticeModeModifiers', {});
         this.PracticeModeModifiers = {
             startSongTime: Helper.isset(practiceModeModifiers, 'startSongTime', 0.0),
             songSpeedMul: Helper.isset(practiceModeModifiers, 'songSpeedMul', 1.0),
         };
 
-        // Misc
-        this.Timer = Helper.isset(data, 'Timer', 0);
+        this.PreviousRecord = Helper.isset(data, 'PreviousRecord', 0);
         this.PreviousBSR = Helper.isset(data, 'PreviousBSR', 0);
     }
 
@@ -150,30 +151,70 @@ class Helper {
 }
 
 class Connection {
-    constructor() {
-        this.connect();
-    }
+    constructor(url, messageCallback, openCallback, closeCallback) {
 
-    connect() {
-        this.socket = new WebSocket('ws:127.0.0.1:2946/BSDataPuller');
-        this.socket.onopen = this.onOpen;
-        this.socket.onmessage = this.onMessage;
-        this.socket.onclose = this.onClose;
+        this.socket = new WebSocket(url);
+
+        this.callbacks = {
+            message: messageCallback,
+            open: openCallback,
+            close: closeCallback
+        }
+
+        this.socket.onopen = (message) => {
+            this.onOpen(message);
+        };
+        this.socket.onmessage = (message) => {
+            this.onMessage(message);
+        }
+        this.socket.onclose = () => {
+            this.onClose();
+        }
     }
 
     onOpen(message) {
-        // ???
+        this.callbacks.open(message);
     }
 
     onClose() {
-        window.setTimeout(() => {
-            connection.connect();
-        }, 5000);
+        this.callbacks.close();
     }
 
     onMessage(message) {
-        let gameData = new GameData(message.data);
-        ui.update(gameData);
+        this.callbacks.message(message);
+    }
+}
+
+class MultiConnection {
+    constructor(ip, port) {
+        this.connections = [];
+        this.ip = ip;
+        this.port = port;
+    }
+
+    addEndpoint(name, callback) {
+
+        this.name = name;
+
+        let url = 'ws:' + this.ip + ':' + this.port + '/' + this.name;
+
+        this.connections[this.name] = new Connection(url, (data) => {
+            data = JSON.parse(data);
+            console.log(data);
+            callback(data);
+        }, () => {
+            this.log('connected!');
+        }, () => {
+            this.log('lost connection');
+            this.log('reconnecting in 5 seconds');
+            window.setTimeout(() => {
+                this.addEndpoint(this.name, callback);
+            }, 5000);
+        });
+    }
+
+    log(message) {
+        console.log('[' + this.name + '] ' + message);
     }
 }
 
@@ -238,12 +279,12 @@ class ColorInput {
 
     static Instance = 0;
 
-    constructor(color, changeevent) {
+    constructor(color, changeEvent) {
 
         this.instance = ColorInput.Instance;
         ColorInput.Instance++;
 
-        this.changeEvent = changeevent;
+        this.changeEvent = changeEvent;
 
         let r, g, b, a, prefix;
         if (color.substring(0, 1) === '#') {
@@ -360,11 +401,13 @@ class ColorInput {
 
 class UI {
     constructor() {
+        this.inactiveClass = 'inactive';
+
         this.urlParamStrings = {
-            backgroundColor: 'bgcolor',
-            textColor: 'color',
-            shortModifierNames: 'shortModifierNames',
-            showPrevBsr: 'showPrevBsr',
+            backgroundColor: 'a',
+            textColor: 'b',
+            shortModifierNames: 'c',
+            showPrevBsr: 'd',
         }
 
         this.urlParams = new URLSearchParams(location.search);
@@ -376,6 +419,7 @@ class UI {
             showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
             previewMode: this.urlParams.has('options')
         };
+
 
         document.body.ondblclick = () => {
             this.options.previewMode = true;
@@ -392,25 +436,25 @@ class UI {
             this.appendNewStyles();
         });
 
-        let oSMN = Helper.element(this.urlParamStrings.shortModifierNames);
+        let oSMN = Helper.element('shortModifierNames');
         oSMN.checked = this.options.shortModifierNames;
         oSMN.onclick = (e) => {
             this.options.shortModifierNames = e.target.checked;
             this.appendNewStyles();
         };
 
-        let oPB = Helper.element(this.urlParamStrings.showPrevBsr);
+        let oPB = Helper.element('showPrevBsr');
         oPB.checked = this.options.showPrevBsr;
         oPB.onclick = (e) => {
             this.options.showPrevBsr = e.target.checked;
             this.appendNewStyles();
         };
 
-        oBGC.createInputMenu(Helper.element(this.urlParamStrings.backgroundColor));
-        oTC.createInputMenu(Helper.element(this.urlParamStrings.textColor));
+        oBGC.createInputMenu(Helper.element('bgColor'));
+        oTC.createInputMenu(Helper.element('color'));
 
         Helper.element('testBg').onclick = (e) => {
-            document.body.style.backgroundImage = e.target.checked ? 'url(beat-saber-5.jpg)' : 'none';
+            document.body.style.backgroundImage = e.target.checked ? 'url(img/beat-saber-5.jpg)' : 'none';
         };
 
         this.getUiElements();
@@ -427,31 +471,37 @@ class UI {
     }
 
     previewGameData() {
-        let g = new GameData('{}');
-        g.PlayerHealth = .5;
-        g.Length = 120;
-        g.Timer = 10;
-        g.Accuracy = 50;
-        g.Score = 1234567;
-        g.NJS = 20;
-        g.BPM = 180;
-        g.PreviousBSR = 'affa';
-        g.BSRKey = '1234';
-        g.Difficulty = 9;
-        g.Modifiers.batteryEnergy = true;
-        g.Modifiers.disappearingArrows = true;
-        g.Modifiers.fasterSong = true;
-        g.Modifiers.ghostNotes = true;
-        g.Modifiers.instantFail = true;
-        g.Modifiers.noArrows = true;
-        g.Modifiers.noBombs = true;
-        g.Modifiers.noFail = true;
-        g.Modifiers.noObstacles = true;
-        g.Modifiers.practiceMode = true;
-        g.Modifiers.slowerSong = true;
-        g.PracticeModeModifiers.songSpeedMul = 1.2;
-        g.PracticeModeModifiers.startSongTime = 10;
-        this.update(g);
+        let s = new StaticData({});
+        s.BPM = 180;
+        s.BSRKey = '1234';
+        s.Difficulty = 9;
+        s.Length = 120;
+        s.NJS = 20;
+        s.PreviousBSR = 'affa';
+        s.PreviousRecord = 123456;  // ??? uhm
+
+        s.Modifiers.batteryEnergy = true;
+        s.Modifiers.disappearingArrows = true;
+        s.Modifiers.fasterSong = true;
+        s.Modifiers.ghostNotes = true;
+        s.Modifiers.instantFail = true;
+        s.Modifiers.noArrows = true;
+        s.Modifiers.noBombs = true;
+        s.Modifiers.noFail = true;
+        s.Modifiers.noObstacles = true;
+        s.Modifiers.practiceMode = true;
+        s.Modifiers.slowerSong = true;
+        s.PracticeModeModifiers.songSpeedMul = 1.2;
+        s.PracticeModeModifiers.startSongTime = 10;
+
+        let l = new LiveData({});
+        l.PlayerHealth = .5;
+        l.Timer = 10;
+        l.Accuracy = 50;
+        l.Score = 1234567;
+
+        this.updateStatic(s);
+        this.updateLive(l);
     }
 
     getUiElements() {
@@ -593,72 +643,92 @@ class UI {
         return minutes < 0 ? seconds : minutes + ':' + seconds;
     }
 
-    update(gameData) {
-        this.gameData = gameData;
-        const inactiveClass = 'inactive';
-
-        // calculate map length
-        let mapLength = this.gameData.Length;
-        if (this.gameData.Modifiers.practiceMode) {
-            mapLength = Math.trunc(this.gameData.Length / this.gameData.PracticeModeModifiers.songSpeedMul);
-        } else if (this.gameData.Modifiers.fasterSong || this.gameData.Modifiers.slowerSong) {
-            mapLength = Math.trunc(this.gameData.Length * (this.gameData.Modifiers.fasterSong ? .8 : 1.15));
-        }
-
+    updateLive(liveData) {
         // toggle ui
-        if (this.options.previewMode || this.gameData.InLevel && !this.uiShown) {
+        if (this.options.previewMode || liveData.InLevel && !this.uiShown) {
 
-            Helper.removeClass(this.songInfoHolder, inactiveClass);
-            Helper.removeClass(this.dataHolder, inactiveClass);
-            Helper.removeClass(this.modifiersHolder, inactiveClass);
+            Helper.removeClass(this.songInfoHolder, this.inactiveClass);
+            Helper.removeClass(this.dataHolder, this.inactiveClass);
+            Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
             this.uiShown = true;
-            this.internalTimer = this.gameData.Timer - 1;
+            this.internalTimer = liveData.Timer - 1;
 
             if (this.options.previewMode) {
-                this.setTime(mapLength / 2, mapLength)
+                this.setTime(this.mapLength / 2, this.mapLength)
             } else {
                 this.internalInterval = window.setInterval(() => {
-                    if (this.uiShown && !this.gameData.LevelPaused && !this.gameData.LevelFailed && !this.gameData.LevelFailed && !this.gameData.LevelQuit) {
+                    if (this.uiShown && !liveData.LevelPaused && !liveData.LevelFailed && !liveData.LevelFailed && !liveData.LevelQuit) {
                         this.internalTimer++;
-                    } else if (this.gameData.Timer > this.internalTimer) {
-                        this.internalTimer = this.gameData.Timer - 1;
+                    } else if (liveData.Timer > this.internalTimer) {
+                        this.internalTimer = liveData.Timer - 1;
                     }
-                    this.setTime(this.internalTimer, mapLength);
+                    this.setTime(this.internalTimer, this.mapLength);
                 }, 1000);
             }
-        } else if (!this.gameData.InLevel && this.uiShown) {
-            Helper.addClass(this.songInfoHolder, inactiveClass);
-            Helper.addClass(this.dataHolder, inactiveClass);
-            Helper.addClass(this.modifiersHolder, inactiveClass);
+        } else if (!liveData.InLevel && this.uiShown) {
+            Helper.addClass(this.songInfoHolder, this.inactiveClass);
+            Helper.addClass(this.dataHolder, this.inactiveClass);
+            Helper.addClass(this.modifiersHolder, this.inactiveClass);
             this.uiShown = false;
 
             window.clearInterval(this.internalInterval);
         }
 
+        // down section
+        this.accuracy.setProgress(liveData.Accuracy.toFixed(2), 100)
+
+        this.data.bpm.innerHTML = '<span>BPM</span>' + liveData.BPM;
+        this.data.combo.innerHTML = '<span>Combo</span>' + liveData.Combo;
+        this.data.njs.innerHTML = '<span>NJS</span>' + liveData.NJS;
+        this.data.previousBSR.innerHTML = liveData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + liveData.PreviousBSR : '';
+        this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(liveData.Score).replace(/,/g, ' ');
+
+        if (liveData.BSRKey.length === 0) {
+            Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
+        } else {
+            Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
+        }
+
+        this.health.setProgress(liveData.Modifiers.practiceMode ? 1 : liveData.PlayerHealth, 100);
+
+        // block hit scores?
+        // full combo?
+        // misses?
+    }
+
+    updateStatic(staticData) {
+        // calculate map length
+        this.mapLength = staticData.Length;
+        if (staticData.Modifiers.practiceMode) {
+            this.mapLength = Math.trunc(staticData.Length / staticData.PracticeModeModifiers.songSpeedMul);
+        } else if (staticData.Modifiers.fasterSong || staticData.Modifiers.slowerSong) {
+            this.mapLength = Math.trunc(staticData.Length * (staticData.Modifiers.fasterSong ? .8 : 1.15));
+        }
+
         // modifiers panel
         let allModifiersOff = true;
-        for (let modifier in this.gameData.Modifiers) {
+        for (let modifier in staticData.Modifiers) {
 
             // noinspection JSUnfilteredForInLoop
-            if (this.gameData.Modifiers[modifier]) {
+            if (staticData.Modifiers[modifier]) {
                 allModifiersOff = false;
             }
 
             // noinspection JSUnfilteredForInLoop
-            Helper.display(this.modifiers[modifier], this.gameData.Modifiers[modifier]);
+            Helper.display(this.modifiers[modifier], staticData.Modifiers[modifier]);
         }
 
-        Helper.display(this.modifiers.practiceMode, this.gameData.Modifiers.practiceMode);
+        Helper.display(this.modifiers.practiceMode, staticData.Modifiers.practiceMode);
 
         // practice
-        if (this.gameData.Modifiers.practiceMode) {
+        if (staticData.Modifiers.practiceMode) {
             allModifiersOff = false;
 
-            Helper.display(this.modifiers.fasterSong, this.gameData.PracticeModeModifiers.songSpeedMul > 1);
-            Helper.display(this.modifiers.slowerSong, this.gameData.PracticeModeModifiers.songSpeedMul < 1);
+            Helper.display(this.modifiers.fasterSong, staticData.PracticeModeModifiers.songSpeedMul > 1);
+            Helper.display(this.modifiers.slowerSong, staticData.PracticeModeModifiers.songSpeedMul < 1);
 
-            let readableSpeed = this.gameData.PracticeModeModifiers.songSpeedMul * 100 - 100;
+            let readableSpeed = staticData.PracticeModeModifiers.songSpeedMul * 100 - 100;
             let identifier = readableSpeed > 0 ? '+' : '';
 
             if (readableSpeed === 100) {
@@ -667,7 +737,7 @@ class UI {
                 Helper.display(this.modifiers.songSpeed, true);
                 this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
             }
-            Helper.display(this.modifiers.songSpeed, this.gameData.Modifiers.songSpeedMul !== 1);
+            Helper.display(this.modifiers.songSpeed, staticData.Modifiers.songSpeedMul !== 1);
         } else {
             Helper.display(this.modifiers.songSpeed, false);
         }
@@ -675,50 +745,30 @@ class UI {
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
         // generic song info
-        this.hideSetting(this.songInfo.bsr, this.gameData.BSRKey, 'BSR: ');
-        this.hideSetting(this.songInfo.mapper, this.gameData.Mapper);
-        this.hideSetting(this.songInfo.artist, this.gameData.SongAuthor);
-        this.hideSetting(this.songInfo.songName, this.gameData.SongName);
+        this.hideSetting(this.songInfo.bsr, staticData.BSRKey, 'BSR: ');
+        this.hideSetting(this.songInfo.mapper, staticData.Mapper);
+        this.hideSetting(this.songInfo.artist, staticData.SongAuthor);
+        this.hideSetting(this.songInfo.songName, staticData.SongName);
 
-        if (this.gameData.SongName.length > 35) {
+        if (staticData.SongName.length > 35) {
             Helper.addClass(this.songInfo.songName, 'small');
         } else {
             Helper.removeClass(this.songInfo.songName, 'small');
         }
 
-        this.songInfo.difficulty.innerHTML = this.gameData.difficultyString();
+        this.songInfo.difficulty.innerHTML = staticData.difficultyString();
 
-        if (this.gameData.SongSubName.length > 0) {
-            let sub = '<small>' + this.gameData.SongSubName + '</small>';
-            if (this.gameData.SongAuthor.length === 0) {
+        if (staticData.SongSubName.length > 0) {
+            let sub = '<small>' + staticData.SongSubName + '</small>';
+            if (staticData.SongAuthor.length === 0) {
                 this.songInfo.artist.innerHTML = sub;
             } else {
                 this.songInfo.artist.innerHTML += ' ' + sub;
             }
         }
 
-        this.songInfo.cover.style.backgroundImage = 'url("' + this.gameData.coverImage + '")';
+        this.songInfo.cover.style.backgroundImage = 'url("' + staticData.coverImage + '")';
 
-        // down section
-        this.accuracy.setProgress(this.gameData.Accuracy.toFixed(2), 100)
-
-        this.data.bpm.innerHTML = '<span>BPM</span>' + this.gameData.BPM;
-        this.data.combo.innerHTML = '<span>Combo</span>' + this.gameData.Combo;
-        this.data.njs.innerHTML = '<span>NJS</span>' + this.gameData.NJS;
-        this.data.previousBSR.innerHTML = this.gameData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + this.gameData.PreviousBSR : '';
-        this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(this.gameData.Score).replace(/,/g, ' ');
-
-        if (this.gameData.BSRKey.length === 0) {
-            Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
-        } else {
-            Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
-        }
-
-        this.health.setProgress(this.gameData.Modifiers.practiceMode ? 1 : this.gameData.PlayerHealth, 1);
-
-        // block hit scores?
-        // full combo?
-        // misses?
         // previous record?
     }
 
@@ -736,18 +786,23 @@ class UI {
         if (this.options.previewMode) {
             this.previewGameData();
         } else {
-            let g = new GameData('{}');
+            let g = new LiveData({});
             g.InLevel = false;
-            this.update(g);
+            this.updateLive(g);
         }
-        connection = new Connection();
     }
 }
 
 let connection;
 let ui;
 
-window.onload = function () {
+window.onload = () => {
+    console.log('If you don\'t have the BSDataPuller mod then download the latest release from here and place it in your BS mods folder: https://github.com/kOFReadie/DataPuller/releases/latest');
+
     ui = new UI();
     ui.init();
+
+    connection = new MultiConnection('127.0.0.1', 2946);
+    connection.addEndpoint('BSDataPuller/LiveData', ui.updateLive);
+    connection.addEndpoint('BSDataPuller/StaticData', ui.updateStatic);
 }
