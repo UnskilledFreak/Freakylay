@@ -194,27 +194,24 @@ class MultiConnection {
 
     addEndpoint(name, callback) {
 
-        this.name = name;
+        let log = (message) => {
+            console.log('[' + name + '] ' + message);
+        }
 
-        let url = 'ws:' + this.ip + ':' + this.port + '/' + this.name;
+        let url = 'ws:' + this.ip + ':' + this.port + '/' + name;
 
-        this.connections[this.name] = new Connection(url, (data) => {
-            data = JSON.parse(data);
-            console.log(data);
+        this.connections[name] = new Connection(url, (data) => {
+            data = JSON.parse(data.data);
             callback(data);
         }, () => {
-            this.log('connected!');
+            log('connected!');
         }, () => {
-            this.log('lost connection');
-            this.log('reconnecting in 5 seconds');
+            log('lost connection');
+            log('reconnecting in 5 seconds');
             window.setTimeout(() => {
-                this.addEndpoint(this.name, callback);
+                this.addEndpoint(name, callback);
             }, 5000);
         });
-    }
-
-    log(message) {
-        console.log('[' + this.name + '] ' + message);
     }
 }
 
@@ -681,16 +678,9 @@ class UI {
         this.data.bpm.innerHTML = '<span>BPM</span>' + liveData.BPM;
         this.data.combo.innerHTML = '<span>Combo</span>' + liveData.Combo;
         this.data.njs.innerHTML = '<span>NJS</span>' + liveData.NJS;
-        this.data.previousBSR.innerHTML = liveData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + liveData.PreviousBSR : '';
         this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(liveData.Score).replace(/,/g, ' ');
 
-        if (liveData.BSRKey.length === 0) {
-            Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
-        } else {
-            Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
-        }
-
-        this.health.setProgress(liveData.Modifiers.practiceMode ? 1 : liveData.PlayerHealth, 100);
+        this.health.setProgress(this.staticData.Modifiers.practiceMode ? 1 : liveData.PlayerHealth, 100);
 
         // block hit scores?
         // full combo?
@@ -698,37 +688,39 @@ class UI {
     }
 
     updateStatic(staticData) {
+        this.staticData = staticData;
+
         // calculate map length
-        this.mapLength = staticData.Length;
-        if (staticData.Modifiers.practiceMode) {
-            this.mapLength = Math.trunc(staticData.Length / staticData.PracticeModeModifiers.songSpeedMul);
-        } else if (staticData.Modifiers.fasterSong || staticData.Modifiers.slowerSong) {
-            this.mapLength = Math.trunc(staticData.Length * (staticData.Modifiers.fasterSong ? .8 : 1.15));
+        this.mapLength = this.staticData.Length;
+        if (this.staticData.Modifiers.practiceMode) {
+            this.mapLength = Math.trunc(this.staticData.Length / this.staticData.PracticeModeModifiers.songSpeedMul);
+        } else if (this.staticData.Modifiers.fasterSong || this.staticData.Modifiers.slowerSong) {
+            this.mapLength = Math.trunc(this.staticData.Length * (this.staticData.Modifiers.fasterSong ? .8 : 1.15));
         }
 
         // modifiers panel
         let allModifiersOff = true;
-        for (let modifier in staticData.Modifiers) {
+        for (let modifier in this.staticData.Modifiers) {
 
             // noinspection JSUnfilteredForInLoop
-            if (staticData.Modifiers[modifier]) {
+            if (this.staticData.Modifiers[modifier]) {
                 allModifiersOff = false;
             }
 
             // noinspection JSUnfilteredForInLoop
-            Helper.display(this.modifiers[modifier], staticData.Modifiers[modifier]);
+            Helper.display(this.modifiers[modifier], this.staticData.Modifiers[modifier]);
         }
 
-        Helper.display(this.modifiers.practiceMode, staticData.Modifiers.practiceMode);
+        Helper.display(this.modifiers.practiceMode, this.staticData.Modifiers.practiceMode);
 
         // practice
-        if (staticData.Modifiers.practiceMode) {
+        if (this.staticData.Modifiers.practiceMode) {
             allModifiersOff = false;
 
-            Helper.display(this.modifiers.fasterSong, staticData.PracticeModeModifiers.songSpeedMul > 1);
-            Helper.display(this.modifiers.slowerSong, staticData.PracticeModeModifiers.songSpeedMul < 1);
+            Helper.display(this.modifiers.fasterSong, this.staticData.PracticeModeModifiers.songSpeedMul > 1);
+            Helper.display(this.modifiers.slowerSong, this.staticData.PracticeModeModifiers.songSpeedMul < 1);
 
-            let readableSpeed = staticData.PracticeModeModifiers.songSpeedMul * 100 - 100;
+            let readableSpeed = this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100;
             let identifier = readableSpeed > 0 ? '+' : '';
 
             if (readableSpeed === 100) {
@@ -737,7 +729,7 @@ class UI {
                 Helper.display(this.modifiers.songSpeed, true);
                 this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
             }
-            Helper.display(this.modifiers.songSpeed, staticData.Modifiers.songSpeedMul !== 1);
+            Helper.display(this.modifiers.songSpeed, this.staticData.Modifiers.songSpeedMul !== 1);
         } else {
             Helper.display(this.modifiers.songSpeed, false);
         }
@@ -745,29 +737,37 @@ class UI {
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
         // generic song info
-        this.hideSetting(this.songInfo.bsr, staticData.BSRKey, 'BSR: ');
-        this.hideSetting(this.songInfo.mapper, staticData.Mapper);
-        this.hideSetting(this.songInfo.artist, staticData.SongAuthor);
-        this.hideSetting(this.songInfo.songName, staticData.SongName);
+        if (this.staticData.BSRKey.length === 0) {
+            Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
+        } else {
+            Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
+        }
 
-        if (staticData.SongName.length > 35) {
+        this.data.previousBSR.innerHTML = this.staticData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + this.staticData.PreviousBSR : '';
+
+        this.hideSetting(this.songInfo.bsr, this.staticData.BSRKey, 'BSR: ');
+        this.hideSetting(this.songInfo.mapper, this.staticData.Mapper);
+        this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
+        this.hideSetting(this.songInfo.songName, this.staticData.SongName);
+
+        if (this.staticData.SongName.length > 35) {
             Helper.addClass(this.songInfo.songName, 'small');
         } else {
             Helper.removeClass(this.songInfo.songName, 'small');
         }
 
-        this.songInfo.difficulty.innerHTML = staticData.difficultyString();
+        this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
 
-        if (staticData.SongSubName.length > 0) {
-            let sub = '<small>' + staticData.SongSubName + '</small>';
-            if (staticData.SongAuthor.length === 0) {
+        if (this.staticData.SongSubName.length > 0) {
+            let sub = '<small>' + this.staticData.SongSubName + '</small>';
+            if (this.staticData.SongAuthor.length === 0) {
                 this.songInfo.artist.innerHTML = sub;
             } else {
                 this.songInfo.artist.innerHTML += ' ' + sub;
             }
         }
 
-        this.songInfo.cover.style.backgroundImage = 'url("' + staticData.coverImage + '")';
+        this.songInfo.cover.style.backgroundImage = 'url("' + this.staticData.coverImage + '")';
 
         // previous record?
     }
@@ -803,6 +803,10 @@ window.onload = () => {
     ui.init();
 
     connection = new MultiConnection('127.0.0.1', 2946);
-    connection.addEndpoint('BSDataPuller/LiveData', ui.updateLive);
-    connection.addEndpoint('BSDataPuller/StaticData', ui.updateStatic);
+    connection.addEndpoint('BSDataPuller/LiveData', (data) => {
+        ui.updateLive(new LiveData(data));
+    });
+    connection.addEndpoint('BSDataPuller/StaticData', (data) => {
+        ui.updateStatic(new StaticData(data));
+    });
 }
