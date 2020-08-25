@@ -596,7 +596,7 @@ class UI {
 
         let options = [
             this.urlParamStrings.backgroundColor + '=' + Helper.toUrlColor(this.options.backgroundColor),
-            this.urlParamStrings.color + '=' + Helper.toUrlColor(this.options.textColor)
+            this.urlParamStrings.textColor + '=' + Helper.toUrlColor(this.options.textColor)
         ];
 
         if (this.options.showPrevBsr) {
