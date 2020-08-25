@@ -17,7 +17,7 @@ class LiveData {
         this.PlayerHealth = Helper.isset(data, 'PlayerHealth', 0);
 
         // time
-        this.Timer = Helper.isset(data, 'Timer', 0);
+        this.TimeElapsed = Helper.isset(data, 'TimeElapsed', 0);
     }
 }
 
@@ -50,9 +50,9 @@ class StaticData {
             noBombs: Helper.isset(modifiers, 'noBombs', false),
             slowerSong: Helper.isset(modifiers, 'slowerSong', false),
             noArrows: Helper.isset(modifiers, 'noArrows', false),
-            practiceMode: Helper.isset(data, 'PracticeMode', false)
+            practiceMode: Helper.isset(data, 'PraticeMode', false)
         };
-        let practiceModeModifiers = Helper.isset(data, 'PracticeModeModifiers', {});
+        let practiceModeModifiers = Helper.isset(data, 'PraticeModeModifiers', {});
         this.PracticeModeModifiers = {
             startSongTime: Helper.isset(practiceModeModifiers, 'startSongTime', 0.0),
             songSpeedMul: Helper.isset(practiceModeModifiers, 'songSpeedMul', 1.0),
@@ -419,8 +419,10 @@ class UI {
 
 
         document.body.ondblclick = () => {
-            this.options.previewMode = true;
-            this.appendNewStyles();
+            this.options.previewMode = !this.options.previewMode;
+            if (this.options.previewMode) {
+                this.appendNewStyles();
+            }
         };
 
         let oBGC = new ColorInput(this.options.backgroundColor, c => {
@@ -493,9 +495,10 @@ class UI {
 
         let l = new LiveData({});
         l.PlayerHealth = .5;
-        l.Timer = 10;
+        l.TimeElapsed = 10;
         l.Accuracy = 50;
         l.Score = 1234567;
+        l.Misses = 17;
 
         this.updateStatic(s);
         this.updateLive(l);
@@ -546,6 +549,7 @@ class UI {
             previousBSR: Helper.element('previousBSR'),
             njs: Helper.element('njs'),
             bpm: Helper.element('bpm'),
+            miss: Helper.element('miss'),
         };
 
         this.optionsElement = Helper.element('options');
@@ -641,29 +645,30 @@ class UI {
     }
 
     updateLive(liveData) {
+        this.liveData = liveData;
         // toggle ui
-        if (this.options.previewMode || liveData.InLevel && !this.uiShown) {
+        if (this.options.previewMode || this.liveData.InLevel && !this.uiShown) {
 
             Helper.removeClass(this.songInfoHolder, this.inactiveClass);
             Helper.removeClass(this.dataHolder, this.inactiveClass);
             Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
             this.uiShown = true;
-            this.internalTimer = liveData.Timer - 1;
+            this.internalTimer = Math.round(this.liveData.TimeElapsed - 1);
 
             if (this.options.previewMode) {
                 this.setTime(this.mapLength / 2, this.mapLength)
             } else {
                 this.internalInterval = window.setInterval(() => {
-                    if (this.uiShown && !liveData.LevelPaused && !liveData.LevelFailed && !liveData.LevelFailed && !liveData.LevelQuit) {
+                    if (this.uiShown && !this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
                         this.internalTimer++;
-                    } else if (liveData.Timer > this.internalTimer) {
-                        this.internalTimer = liveData.Timer - 1;
+                    } else if (this.liveData.TimeElapsed > this.internalTimer) {
+                        this.internalTimer = this.liveData.TimeElapsed - 1;
                     }
                     this.setTime(this.internalTimer, this.mapLength);
                 }, 1000);
             }
-        } else if (!liveData.InLevel && this.uiShown) {
+        } else if (!this.liveData.InLevel && this.uiShown) {
             Helper.addClass(this.songInfoHolder, this.inactiveClass);
             Helper.addClass(this.dataHolder, this.inactiveClass);
             Helper.addClass(this.modifiersHolder, this.inactiveClass);
@@ -673,14 +678,13 @@ class UI {
         }
 
         // down section
-        this.accuracy.setProgress(liveData.Accuracy.toFixed(2), 100)
+        this.accuracy.setProgress(this.liveData.Accuracy.toFixed(2), 100)
 
-        this.data.bpm.innerHTML = '<span>BPM</span>' + liveData.BPM;
-        this.data.combo.innerHTML = '<span>Combo</span>' + liveData.Combo;
-        this.data.njs.innerHTML = '<span>NJS</span>' + liveData.NJS;
-        this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(liveData.Score).replace(/,/g, ' ');
+        this.data.combo.innerHTML = '<span>Combo</span>' + this.liveData.Combo;
+        this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses;
+        this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(this.liveData.Score).replace(/,/g, ' ');
 
-        this.health.setProgress(this.staticData.Modifiers.practiceMode ? 1 : liveData.PlayerHealth, 100);
+        this.health.setProgress(this.staticData.Modifiers.practiceMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
 
         // block hit scores?
         // full combo?
@@ -689,7 +693,7 @@ class UI {
 
     updateStatic(staticData) {
         this.staticData = staticData;
-
+        //console.log(this.staticData);
         // calculate map length
         this.mapLength = this.staticData.Length;
         if (this.staticData.Modifiers.practiceMode) {
@@ -737,7 +741,7 @@ class UI {
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
         // generic song info
-        if (this.staticData.BSRKey.length === 0) {
+        if (this.staticData.BSRKey.length === 0 || this.staticData.BSRKey === 'BSRKey') {
             Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
         } else {
             Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
@@ -745,7 +749,7 @@ class UI {
 
         this.data.previousBSR.innerHTML = this.staticData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + this.staticData.PreviousBSR : '';
 
-        this.hideSetting(this.songInfo.bsr, this.staticData.BSRKey, 'BSR: ');
+        this.hideSetting(this.songInfo.bsr, this.staticData.BSRKey === 'BSRKey' ? '' : this.staticData.BSRKey, 'BSR: ');
         this.hideSetting(this.songInfo.mapper, this.staticData.Mapper);
         this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
         this.hideSetting(this.songInfo.songName, this.staticData.SongName);
@@ -768,6 +772,9 @@ class UI {
         }
 
         this.songInfo.cover.style.backgroundImage = 'url("' + this.staticData.coverImage + '")';
+
+        this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
+        this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS;
 
         // previous record?
     }
@@ -804,9 +811,15 @@ window.onload = () => {
 
     connection = new MultiConnection('127.0.0.1', 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
-        ui.updateLive(new LiveData(data));
+        console.log(data);
+        data = new LiveData(data);
+        console.log(data);
+        ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
-        ui.updateStatic(new StaticData(data));
+        //console.log(data);
+        data = new StaticData(data);
+        //console.log(data);
+        ui.updateStatic(data);
     });
 }
