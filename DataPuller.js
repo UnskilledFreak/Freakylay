@@ -692,7 +692,8 @@ class UI {
         this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses;
         this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(this.liveData.Score).replace(/,/g, ' ');
 
-        this.health.setProgress(this.staticData.Modifiers.practiceMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
+        //this.health.setProgress(this.staticData.Modifiers.practiceMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
+        this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
 
         // block hit scores?
         // full combo?
