@@ -50,9 +50,9 @@ class StaticData {
             noBombs: Helper.isset(modifiers, 'noBombs', false),
             slowerSong: Helper.isset(modifiers, 'slowerSong', false),
             noArrows: Helper.isset(modifiers, 'noArrows', false),
-            practiceMode: Helper.isset(data, 'PraticeMode', false)
+            practiceMode: Helper.isset(data, 'PracticeMode', false)
         };
-        let practiceModeModifiers = Helper.isset(data, 'PraticeModeModifiers', {});
+        let practiceModeModifiers = Helper.isset(data, 'PracticeModeModifiers', {});
         this.PracticeModeModifiers = {
             startSongTime: Helper.isset(practiceModeModifiers, 'startSongTime', 0.0),
             songSpeedMul: Helper.isset(practiceModeModifiers, 'songSpeedMul', 1.0),
@@ -124,8 +124,8 @@ class Helper {
         element.style.visibility = visible ? 'visible' : 'hidden';
     }
 
-    static display(element, display) {
-        element.style.display = display ? 'block' : 'none';
+    static display(element, display, isInline = false) {
+        element.style.display = display ? (isInline ? 'inline-block' : 'block') : 'none';
     }
 
     static fromUrlColor(input) {
@@ -154,8 +154,7 @@ class Helper {
 
 class Connection {
     constructor(url, messageCallback, openCallback, closeCallback) {
-
-        this.socket = new WebSocket(url);
+        this.url = url;
 
         this.callbacks = {
             message: messageCallback,
@@ -163,6 +162,11 @@ class Connection {
             close: closeCallback
         }
 
+        this.connect();
+    }
+
+    connect() {
+        this.socket = new WebSocket(this.url);
         this.socket.onopen = (message) => {
             this.onOpen(message);
         };
@@ -172,6 +176,15 @@ class Connection {
         this.socket.onclose = () => {
             this.onClose();
         }
+    }
+
+    reconnect(url = null) {
+        if (url != null) {
+            this.url = url;
+        }
+
+        this.socket.close();
+        this.connect();
     }
 
     onOpen(message) {
@@ -200,9 +213,7 @@ class MultiConnection {
             console.log('[' + name + '] ' + message);
         }
 
-        let url = 'ws:' + this.ip + ':' + this.port + '/' + name;
-
-        this.connections[name] = new Connection(url, (data) => {
+        this.connections[name] = new Connection(this.getUrl(), (data) => {
             data = JSON.parse(data.data);
             callback(data);
         }, () => {
@@ -214,6 +225,26 @@ class MultiConnection {
                 this.addEndpoint(name, callback);
             }, 5000);
         });
+    }
+
+    getUrl(a = false) {
+        if (a) {
+            return this.ip + ':' + this.port;
+        }
+        return 'ws:' + this.getUrl(true) + '/' + name;
+    }
+
+    reconnect(ip = null, port = null) {
+        if (ip != null) {
+            this.ip = ip;
+        }
+        if (port != null) {
+            this.port = port;
+        }
+
+        for (let e of this.connections) {
+            e.reconnect(this.getUrl());
+        }
     }
 }
 
@@ -398,6 +429,41 @@ class ColorInput {
     }
 }
 
+class SettingLine {
+
+    static index = 0;
+
+    constructor(name, setting, isDirectCallback = false) {
+        let line = Helper.create('div');
+        let label = Helper.create('label');
+        this.element = Helper.create('input');
+
+        label.htmlFor = 'input_' + SettingLine.index;
+        label.innerHTML = name;
+        this.element.id = label.htmlFor;
+        this.element.type = 'checkbox';
+
+        if (!isDirectCallback) {
+            this.element.checked = ui.options[setting];
+        }
+
+        this.element.onclick = (e) => {
+            let checked = !!e.target.checked;
+            if (isDirectCallback) {
+                setting(checked);
+            } else {
+                ui.options[setting] = checked;
+            }
+            ui.appendNewStyles();
+        }
+
+        line.append(this.element, label);
+        ui.optionsLinesElement.append(line);
+
+        SettingLine.index++;
+    }
+}
+
 class UI {
     constructor() {
         this.inactiveClass = 'inactive';
@@ -407,6 +473,10 @@ class UI {
             textColor: 'b',
             shortModifierNames: 'c',
             showPrevBsr: 'd',
+            missCounter: 'e',
+            showBpm: 'f',
+            showNjs: 'g',
+            showCombo: 'h',
         }
 
         this.urlParams = new URLSearchParams(location.search);
@@ -416,44 +486,20 @@ class UI {
             textColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.textColor, 'ffffff')),
             shortModifierNames: this.urlParams.has(this.urlParamStrings.shortModifierNames),
             showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
-            previewMode: this.urlParams.has('options')
+            previewMode: this.urlParams.has('options'),
+            missCounter: !this.urlParams.has(this.urlParamStrings.missCounter),
+            showBpm: !this.urlParams.has(this.urlParamStrings.showBpm),
+            showNjs: !this.urlParams.has(this.urlParamStrings.showNjs),
+            showCombo: !this.urlParams.has(this.urlParamStrings.showCombo),
+            ip: this.urlParams.has('ip') ? this.urlParams.get('ip') : '127.0.0.1'
         };
 
-
-        document.body.ondblclick = () => {
+        document.body.ondblclick = (e) => {
+            if (e.target !== document.body) {
+                return;
+            }
             this.options.previewMode = !this.options.previewMode;
             this.appendNewStyles();
-        };
-
-        let oBGC = new ColorInput(this.options.backgroundColor, c => {
-            this.options.backgroundColor = c;
-            this.appendNewStyles();
-        });
-
-        let oTC = new ColorInput(this.options.textColor, c => {
-            this.options.textColor = c;
-            this.appendNewStyles();
-        });
-
-        let oSMN = Helper.element('shortModifierNames');
-        oSMN.checked = this.options.shortModifierNames;
-        oSMN.onclick = (e) => {
-            this.options.shortModifierNames = e.target.checked;
-            this.appendNewStyles();
-        };
-
-        let oPB = Helper.element('showPrevBsr');
-        oPB.checked = this.options.showPrevBsr;
-        oPB.onclick = (e) => {
-            this.options.showPrevBsr = e.target.checked;
-            this.appendNewStyles();
-        };
-
-        oBGC.createInputMenu(Helper.element('bgColor'));
-        oTC.createInputMenu(Helper.element('color'));
-
-        Helper.element('testBg').onclick = (e) => {
-            document.body.style.backgroundImage = e.target.checked ? 'url(img/beat-saber-5.jpg)' : 'none';
         };
 
         this.getUiElements();
@@ -467,6 +513,36 @@ class UI {
         this.internalInterval = 0;
 
         this.appendNewStyles();
+    }
+
+    buildOptionsPanel() {
+        let backgroundColor = new ColorInput(this.options.backgroundColor, c => {
+            this.options.backgroundColor = c;
+            this.appendNewStyles();
+        });
+
+        let textColor = new ColorInput(this.options.textColor, c => {
+            this.options.textColor = c;
+        });
+
+        new SettingLine('Short Modifiers', 'shortModifierNames');
+        new SettingLine('Enable Miss Counter', 'missCounter');
+
+        this.optionsLinesElement.append(Helper.create('hr'));
+
+        new SettingLine('Show previous BSR', 'showPrevBsr');
+        new SettingLine('Show BPM', 'showBpm');
+        new SettingLine('Show NJS', 'showNjs');
+        new SettingLine('Show Combo', 'showCombo');
+
+        this.optionsLinesElement.append(Helper.create('hr'));
+
+        new SettingLine('Test with Background Image', (checked) => {
+            document.body.style.backgroundImage = checked ? 'url(img/beat-saber-5.jpg)' : 'none';
+        }, true);
+
+        backgroundColor.createInputMenu(Helper.element('bgColor'));
+        textColor.createInputMenu(Helper.element('color'));
     }
 
     previewGameData() {
@@ -553,7 +629,18 @@ class UI {
         };
 
         this.optionsElement = Helper.element('options');
+        this.optionsLinesElement = Helper.element('optionsLines');
         this.urlText = Helper.element('urlText');
+        /// there :3
+        this.ipText = Helper.element('ip');
+        this.changeIp = Helper.element('changeIp');
+        this.changeIp.onclick = (e) => {
+            let f = this.ipText.value.split(':');
+            if (!f[1] || typeof f[1] === 'undefined') {
+                f[1] = 2946;
+            }
+            connection.reconnect(f[0], f[1]);
+        }
     }
 
     appendNewStyles() {
@@ -593,6 +680,10 @@ class UI {
 
         Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
         Helper.display(this.optionsElement, this.options.previewMode);
+        Helper.display(this.data.bpm, this.options.showBpm, true);
+        Helper.display(this.data.njs, this.options.showNjs, true);
+        Helper.visibility(this.data.combo, this.options.showCombo);
+        Helper.display(this.data.miss, this.options.missCounter, true);
 
         let options = [
             this.urlParamStrings.backgroundColor + '=' + Helper.toUrlColor(this.options.backgroundColor),
@@ -601,13 +692,31 @@ class UI {
 
         if (this.options.showPrevBsr) {
             Helper.removeClass(this.beatMapCover, "borderRadiusTopRight");
-            options.push(this.urlParamStrings.showPrevBsr);
         } else {
             Helper.addClass(this.beatMapCover, "borderRadiusTopRight");
         }
 
-        if (this.options.shortModifierNames) {
-            options.push(this.urlParamStrings.shortModifierNames);
+        let pushData = [
+            'shortModifierNames',
+            'showPrevBsr',
+            '!missCounter',
+            '!showBpm',
+            '!showNjs',
+            '!showCombo'
+        ];
+
+        for (let x of pushData) {
+            if (x.substring(0, 1) === '!') {
+                x = x.substring(1, x.length);
+                if (!this.options[x]) {
+                    options.push(this.urlParamStrings[x]);
+                }
+                continue;
+            }
+
+            if (this.options[x]) {
+                options.push(this.urlParamStrings[x]);
+            }
         }
 
         let optionsString = options.length > 0 ? '?' + options.join('&') : '';
@@ -697,7 +806,6 @@ class UI {
 
         // block hit scores?
         // full combo?
-        // misses?
     }
 
     updateStatic(staticData) {
@@ -817,8 +925,9 @@ window.onload = () => {
 
     ui = new UI();
     ui.init();
+    ui.buildOptionsPanel();
 
-    connection = new MultiConnection('127.0.0.1', 2946);
+    connection = new MultiConnection(ui.options.ip, 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         data = new LiveData(data);
         ui.updateLive(data);
@@ -827,4 +936,6 @@ window.onload = () => {
         data = new StaticData(data);
         ui.updateStatic(data);
     });
+
+    ui.ipText.value = connection.getUrl(true);
 }

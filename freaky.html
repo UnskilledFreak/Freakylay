@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link rel="stylesheet" type="text/css" href="css/css.css">
 
+    <link rel="icon" href="img/favicon.png">
+
     <script src="DataPuller.js"></script>
 </head>
 <body>
@@ -63,6 +65,12 @@
 
 <div id="options" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
     <div>
+        <label for="ip">IP:Port</label>
+        <input id="ip" type="text">
+        <input type="button" id="changeIp" value="apply">
+    </div>
+    <hr>
+    <div>
         <div>Background Color</div>
         <div id="bgColor"></div>
     </div>
@@ -71,24 +79,14 @@
         <div id="color"></div>
     </div>
     <hr>
-    <div>
-        <input type="checkbox" id="shortModifierNames">
-        <label for="shortModifierNames">Short Modifiers</label>
-    </div>
-    <div>
-        <input type="checkbox" id="showPrevBsr">
-        <label for="showPrevBsr">Show previous BSR</label>
-    </div><hr>
-    <div>
-        <input type="checkbox" id="testBg">
-        <label for="testBg">Test with Background Image</label>
-    </div><hr>
+    <div id="optionsLines"></div>
+    <hr>
     <div>
         <label for="urlText">URL:</label><br>
         <textarea readonly="readonly" id="urlText" style="width: 97%; height: 50px; resize: none;"></textarea>
     </div>
 </div>
-<!-- made with love -->
+<!-- made with ♥♥ love -->
 <!-- by UnskilledFreak -->
 </body>
 </html>
