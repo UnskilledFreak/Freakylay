@@ -213,7 +213,7 @@ class MultiConnection {
             console.log('[' + name + '] ' + message);
         }
 
-        this.connections[name] = new Connection(this.getUrl(), (data) => {
+        this.connections[name] = new Connection(this.getUrl() + name, (data) => {
             data = JSON.parse(data.data);
             callback(data);
         }, () => {
@@ -231,7 +231,7 @@ class MultiConnection {
         if (a) {
             return this.ip + ':' + this.port;
         }
-        return 'ws:' + this.getUrl(true) + '/' + name;
+        return 'ws:' + this.getUrl(true) + '/';
     }
 
     reconnect(ip = null, port = null) {
@@ -634,7 +634,7 @@ class UI {
         /// there :3
         this.ipText = Helper.element('ip');
         this.changeIp = Helper.element('changeIp');
-        this.changeIp.onclick = (e) => {
+        this.changeIp.onclick = () => {
             let f = this.ipText.value.split(':');
             if (!f[1] || typeof f[1] === 'undefined') {
                 f[1] = 2946;
@@ -841,7 +841,7 @@ class UI {
             Helper.display(this.modifiers.fasterSong, this.staticData.PracticeModeModifiers.songSpeedMul > 1);
             Helper.display(this.modifiers.slowerSong, this.staticData.PracticeModeModifiers.songSpeedMul < 1);
 
-            let readableSpeed = this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100;
+            let readableSpeed = (this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100).toFixed();
             let identifier = readableSpeed > 0 ? '+' : '';
 
             if (readableSpeed === 100) {
