@@ -631,7 +631,12 @@ class UI {
         this.optionsElement = Helper.element('options');
         this.optionsLinesElement = Helper.element('optionsLines');
         this.urlText = Helper.element('urlText');
-        /// there :3
+
+        this.urlText.onclick = () => {
+            this.urlText.select();
+            document.execCommand('copy');
+        };
+
         this.ipText = Helper.element('ip');
         this.changeIp = Helper.element('changeIp');
         this.changeIp.onclick = () => {
@@ -871,7 +876,7 @@ class UI {
         this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
         this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
-        if (this.staticData.SongName.length > 35) {
+        if (this.staticData.SongName.length > 26) {
             Helper.addClass(this.songInfo.songName, 'small');
         } else {
             Helper.removeClass(this.songInfo.songName, 'small');
