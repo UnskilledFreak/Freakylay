@@ -333,10 +333,10 @@ class ColorInput {
 
             if (prefix === 'rgb') {
                 color[0] = color[0].substring(1);
-                a = 100;
+                a = 255;
             } else {
                 color[0] = color[0].substring(2);
-                a = parseFloat(color[3]) * 255;
+                a = Math.round(parseFloat(color[3]) * 255);
             }
 
             r = parseInt(color[0]);
@@ -400,7 +400,7 @@ class ColorInput {
             return '#' + this.to2digitHex(r) + this.to2digitHex(g) + this.to2digitHex(b);
         }
 
-        return 'rgba(' + [r, g, b, a / 255].join(', ') + ')';
+        return 'rgba(' + [r, g, b, (a / 255).toFixed(1)].join(', ') + ')';
     }
 
     to2digitHex(input) {
@@ -468,7 +468,14 @@ class UI {
     constructor() {
         this.inactiveClass = 'inactive';
 
+        this.defaults = {
+            ip: '127.0.0.1',
+            textColor: 'ffffff',
+            backgroundColor: 'rgba(255,133,255,0.7)'
+        }
+
         this.urlParamStrings = {
+            ip: 'ip',
             backgroundColor: 'a',
             textColor: 'b',
             shortModifierNames: 'c',
@@ -477,13 +484,15 @@ class UI {
             showBpm: 'f',
             showNjs: 'g',
             showCombo: 'h',
+            flipStatic: 'i',
+            flipLive: 'j'
         }
 
         this.urlParams = new URLSearchParams(location.search);
 
         this.options = {
-            backgroundColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.backgroundColor, 'rgba(255, 133, 255, 0.7)')),
-            textColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.textColor, 'ffffff')),
+            backgroundColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
+            textColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.textColor, this.defaults.textColor)),
             shortModifierNames: this.urlParams.has(this.urlParamStrings.shortModifierNames),
             showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
             previewMode: this.urlParams.has('options'),
@@ -491,11 +500,11 @@ class UI {
             showBpm: !this.urlParams.has(this.urlParamStrings.showBpm),
             showNjs: !this.urlParams.has(this.urlParamStrings.showNjs),
             showCombo: !this.urlParams.has(this.urlParamStrings.showCombo),
-            ip: this.urlParams.has('ip') ? this.urlParams.get('ip') : '127.0.0.1'
+            ip: this.getUrlParam(this.urlParamStrings.ip, this.defaults.ip)
         };
 
         document.body.ondblclick = (e) => {
-            if (e.target !== document.body) {
+            if (e.target !== this.songInfoHolder) {
                 return;
             }
             this.options.previewMode = !this.options.previewMode;
@@ -690,15 +699,26 @@ class UI {
         Helper.visibility(this.data.combo, this.options.showCombo);
         Helper.display(this.data.miss, this.options.missCounter, true);
 
-        let options = [
-            this.urlParamStrings.backgroundColor + '=' + Helper.toUrlColor(this.options.backgroundColor),
-            this.urlParamStrings.textColor + '=' + Helper.toUrlColor(this.options.textColor)
-        ];
+        let options = [];
+
+        let bg = Helper.toUrlColor(this.options.backgroundColor);
+        if (bg !== this.defaults.backgroundColor) {
+            options.push(this.urlParamStrings.backgroundColor + '=' + bg);
+        }
+
+        let tc = Helper.toUrlColor(this.options.textColor);
+        if (tc !== this.defaults.textColor) {
+            options.push(this.urlParamStrings.textColor + '=' + tc);
+        }
 
         if (this.options.showPrevBsr) {
             Helper.removeClass(this.beatMapCover, "borderRadiusTopRight");
         } else {
             Helper.addClass(this.beatMapCover, "borderRadiusTopRight");
+        }
+
+        if (this.options.ip !== this.defaults.ip) {
+            options.push(this.urlParamStrings.ip + "=" + this.options.ip);
         }
 
         let pushData = [
@@ -933,6 +953,7 @@ window.onload = () => {
     ui.buildOptionsPanel();
 
     connection = new MultiConnection(ui.options.ip, 2946);
+    /*
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         data = new LiveData(data);
         ui.updateLive(data);
@@ -941,6 +962,7 @@ window.onload = () => {
         data = new StaticData(data);
         ui.updateStatic(data);
     });
+    //*/
 
     ui.ipText.value = connection.getUrl(true);
 }
