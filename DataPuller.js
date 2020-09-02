@@ -991,7 +991,6 @@ window.onload = () => {
     ui.buildOptionsPanel();
 
     connection = new MultiConnection(ui.options.ip, 2946);
-    /*
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         data = new LiveData(data);
         ui.updateLive(data);
@@ -1000,7 +999,6 @@ window.onload = () => {
         data = new StaticData(data);
         ui.updateStatic(data);
     });
-    //*/
 
     ui.ipText.value = connection.getUrl(true);
 }
