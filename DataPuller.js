@@ -150,6 +150,14 @@ class Helper {
 
         return '000000';
     }
+
+    static toggleClass(element, value, className) {
+        if (!!value) {
+            Helper.addClass(element, className);
+        } else {
+            Helper.removeClass(element, className);
+        }
+    }
 }
 
 class Connection {
@@ -356,23 +364,14 @@ class ColorInput {
         this.bElement = this.input(this.b, 'b');
         this.aElement = this.input(this.a, 'a');
 
-        this.rElement.onchange = () => {
-            this.internalChange();
-        };
-        this.gElement.onchange = () => {
-            this.internalChange();
-        };
-        this.bElement.onchange = () => {
-            this.internalChange();
-        };
-        this.aElement.onchange = () => {
+        let change = () => {
             this.internalChange();
         };
 
-        this.rElement.onkeyup = this.rElement.onchange;
-        this.gElement.onkeyup = this.gElement.onchange;
-        this.bElement.onkeyup = this.bElement.onchange;
-        this.aElement.onkeyup = this.aElement.onchange;
+        this.rElement.oninput = change;
+        this.gElement.oninput = change;
+        this.bElement.oninput = change;
+        this.aElement.oninput = change;
 
         element.append(
             this.label('R:', this.rElement.id),
@@ -408,14 +407,14 @@ class ColorInput {
         return input.length === 1 ? '0' + input : input;
     }
 
-    input(value, id, isAlpha = false) {
+    input(value, id) {
         let i = Helper.create('input');
-        i.type = 'number';
+        i.type = 'range';
         i.min = 0;
-        i.max = isAlpha ? 100 : 255;
+        i.max = 255;
         i.value = value;
         i.id = this.instance + id;
-        i.style.width = '40px';
+        i.style.width = '80px';
 
         return i;
     }
@@ -485,7 +484,8 @@ class UI {
             showNjs: 'g',
             showCombo: 'h',
             flipStatic: 'i',
-            flipLive: 'j'
+            flipLive: 'j',
+            flipModifiers: 'k'
         }
 
         this.urlParams = new URLSearchParams(location.search);
@@ -500,7 +500,10 @@ class UI {
             showBpm: !this.urlParams.has(this.urlParamStrings.showBpm),
             showNjs: !this.urlParams.has(this.urlParamStrings.showNjs),
             showCombo: !this.urlParams.has(this.urlParamStrings.showCombo),
-            ip: this.getUrlParam(this.urlParamStrings.ip, this.defaults.ip)
+            ip: this.getUrlParam(this.urlParamStrings.ip, this.defaults.ip),
+            flipLive: this.urlParams.has(this.urlParamStrings.flipLive),
+            flipStatic: this.urlParams.has(this.urlParamStrings.flipStatic),
+            flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers)
         };
 
         document.body.ondblclick = (e) => {
@@ -522,6 +525,10 @@ class UI {
         this.internalInterval = 0;
 
         this.appendNewStyles();
+
+        window.setTimeout(() => {
+            this.calculateOptionPosition();
+        }, 100);
     }
 
     buildOptionsPanel() {
@@ -532,6 +539,7 @@ class UI {
 
         let textColor = new ColorInput(this.options.textColor, c => {
             this.options.textColor = c;
+            this.appendNewStyles();
         });
 
         new SettingLine('Short Modifiers', 'shortModifierNames');
@@ -543,6 +551,12 @@ class UI {
         new SettingLine('Show BPM', 'showBpm');
         new SettingLine('Show NJS', 'showNjs');
         new SettingLine('Show Combo', 'showCombo');
+
+        this.optionsLinesElement.append(Helper.create('hr'));
+
+        new SettingLine('Flip SongInfo to right', 'flipStatic');
+        new SettingLine('Flip Modifiers to right', 'flipModifiers');
+        new SettingLine('Flip Progress to top', 'flipLive');
 
         this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -657,6 +671,12 @@ class UI {
         }
     }
 
+    calculateOptionPosition() {
+        let styles = window.getComputedStyle(this.optionsElement, null)
+        this.optionsElement.style.marginTop = (-parseInt(styles.getPropertyValue('height')) / 2) + 'px';
+        this.optionsElement.style.marginLeft = (-parseInt(styles.getPropertyValue('width')) / 2) + 'px';
+    }
+
     appendNewStyles() {
         document.body.style.color = this.options.textColor;
         document.querySelectorAll('.roundBar circle').forEach(element => {
@@ -693,11 +713,15 @@ class UI {
         }
 
         Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
-        Helper.display(this.optionsElement, this.options.previewMode);
+        Helper.visibility(this.data.combo, this.options.showCombo);
         Helper.display(this.data.bpm, this.options.showBpm, true);
         Helper.display(this.data.njs, this.options.showNjs, true);
-        Helper.visibility(this.data.combo, this.options.showCombo);
         Helper.display(this.data.miss, this.options.missCounter, true);
+
+        Helper.display(this.optionsElement, this.options.previewMode);
+        if (this.options.previewMode) {
+            this.calculateOptionPosition();
+        }
 
         let options = [];
 
@@ -711,14 +735,33 @@ class UI {
             options.push(this.urlParamStrings.textColor + '=' + tc);
         }
 
-        if (this.options.showPrevBsr) {
-            Helper.removeClass(this.beatMapCover, "borderRadiusTopRight");
-        } else {
-            Helper.addClass(this.beatMapCover, "borderRadiusTopRight");
+        let switchRadius = (element, value) => {
+            Helper.toggleClass(element, !value, 'borderRadiusTopLeft');
+            Helper.toggleClass(element, !value, 'borderRadiusBottomLeft');
+            Helper.toggleClass(element, value, 'borderRadiusTopRight');
+            Helper.toggleClass(element, value, 'borderRadiusBottomRight');
         }
 
+        switchRadius(this.songInfo.bsr, this.options.flipStatic);
+        switchRadius(this.songInfo.mapper, this.options.flipStatic);
+        switchRadius(this.songInfo.difficulty, this.options.flipStatic);
+        switchRadius(this.songInfo.artist, this.options.flipStatic);
+        switchRadius(this.songInfo.songName, this.options.flipStatic);
+
+        Helper.toggleClass(this.beatMapCover, !this.options.flipStatic, 'borderRadiusBottomRight');
+        Helper.toggleClass(this.beatMapCover, this.options.flipStatic, 'borderRadiusBottomLeft');
+        if (this.options.flipStatic) {
+            Helper.toggleClass(this.beatMapCover, !this.options.showPrevBsr, 'borderRadiusTopLeft');
+        } else {
+            Helper.toggleClass(this.beatMapCover, !this.options.showPrevBsr, 'borderRadiusTopRight');
+        }
+
+        Helper.toggleClass(this.songInfoHolder, this.options.flipStatic, 'flip');
+        Helper.toggleClass(this.modifiersHolder, this.options.flipModifiers, 'flip');
+        Helper.toggleClass(this.dataHolder, this.options.flipLive, 'flip');
+
         if (this.options.ip !== this.defaults.ip) {
-            options.push(this.urlParamStrings.ip + "=" + this.options.ip);
+            options.push(this.urlParamStrings.ip + '=' + this.options.ip);
         }
 
         let pushData = [
@@ -727,7 +770,10 @@ class UI {
             '!missCounter',
             '!showBpm',
             '!showNjs',
-            '!showCombo'
+            '!showCombo',
+            'flipStatic',
+            'flipLive',
+            'flipModifiers',
         ];
 
         for (let x of pushData) {
@@ -883,11 +929,7 @@ class UI {
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
         // generic song info
-        if (this.staticData.BSRKey.length === 0 || this.staticData.BSRKey === 'BSRKey') {
-            Helper.addClass(this.beatMapCover, 'borderRadiusTopLeft');
-        } else {
-            Helper.removeClass(this.beatMapCover, 'borderRadiusTopLeft');
-        }
+        Helper.toggleClass(this.beatMapCover, this.staticData.BSRKey.length === 0 || this.staticData.BSRKey === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
 
         this.data.previousBSR.innerHTML = this.staticData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + this.staticData.PreviousBSR : '';
 
@@ -896,11 +938,7 @@ class UI {
         this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
         this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
-        if (this.staticData.SongName.length > 26) {
-            Helper.addClass(this.songInfo.songName, 'small');
-        } else {
-            Helper.removeClass(this.songInfo.songName, 'small');
-        }
+        Helper.toggleClass(this.songInfo.songName, this.staticData.SongName.length > 26, 'small');
 
         this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
 
@@ -913,7 +951,7 @@ class UI {
             }
         }
 
-        this.songInfo.cover.style.backgroundImage = 'url("' + this.staticData.coverImage + '")';
+        this.songInfo.cover.style.backgroundImage = 'url(\'' + this.staticData.coverImage + '\')';
 
         this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
         this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS;

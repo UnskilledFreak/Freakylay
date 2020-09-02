@@ -78,21 +78,21 @@ body {
     background-size: contain;
 }
 
-#previousBSR {
-    display: inline-block;
-}
-
 #infoText {
     float: left;
 }
 
 #previousBSRWrapper .line,
 #infoText .line {
-    padding: 3px 2px 3px 10px;
+    padding: 3px 10px 3px 10px;
     width: fit-content;
     margin-left: auto;
     font-size: 18px;
     max-width: 520px;
+}
+
+#previousBSR {
+    display: inline-block;
 }
 
 #mapName {
@@ -209,9 +209,52 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 350px;
-    height: 400px;
-    margin-left: -175px;
-    margin-top: -200px;
     padding: 10px;
+}
+
+#options input[type=checkbox] ~ label {
+    cursor: pointer;
+}
+
+/** flip **/
+
+
+#songInfo.flip {
+    text-align: left;
+}
+
+#songInfo.flip .textBottom {
+    right: inherit;
+    left: 5px;
+    width: 50%;
+}
+#songInfo.flip #previousBSRWrapper {
+    width: 100%;
+}
+
+#songInfo.flip #beatMapCover {
+    float: left;
+    width: 150px;
+}
+
+#songInfo.flip #infoText .line {
+    margin-left: inherit;
+}
+
+#modifiers.flip {
+    right: inherit;
+    left: 5px;
+}
+
+#modifiers.flip.inactive {
+    left: -250px;
+}
+
+#downSection.flip {
+    bottom: inherit;
+    top: 5px;
+}
+
+#downSection.flip.inactive {
+    top: -100px;
 }
