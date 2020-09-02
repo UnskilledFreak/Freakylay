@@ -554,9 +554,9 @@ class UI {
 
         this.optionsLinesElement.append(Helper.create('hr'));
 
-        new SettingLine('Flip SongInfo to right', 'flipStatic');
-        new SettingLine('Flip Modifiers to right', 'flipModifiers');
-        new SettingLine('Flip Progress to top', 'flipLive');
+        new SettingLine('Flip SongInfo to left', 'flipStatic');
+        new SettingLine('Flip Modifiers to left', 'flipModifiers');
+        new SettingLine('Flip Counter section to top', 'flipLive');
 
         this.optionsLinesElement.append(Helper.create('hr'));
 
