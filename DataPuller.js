@@ -514,6 +514,7 @@ class UI {
             this.appendNewStyles();
         };
 
+        this.levelWasPaused = false;
         this.getUiElements();
 
         this.health.setProgress(0, 1);
@@ -825,7 +826,7 @@ class UI {
     }
 
     getTimeElapsed() {
-        return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul) - 1;
+        return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul);
     }
 
     updateLive(liveData) {
@@ -845,7 +846,13 @@ class UI {
                 this.setTime(this.mapLength / 2, this.mapLength)
             } else {
                 this.internalInterval = window.setInterval(() => {
-                    if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
+                    if (this.liveData.LevelPaused) {
+                        this.levelWasPaused = true;
+                    } else if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
+                        if (this.levelWasPaused) {
+                            this.levelWasPaused = false;
+                            this.internalTimer = this.getTimeElapsed();
+                        }
                         if (!this.timerAdjusted && this.getTimeElapsed() !== this.internalTimer) {
                             this.internalTimer = this.getTimeElapsed();
                             this.timerAdjusted = true;
@@ -861,6 +868,7 @@ class UI {
             Helper.addClass(this.dataHolder, this.inactiveClass);
             Helper.addClass(this.modifiersHolder, this.inactiveClass);
             this.uiShown = false;
+            this.levelWasPaused = false;
 
             window.clearInterval(this.internalInterval);
         }
