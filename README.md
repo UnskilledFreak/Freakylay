@@ -1,6 +1,8 @@
 # Freakylay
 An alternative and customizable overlay for [DataPuller Mod](https://github.com/kOFReadie/DataPuller) which lets you choose your own style.
 
+Its bases on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) whith some tweaks and a completly new way of displaying scores, combo, player health, accuracy and much more!
+
 ## Features
 
 - change **background and font color like you want**, even with transparency
@@ -10,6 +12,7 @@ An alternative and customizable overlay for [DataPuller Mod](https://github.com/
     - 80% => -20%
 - displays accuracy, player health and time in a nice circular progressbar
 - it hides itself when in menus
+- flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
 
 ## Url - give me the Link:
