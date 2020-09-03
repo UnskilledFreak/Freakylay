@@ -1,7 +1,7 @@
 # Freakylay
 An alternative and customizable overlay for [DataPuller Mod](https://github.com/kOFReadie/DataPuller) which lets you choose your own style.
 
-Its bases on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) whith some tweaks and a completly new way of displaying scores, combo, player health, accuracy and much more!
+Its bases on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) with some tweaks and a completely new way of displaying scores, combo, player health, accuracy and much more!
 
 ## Features
 
