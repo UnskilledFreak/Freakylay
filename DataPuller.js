@@ -946,7 +946,7 @@ class UI {
         this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
         this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
-        Helper.toggleClass(this.songInfo.songName, this.staticData.SongName.length > 26, 'small');
+        Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
         this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
 
@@ -962,7 +962,7 @@ class UI {
         this.songInfo.cover.style.backgroundImage = 'url(\'' + this.staticData.coverImage + '\')';
 
         this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
-        this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS;
+        this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS.toFixed(1);
 
         // previous record?
     }
