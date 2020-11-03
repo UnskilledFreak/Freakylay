@@ -31,9 +31,11 @@ class StaticData {
         this.BSRKey = Helper.isset(data, 'BSRKey', 'BSRKey');
         this.coverImage = Helper.isset(data, 'coverImage', 'img/tyGQRx5x_400x400.jpg');
         this.Length = Helper.isset(data, 'Length', 1);
+        this.TimeScale = Helper.isset(data, 'TimeScale', 1);
 
         // Difficulty
         this.Difficulty = Helper.isset(data, 'Difficulty', 0);
+        this.CustomDifficultyLabel = Helper.isset(data, 'CustomDifficultyLabel', '');
         this.BPM = Helper.isset(data, 'BPM', 0);
         this.NJS = Helper.isset(data, 'NJS', 0.0);
 
@@ -460,6 +462,24 @@ class SettingLine {
         ui.optionsLinesElement.append(line);
 
         SettingLine.index++;
+    }
+}
+
+class UrlParam {
+    constructor(key, def, valueCallback = null) {
+        let p = new URLSearchParams(location.search);
+        this.key = key;
+        this.default = def;
+        this.hasKey = p.has(this.key);
+        this.value = this.hasKey ? p.get(this.key) : this.default;
+
+        if (typeof valueCallback === 'function') {
+            this.value = valueCallback(this.value);
+        }
+    }
+
+    isDefaultValue() {
+        return this.value === this.default;
     }
 }
 
@@ -948,7 +968,12 @@ class UI {
 
         Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
-        this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
+        console.log(this.staticData.CustomDifficultyLabel, this.staticData.Difficulty);
+        if (this.staticData.CustomDifficultyLabel === '') {
+            this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
+        } else {
+            this.songInfo.difficulty.innerHTML = this.staticData.CustomDifficultyLabel + ' - ' + this.staticData.difficultyString();
+        }
 
         if (this.staticData.SongSubName.length > 0) {
             let sub = '<small>' + this.staticData.SongSubName + '</small>';
