@@ -66,7 +66,7 @@ class StaticData {
         this.PracticeModeModifiers.songSpeedMul = Math.round(this.PracticeModeModifiers.songSpeedMul * 100) / 100;
     }
 
-    difficultyString() {
+    getDifficultyString() {
         switch (this.Difficulty) {
             case 1:
                 return 'Easy';
@@ -81,6 +81,24 @@ class StaticData {
             default:
                 return 'Difficulty: ' + this.Difficulty;
         }
+    }
+
+    getFullDifficultyLabel() {
+        if (this.CustomDifficultyLabel === '') {
+            return this.getDifficultyString();
+        } else {
+            return this.CustomDifficultyLabel + ' - ' + this.getDifficultyString();
+        }
+    }
+
+    getSongAuthorLine() {
+        let name = this.SongAuthor;
+
+        if (this.SongSubName.length > 0) {
+            name += ' <small>' + this.SongSubName + '</small>';
+        }
+
+        return name;
     }
 }
 
@@ -465,6 +483,7 @@ class SettingLine {
     }
 }
 
+/*
 class UrlParam {
     constructor(key, def, valueCallback = null) {
         let p = new URLSearchParams(location.search);
@@ -482,6 +501,7 @@ class UrlParam {
         return this.value === this.default;
     }
 }
+*/
 
 class UI {
     constructor() {
@@ -963,27 +983,14 @@ class UI {
 
         this.hideSetting(this.songInfo.bsr, this.staticData.BSRKey === 'BSRKey' ? '' : this.staticData.BSRKey, 'BSR: ');
         this.hideSetting(this.songInfo.mapper, this.staticData.Mapper);
-        this.hideSetting(this.songInfo.artist, this.staticData.SongAuthor);
+        this.hideSetting(this.songInfo.artist, this.staticData.getSongAuthorLine);
         this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
         Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
-        console.log(this.staticData.CustomDifficultyLabel, this.staticData.Difficulty);
-        if (this.staticData.CustomDifficultyLabel === '') {
-            this.songInfo.difficulty.innerHTML = this.staticData.difficultyString();
-        } else {
-            this.songInfo.difficulty.innerHTML = this.staticData.CustomDifficultyLabel + ' - ' + this.staticData.difficultyString();
-        }
+        this.songInfo.difficulty.innerHTML = this.staticData.getFullDifficultyLabel();
 
-        if (this.staticData.SongSubName.length > 0) {
-            let sub = '<small>' + this.staticData.SongSubName + '</small>';
-            if (this.staticData.SongAuthor.length === 0) {
-                this.songInfo.artist.innerHTML = sub;
-            } else {
-                this.songInfo.artist.innerHTML += ' ' + sub;
-            }
-        }
-
+        console.log(this.staticData.coverImage);
         this.songInfo.cover.style.backgroundImage = 'url(\'' + this.staticData.coverImage + '\')';
 
         this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
