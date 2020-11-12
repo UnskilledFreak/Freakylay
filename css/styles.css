@@ -96,13 +96,15 @@ body {
 }
 
 #mapName {
-    word-wrap: break-word;
     font-size: 34px !important;
+    height: 42px;
+    max-width: 400px !important;
+    overflow: hidden;
 }
 
-#mapName.small {
-    padding: 5px 2px 5px 5px;
-    font-size: 16px !important;
+#mapName #marquee {
+    width: max-content;
+    white-space: pre;
 }
 
 /** svgs **/

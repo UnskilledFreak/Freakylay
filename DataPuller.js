@@ -696,6 +696,8 @@ class UI {
         this.optionsLinesElement = Helper.element('optionsLines');
         this.urlText = Helper.element('urlText');
 
+        this.marquee = new Marquee();
+
         this.urlText.onclick = () => {
             this.urlText.select();
             document.execCommand('copy');
@@ -882,36 +884,38 @@ class UI {
             this.timerAdjusted = false;
             this.internalTimer = this.getTimeElapsed();
 
-            if (this.options.previewMode) {
-                this.setTime(this.mapLength / 2, this.mapLength)
-            } else {
-                this.internalInterval = window.setInterval(() => {
-                    if (this.liveData.LevelPaused) {
-                        this.levelWasPaused = true;
-                    } else if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
-                        if (this.levelWasPaused) {
-                            this.levelWasPaused = false;
-                            this.internalTimer = this.getTimeElapsed();
-                        }
-                        if (!this.timerAdjusted && this.getTimeElapsed() !== this.internalTimer) {
-                            this.internalTimer = this.getTimeElapsed();
-                            this.timerAdjusted = true;
-                        } else {
-                            this.internalTimer++;
-                        }
+            /*
+            this.internalInterval = window.setInterval(() => {
+                if (this.liveData.LevelPaused) {
+                    this.levelWasPaused = true;
+                } else if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
+                    if (this.levelWasPaused) {
+                        this.levelWasPaused = false;
+                        this.internalTimer = this.getTimeElapsed();
                     }
-                    this.setTime(this.internalTimer, this.mapLength);
-                }, 1000);
-            }
+                    if (!this.timerAdjusted && this.getTimeElapsed() !== this.internalTimer) {
+                        this.internalTimer = this.getTimeElapsed();
+                        this.timerAdjusted = true;
+                    } else {
+                        this.internalTimer++;
+                    }
+                }
+                this.setTime(this.internalTimer, this.mapLength);
+            }, 1000);
+            */
+
         } else if (!this.liveData.InLevel && this.uiShown) {
             Helper.addClass(this.songInfoHolder, this.inactiveClass);
             Helper.addClass(this.dataHolder, this.inactiveClass);
             Helper.addClass(this.modifiersHolder, this.inactiveClass);
             this.uiShown = false;
             this.levelWasPaused = false;
+            this.marquee.stop();
 
-            window.clearInterval(this.internalInterval);
+            //window.clearInterval(this.internalInterval);
         }
+
+        this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed, this.mapLength);
 
         // down section
         this.accuracy.setProgress(this.liveData.Accuracy.toFixed(2), 100)
@@ -983,14 +987,14 @@ class UI {
 
         this.hideSetting(this.songInfo.bsr, this.staticData.BSRKey === 'BSRKey' ? '' : this.staticData.BSRKey, 'BSR: ');
         this.hideSetting(this.songInfo.mapper, this.staticData.Mapper);
-        this.hideSetting(this.songInfo.artist, this.staticData.getSongAuthorLine);
-        this.hideSetting(this.songInfo.songName, this.staticData.SongName);
+        this.hideSetting(this.songInfo.artist, this.staticData.getSongAuthorLine());
+        //this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
-        Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
+        this.marquee.setValue(this.staticData.SongName);
+
+        //Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
         this.songInfo.difficulty.innerHTML = this.staticData.getFullDifficultyLabel();
-
-        console.log(this.staticData.coverImage);
         this.songInfo.cover.style.backgroundImage = 'url(\'' + this.staticData.coverImage + '\')';
 
         this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
@@ -1017,6 +1021,37 @@ class UI {
             g.InLevel = false;
             this.updateLive(g);
         }
+    }
+}
+
+class Marquee {
+    constructor() {
+        this.animationSpeed = 250;
+        this.element = Helper.element('marquee');
+        this.internalTimer = null;
+        this.width = 0;
+    }
+
+    setValue(val) {
+        this.stop();
+        this.element.innerHTML = val;
+
+        let styles = window.getComputedStyle(this.element, null);
+        let width = parseInt(styles.getPropertyValue('width'));
+
+        if (width > 400) {
+            this.element.innerHTML += ' '.repeat(Math.floor(val.length / 2));
+            this.internalTimer = window.setInterval(() => {
+                let actualVal = this.element.innerHTML;
+                let first = actualVal.substr(0, 1);
+                this.element.innerHTML = actualVal.substr(1) + first;
+            }, this.animationSpeed);
+        }
+
+    }
+
+    stop() {
+        window.clearInterval(this.internalTimer);
     }
 }
 
