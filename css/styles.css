@@ -131,9 +131,9 @@ body {
 /** modifiers **/
 #modifiers {
     position: absolute;
+    text-align: right;
     right: 5px;
     bottom: 200px;
-    text-align: center;
     font-size: 14px;
     transition: 1s all;
 }
@@ -143,7 +143,9 @@ body {
 }
 
 #modifiers > div {
-    margin: 5px;
+    padding: 5px;
+    display: inline-block;
+    width: fit-content;
 }
 
 /** down **/
@@ -246,6 +248,7 @@ body {
 #modifiers.flip {
     right: inherit;
     left: 5px;
+    text-align: left;
 }
 
 #modifiers.flip.inactive {
@@ -259,4 +262,10 @@ body {
 
 #downSection.flip.inactive {
     top: -100px;
+}
+
+@media screen and (max-width: 1280px) {
+    body {
+        zoom: 75%;
+    }
 }

@@ -24,6 +24,7 @@ class LiveData {
 class StaticData {
     constructor(data) {
         // Map
+        this.Hash = Helper.isset(data, 'Hash', 'SongName');
         this.SongName = Helper.isset(data, 'SongName', 'SongName');
         this.SongSubName = Helper.isset(data, 'SongSubName', 'SongSubName');
         this.SongAuthor = Helper.isset(data, 'SongAuthor', 'SongAuthor');
@@ -31,13 +32,16 @@ class StaticData {
         this.BSRKey = Helper.isset(data, 'BSRKey', 'BSRKey');
         this.coverImage = Helper.isset(data, 'coverImage', 'img/tyGQRx5x_400x400.jpg');
         this.Length = Helper.isset(data, 'Length', 1);
-        this.TimeScale = Helper.isset(data, 'TimeScale', 1);
 
         // Difficulty
+        this.MapType = Helper.isset(data, 'MapType', 0);
         this.Difficulty = Helper.isset(data, 'Difficulty', 0);
         this.CustomDifficultyLabel = Helper.isset(data, 'CustomDifficultyLabel', '');
         this.BPM = Helper.isset(data, 'BPM', 0);
         this.NJS = Helper.isset(data, 'NJS', 0.0);
+        this.PracticeMode = Helper.isset(data, 'PracticeMode', false);
+        this.PP = Helper.isset(data, 'PP', false);
+        this.Star = Helper.isset(data, 'Star', false);
 
         //Modifiers
         let modifiers = Helper.isset(data, 'Modifiers', {});
@@ -51,8 +55,7 @@ class StaticData {
             noObstacles: Helper.isset(modifiers, 'noObstacles', false),
             noBombs: Helper.isset(modifiers, 'noBombs', false),
             slowerSong: Helper.isset(modifiers, 'slowerSong', false),
-            noArrows: Helper.isset(modifiers, 'noArrows', false),
-            practiceMode: Helper.isset(data, 'PracticeMode', false)
+            noArrows: Helper.isset(modifiers, 'noArrows', false)
         };
         let practiceModeModifiers = Helper.isset(data, 'PracticeModeModifiers', {});
         this.PracticeModeModifiers = {
@@ -507,11 +510,44 @@ class UI {
     constructor() {
         this.inactiveClass = 'inactive';
 
+        this.staticDataTest = new StaticData({});
+        this.staticDataTest.BPM = 180;
+        this.staticDataTest.BSRKey = '1234';
+        this.staticDataTest.Difficulty = 9;
+        this.staticDataTest.Length = 120;
+        this.staticDataTest.NJS = 20;
+        this.staticDataTest.PreviousBSR = 'affa';
+        this.staticDataTest.PreviousRecord = 123456;  // ??? uhm
+
+        this.staticDataTest.Modifiers.batteryEnergy = true;
+        this.staticDataTest.Modifiers.disappearingArrows = true;
+        //this.staticDataTest.Modifiers.fasterSong = true;
+        this.staticDataTest.Modifiers.ghostNotes = true;
+        this.staticDataTest.Modifiers.instantFail = true;
+        this.staticDataTest.Modifiers.noArrows = true;
+        this.staticDataTest.Modifiers.noBombs = true;
+        this.staticDataTest.Modifiers.noFail = true;
+        this.staticDataTest.Modifiers.noObstacles = true;
+        //this.staticDataTest.Modifiers.slowerSong = true;
+
+        this.staticDataTest.PracticeMode = true;
+        this.staticDataTest.PracticeModeModifiers.songSpeedMul = 1.2;
+        //this.staticDataTest.PracticeModeModifiers.songSpeedMul = 0.8;
+        this.staticDataTest.PracticeModeModifiers.startSongTime = 10;
+
+        this.liveDataTest = new LiveData({});
+        this.liveDataTest.PlayerHealth = .5;
+        this.liveDataTest.TimeElapsed = 10;
+        this.liveDataTest.Accuracy = 50;
+        this.liveDataTest.Score = 1234567;
+        this.liveDataTest.Misses = 17;
+        this.liveDataTest.fullCombo = true;
+
         this.defaults = {
             ip: '127.0.0.1',
             textColor: 'ffffff',
             backgroundColor: 'rgba(255,133,255,0.7)'
-        }
+        };
 
         this.urlParamStrings = {
             ip: 'ip',
@@ -525,8 +561,10 @@ class UI {
             showCombo: 'h',
             flipStatic: 'i',
             flipLive: 'j',
-            flipModifiers: 'k'
-        }
+            flipModifiers: 'k',
+            showScoreIncrease: 'l',
+            showFullComboModifier: 'm'
+        };
 
         this.urlParams = new URLSearchParams(location.search);
 
@@ -543,7 +581,9 @@ class UI {
             ip: this.getUrlParam(this.urlParamStrings.ip, this.defaults.ip),
             flipLive: this.urlParams.has(this.urlParamStrings.flipLive),
             flipStatic: this.urlParams.has(this.urlParamStrings.flipStatic),
-            flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers)
+            flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers),
+            showScoreIncrease: this.urlParams.has(this.urlParamStrings.showScoreIncrease),
+            showFullComboModifier: this.urlParams.has(this.urlParamStrings.showFullComboModifier)
         };
 
         document.body.ondblclick = (e) => {
@@ -554,7 +594,7 @@ class UI {
             this.appendNewStyles();
         };
 
-        this.levelWasPaused = false;
+        //this.levelWasPaused = false;
         this.getUiElements();
 
         this.health.setProgress(0, 1);
@@ -562,8 +602,10 @@ class UI {
         this.setTime(0, 60)
 
         this.uiShown = true;
+        /*
         this.internalTimer = -1;
         this.internalInterval = 0;
+         */
 
         this.appendNewStyles();
 
@@ -592,6 +634,8 @@ class UI {
         new SettingLine('Show BPM', 'showBpm');
         new SettingLine('Show NJS', 'showNjs');
         new SettingLine('Show Combo', 'showCombo');
+        new SettingLine('Show Score arrow pointing up or down depending on last score', 'showScoreIncrease');
+        new SettingLine('Show Full Combo modifier', 'showFullComboModifier');
 
         this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -610,38 +654,8 @@ class UI {
     }
 
     previewGameData() {
-        let s = new StaticData({});
-        s.BPM = 180;
-        s.BSRKey = '1234';
-        s.Difficulty = 9;
-        s.Length = 120;
-        s.NJS = 20;
-        s.PreviousBSR = 'affa';
-        s.PreviousRecord = 123456;  // ??? uhm
-
-        s.Modifiers.batteryEnergy = true;
-        s.Modifiers.disappearingArrows = true;
-        s.Modifiers.fasterSong = true;
-        s.Modifiers.ghostNotes = true;
-        s.Modifiers.instantFail = true;
-        s.Modifiers.noArrows = true;
-        s.Modifiers.noBombs = true;
-        s.Modifiers.noFail = true;
-        s.Modifiers.noObstacles = true;
-        s.Modifiers.practiceMode = true;
-        s.Modifiers.slowerSong = true;
-        s.PracticeModeModifiers.songSpeedMul = 1.2;
-        s.PracticeModeModifiers.startSongTime = 10;
-
-        let l = new LiveData({});
-        l.PlayerHealth = .5;
-        l.TimeElapsed = 10;
-        l.Accuracy = 50;
-        l.Score = 1234567;
-        l.Misses = 17;
-
-        this.updateStatic(s);
-        this.updateLive(l);
+        this.updateStatic(this.staticDataTest);
+        this.updateLive(this.liveDataTest);
     }
 
     getUiElements() {
@@ -651,14 +665,14 @@ class UI {
             batteryEnergy: Helper.element('BE'),
             disappearingArrows: Helper.element('DA'),
             ghostNotes: Helper.element('GN'),
-            fasterSong: Helper.element('FS'),
+            speed: Helper.element('speed'),
             noFail: Helper.element('NF'),
             noObstacles: Helper.element('NO'),
             noBombs: Helper.element('NB'),
-            slowerSong: Helper.element('SS'),
             noArrows: Helper.element('NA'),
             practiceMode: Helper.element('PM'),
-            songSpeed: Helper.element('songSpeed')
+            songSpeed: Helper.element('songSpeed'),
+            fullCombo: Helper.element('FC')
         };
 
         this.timer = new CircleBar(Helper.element('timerHolder'));
@@ -734,25 +748,23 @@ class UI {
             this.modifiers.batteryEnergy.innerHTML = 'BE';
             this.modifiers.disappearingArrows.innerHTML = 'DA';
             this.modifiers.ghostNotes.innerHTML = 'GN';
-            this.modifiers.fasterSong.innerHTML = 'FS';
             this.modifiers.noFail.innerHTML = 'NF';
             this.modifiers.noObstacles.innerHTML = 'NO';
             this.modifiers.noBombs.innerHTML = 'NB';
-            this.modifiers.slowerSong.innerHTML = 'SS';
             this.modifiers.noArrows.innerHTML = 'NA';
             this.modifiers.practiceMode.innerHTML = 'PM';
+            this.modifiers.fullCombo.innerHTML = 'FC';
         } else {
             this.modifiers.instantFail.innerHTML = 'Insta Fail';
             this.modifiers.batteryEnergy.innerHTML = 'Battery Energy';
             this.modifiers.disappearingArrows.innerHTML = 'Disappearing Arrows';
             this.modifiers.ghostNotes.innerHTML = 'Ghost Notes';
-            this.modifiers.fasterSong.innerHTML = 'Faster Song';
             this.modifiers.noFail.innerHTML = 'No Fail';
             this.modifiers.noObstacles.innerHTML = 'No Obstacles';
             this.modifiers.noBombs.innerHTML = 'No Bombs';
-            this.modifiers.slowerSong.innerHTML = 'Slower Song';
             this.modifiers.noArrows.innerHTML = 'No Arrows';
             this.modifiers.practiceMode.innerHTML = 'Practice Mode';
+            this.modifiers.fullCombo.innerHTML = 'Full Combo';
         }
 
         Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
@@ -762,6 +774,7 @@ class UI {
         Helper.display(this.data.miss, this.options.missCounter, true);
 
         Helper.display(this.optionsElement, this.options.previewMode);
+
         if (this.options.previewMode) {
             this.calculateOptionPosition();
         }
@@ -817,6 +830,8 @@ class UI {
             'flipStatic',
             'flipLive',
             'flipModifiers',
+            'showScoreIncrease',
+            'showFullComboModifier'
         ];
 
         for (let x of pushData) {
@@ -866,10 +881,11 @@ class UI {
 
         return minutes < 0 ? seconds : minutes + ':' + seconds;
     }
-
+    /*
     getTimeElapsed() {
         return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul);
     }
+     */
 
     updateLive(liveData) {
         this.liveData = liveData;
@@ -881,6 +897,7 @@ class UI {
             Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
             this.uiShown = true;
+            /*
             this.timerAdjusted = false;
             this.internalTimer = this.getTimeElapsed();
 
@@ -920,15 +937,23 @@ class UI {
         // down section
         this.accuracy.setProgress(this.liveData.Accuracy.toFixed(2), 100)
 
+        let arrow = '';
+
+        if (this.options.showScoreIncrease) {
+            let lS = this.liveData.Score;
+            let pR = this.staticData.PreviousRecord;
+            arrow = lS < pR ? '&darr;' : lS > pR ? '&uarr;' : '';
+        }
+
         this.data.combo.innerHTML = '<span>Combo</span>' + this.liveData.Combo;
         this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses;
-        this.data.score.innerHTML = new Intl.NumberFormat('en-US').format(this.liveData.Score).replace(/,/g, ' ');
+        this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score).replace(/,/g, ' ');
 
-        //this.health.setProgress(this.staticData.Modifiers.practiceMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
+        //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
         this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
 
         // block hit scores?
-        // full combo?
+        Helper.display(this.modifiers.fullCombo, this.options.showFullComboModifier, true);
     }
 
     updateStatic(staticData) {
@@ -936,7 +961,7 @@ class UI {
 
         // calculate map length
         this.mapLength = this.staticData.Length;
-        if (this.staticData.Modifiers.practiceMode) {
+        if (this.staticData.PracticeMode) {
             this.mapLength = Math.trunc(this.staticData.Length / this.staticData.PracticeModeModifiers.songSpeedMul);
         } else if (this.staticData.Modifiers.fasterSong || this.staticData.Modifiers.slowerSong) {
             this.mapLength = Math.trunc(this.staticData.Length * (this.staticData.Modifiers.fasterSong ? .8 : 1.15));
@@ -952,30 +977,42 @@ class UI {
             }
 
             // noinspection JSUnfilteredForInLoop
-            Helper.display(this.modifiers[modifier], this.staticData.Modifiers[modifier]);
+            if (typeof this.modifiers[modifier] !== 'undefined') {
+                Helper.display(this.modifiers[modifier], this.staticData.Modifiers[modifier], true);
+            }
         }
 
-        Helper.display(this.modifiers.practiceMode, this.staticData.Modifiers.practiceMode);
+        Helper.display(this.modifiers.practiceMode, this.staticData.PracticeMode, true);
 
         // practice
-        if (this.staticData.Modifiers.practiceMode) {
+        if (this.staticData.PracticeMode) {
             allModifiersOff = false;
 
-            Helper.display(this.modifiers.fasterSong, this.staticData.PracticeModeModifiers.songSpeedMul > 1);
-            Helper.display(this.modifiers.slowerSong, this.staticData.PracticeModeModifiers.songSpeedMul < 1);
+            if (this.staticData.PracticeModeModifiers.songSpeedMul !== 1) {
+                let str;
+                if (this.staticData.PracticeModeModifiers.songSpeedMul > 1) {
+                    str = this.options.shortModifierNames ? 'FS' : 'Faster Song'
+                } else {
+                    str = this.options.shortModifierNames ? 'SS' : 'Slower Song'
+                }
+                this.modifiers.speed.innerHTML = str;
+                Helper.display(this.modifiers.speed, true, true);
+            } else {
+                Helper.display(this.modifiers.speed, false, true);
+            }
 
             let readableSpeed = (this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100).toFixed();
             let identifier = readableSpeed > 0 ? '+' : '';
 
             if (readableSpeed === 100) {
-                Helper.display(this.modifiers.songSpeed, false);
+                Helper.display(this.modifiers.songSpeed, false, true);
             } else {
-                Helper.display(this.modifiers.songSpeed, true);
+                Helper.display(this.modifiers.songSpeed, true, true);
                 this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
             }
-            Helper.display(this.modifiers.songSpeed, this.staticData.Modifiers.songSpeedMul !== 1);
+            Helper.display(this.modifiers.songSpeed, this.staticData.Modifiers.songSpeedMul !== 1, true);
         } else {
-            Helper.display(this.modifiers.songSpeed, false);
+            Helper.display(this.modifiers.songSpeed, false, true);
         }
 
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
