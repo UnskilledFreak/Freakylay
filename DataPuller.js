@@ -340,12 +340,13 @@ class ColorInput {
 
     static Instance = 0;
 
-    constructor(color, changeEvent) {
+    constructor(color, changeEvent, alphaCheck) {
 
         this.instance = ColorInput.Instance;
         ColorInput.Instance++;
 
         this.changeEvent = changeEvent;
+        this.alphaCheck = alphaCheck;
 
         let r, g, b, a, prefix;
         if (color.substring(0, 1) === '#') {
@@ -386,6 +387,9 @@ class ColorInput {
         this.gElement = this.input(this.g, 'g');
         this.bElement = this.input(this.b, 'b');
         this.aElement = this.input(this.a, 'a');
+        this.aInfoElement = Helper.create('span');
+        this.aInfoElement.innerHTML = 'Not recommended';
+        Helper.visibility(this.aInfoElement, false);
 
         let change = () => {
             this.internalChange();
@@ -394,7 +398,11 @@ class ColorInput {
         this.rElement.oninput = change;
         this.gElement.oninput = change;
         this.bElement.oninput = change;
-        this.aElement.oninput = change;
+        this.aElement.oninput = () => {
+            let a = parseInt(this.aElement.value);
+            Helper.visibility(this.aInfoElement, this.alphaCheck(a));
+            change();
+        };
 
         element.append(
             this.label('R:', this.rElement.id),
@@ -405,6 +413,7 @@ class ColorInput {
             this.bElement,
             this.label('A:', this.aElement.id),
             this.aElement,
+            this.aInfoElement
         );
     }
 
@@ -422,7 +431,7 @@ class ColorInput {
             return '#' + this.to2digitHex(r) + this.to2digitHex(g) + this.to2digitHex(b);
         }
 
-        return 'rgba(' + [r, g, b, (a / 255).toFixed(1)].join(', ') + ')';
+        return 'rgba(' + [r, g, b, (a / 255).toFixed(2)].join(', ') + ')';
     }
 
     to2digitHex(input) {
@@ -436,7 +445,7 @@ class ColorInput {
         i.min = 0;
         i.max = 255;
         i.value = value;
-        i.id = this.instance + id;
+        i.id = 'in_' + this.instance + id;
         i.style.width = '80px';
 
         return i;
@@ -615,15 +624,27 @@ class UI {
     }
 
     buildOptionsPanel() {
-        let backgroundColor = new ColorInput(this.options.backgroundColor, c => {
-            this.options.backgroundColor = c;
-            this.appendNewStyles();
-        });
+        let backgroundColor = new ColorInput(
+            this.options.backgroundColor,
+            c => {
+                this.options.backgroundColor = c;
+                this.appendNewStyles();
+            },
+            a => {
+                return a < 127 || a > 230;
+            }
+        );
 
-        let textColor = new ColorInput(this.options.textColor, c => {
-            this.options.textColor = c;
-            this.appendNewStyles();
-        });
+        let textColor = new ColorInput(
+            this.options.textColor,
+            c => {
+                this.options.textColor = c;
+                this.appendNewStyles();
+            },
+            a => {
+                return a < 127;
+            }
+        );
 
         new SettingLine('Short Modifiers', 'shortModifierNames');
         new SettingLine('Enable Miss Counter', 'missCounter');
@@ -881,6 +902,7 @@ class UI {
 
         return minutes < 0 ? seconds : minutes + ':' + seconds;
     }
+
     /*
     getTimeElapsed() {
         return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul);
