@@ -59,7 +59,6 @@ class StaticData {
         };
         let practiceModeModifiers = Helper.isset(data, 'PracticeModeModifiers', {});
         this.PracticeModeModifiers = {
-            startSongTime: Helper.isset(practiceModeModifiers, 'startSongTime', 0.0),
             songSpeedMul: Helper.isset(practiceModeModifiers, 'songSpeedMul', 1.0),
         };
 
@@ -526,23 +525,20 @@ class UI {
         this.staticDataTest.Length = 120;
         this.staticDataTest.NJS = 20;
         this.staticDataTest.PreviousBSR = 'affa';
-        this.staticDataTest.PreviousRecord = 123456;  // ??? uhm
+        this.staticDataTest.PreviousRecord = 123456;
 
         this.staticDataTest.Modifiers.batteryEnergy = true;
         this.staticDataTest.Modifiers.disappearingArrows = true;
-        //this.staticDataTest.Modifiers.fasterSong = true;
         this.staticDataTest.Modifiers.ghostNotes = true;
-        this.staticDataTest.Modifiers.instantFail = true;
+        this.staticDataTest.Modifiers.instantFail = false;
         this.staticDataTest.Modifiers.noArrows = true;
-        this.staticDataTest.Modifiers.noBombs = true;
-        this.staticDataTest.Modifiers.noFail = true;
+        this.staticDataTest.Modifiers.noBombs = false;
+        this.staticDataTest.Modifiers.noFail = false;
         this.staticDataTest.Modifiers.noObstacles = true;
-        //this.staticDataTest.Modifiers.slowerSong = true;
 
         this.staticDataTest.PracticeMode = true;
         this.staticDataTest.PracticeModeModifiers.songSpeedMul = 1.2;
         //this.staticDataTest.PracticeModeModifiers.songSpeedMul = 0.8;
-        this.staticDataTest.PracticeModeModifiers.startSongTime = 10;
 
         this.liveDataTest = new LiveData({});
         this.liveDataTest.PlayerHealth = .5;
@@ -550,7 +546,7 @@ class UI {
         this.liveDataTest.Accuracy = 50;
         this.liveDataTest.Score = 1234567;
         this.liveDataTest.Misses = 17;
-        this.liveDataTest.fullCombo = true;
+        this.liveDataTest.FullCombo = true;
 
         this.defaults = {
             ip: '127.0.0.1',
@@ -647,16 +643,16 @@ class UI {
         );
 
         new SettingLine('Short Modifiers', 'shortModifierNames');
-        new SettingLine('Enable Miss Counter', 'missCounter');
+        new SettingLine('Miss Counter', 'missCounter');
 
-        this.optionsLinesElement.append(Helper.create('hr'));
+        //this.optionsLinesElement.append(Helper.create('hr'));
 
-        new SettingLine('Show previous BSR', 'showPrevBsr');
-        new SettingLine('Show BPM', 'showBpm');
-        new SettingLine('Show NJS', 'showNjs');
-        new SettingLine('Show Combo', 'showCombo');
-        new SettingLine('Show Score arrow pointing up or down depending on last score', 'showScoreIncrease');
-        new SettingLine('Show Full Combo modifier', 'showFullComboModifier');
+        new SettingLine('Previous BSR', 'showPrevBsr');
+        new SettingLine('BPM', 'showBpm');
+        new SettingLine('NJS', 'showNjs');
+        new SettingLine('Combo', 'showCombo');
+        new SettingLine('Score arrow pointing up or down depending on last score', 'showScoreIncrease');
+        new SettingLine('Full Combo modifier', 'showFullComboModifier');
 
         this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -975,7 +971,10 @@ class UI {
         this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
 
         // block hit scores?
-        Helper.display(this.modifiers.fullCombo, this.options.showFullComboModifier, true);
+
+        let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo;
+        Helper.visibility(this.modifiersHolder, hasFc);
+        Helper.display(this.modifiers.fullCombo, hasFc, true);
     }
 
     updateStatic(staticData) {
@@ -1009,7 +1008,6 @@ class UI {
         // practice
         if (this.staticData.PracticeMode) {
             allModifiersOff = false;
-
             if (this.staticData.PracticeModeModifiers.songSpeedMul !== 1) {
                 let str;
                 if (this.staticData.PracticeModeModifiers.songSpeedMul > 1) {
@@ -1026,15 +1024,22 @@ class UI {
             let readableSpeed = (this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100).toFixed();
             let identifier = readableSpeed > 0 ? '+' : '';
 
-            if (readableSpeed === 100) {
+            if (readableSpeed === "100") {
                 Helper.display(this.modifiers.songSpeed, false, true);
             } else {
                 Helper.display(this.modifiers.songSpeed, true, true);
                 this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
             }
+
             Helper.display(this.modifiers.songSpeed, this.staticData.Modifiers.songSpeedMul !== 1, true);
         } else {
+            Helper.display(this.modifiers.speed, false, true);
             Helper.display(this.modifiers.songSpeed, false, true);
+        }
+
+        // full combo
+        if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo) {
+            allModifiersOff = false;
         }
 
         Helper.visibility(this.modifiersHolder, !allModifiersOff);
@@ -1060,6 +1065,27 @@ class UI {
         this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS.toFixed(1);
 
         // previous record?
+
+        this.insertModifierBreakLines();
+    }
+
+    insertModifierBreakLines() {
+        let modifierElements = document.querySelectorAll('#modifiers > *');
+        let modifiers = [];
+
+        for (let x of modifierElements) {
+            if (x.classList.contains('modifiers')) {
+                modifiers.push(x);
+            } else {
+                x.remove();
+            }
+        }
+
+        for (let e of modifiers) {
+            if (e.style.display === 'inline-block') {
+                e.parentNode.insertBefore(Helper.create('br'), e.nextSibling);
+            }
+        }
     }
 
     hideSetting(element, value, prefix = '') {
@@ -1076,8 +1102,10 @@ class UI {
         if (this.options.previewMode) {
             this.previewGameData();
         } else {
+            let s = new StaticData({});
             let g = new LiveData({});
             g.InLevel = false;
+            this.updateStatic(s);
             this.updateLive(g);
         }
     }
@@ -1126,10 +1154,12 @@ window.onload = () => {
 
     connection = new MultiConnection(ui.options.ip, 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
+        //console.log(data);
         data = new LiveData(data);
         ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
+        //console.log(data);
         data = new StaticData(data);
         ui.updateStatic(data);
     });

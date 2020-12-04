@@ -49,3 +49,5 @@ The option panel will generate the URL by itself. Copy the URL and insert it int
 |i|display song info on the right side|
 |j|display counter section on the right side|
 |k|display modifiers on the right side|
+|l|shows an arrow next to the score, pointing up if a new high score can be set, pointing down if actual score is lower then previous one|
+|m|show full combo as modifier, will get removed when full combo breaks|
