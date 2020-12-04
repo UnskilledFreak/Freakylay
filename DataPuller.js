@@ -1167,7 +1167,7 @@ window.onload = () => {
         ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
-        console.log(data);
+        //console.log(data);
         data = new StaticData(data);
         ui.updateStatic(data);
     });
