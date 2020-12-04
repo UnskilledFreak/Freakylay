@@ -35,7 +35,7 @@ class StaticData {
 
         // Difficulty
         this.MapType = Helper.isset(data, 'MapType', 0);
-        this.Difficulty = Helper.isset(data, 'Difficulty', 0);
+        this.Difficulty = Helper.isset(data, 'Difficulty', 'Normal');
         this.CustomDifficultyLabel = Helper.isset(data, 'CustomDifficultyLabel', '');
         this.BPM = Helper.isset(data, 'BPM', 0);
         this.NJS = Helper.isset(data, 'NJS', 0.0);
@@ -69,6 +69,7 @@ class StaticData {
     }
 
     getDifficultyString() {
+        /*
         switch (this.Difficulty) {
             case 1:
                 return 'Easy';
@@ -82,6 +83,13 @@ class StaticData {
                 return 'Expert+';
             default:
                 return 'Difficulty: ' + this.Difficulty;
+        }
+        */
+        switch (this.Difficulty) {
+            case 'ExpertPlus':
+                return 'Expert+';
+            default:
+                return this.Difficulty;
         }
     }
 
@@ -1159,7 +1167,7 @@ window.onload = () => {
         ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
-        //console.log(data);
+        console.log(data);
         data = new StaticData(data);
         ui.updateStatic(data);
     });
