@@ -529,11 +529,12 @@ class UI {
         this.staticDataTest = new StaticData({});
         this.staticDataTest.BPM = 180;
         this.staticDataTest.BSRKey = '1234';
-        this.staticDataTest.Difficulty = 9;
+        this.staticDataTest.Difficulty = 'ExpertPlus';
         this.staticDataTest.Length = 120;
         this.staticDataTest.NJS = 20;
         this.staticDataTest.PreviousBSR = 'affa';
         this.staticDataTest.PreviousRecord = 123456;
+        this.staticDataTest.CustomDifficultyLabel = 'CustomDifficulty!';
 
         this.staticDataTest.Modifiers.batteryEnergy = true;
         this.staticDataTest.Modifiers.disappearingArrows = true;
