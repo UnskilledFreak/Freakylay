@@ -102,6 +102,7 @@ body {
     height: 42px;
     max-width: 400px !important;
     overflow: hidden;
+    padding-right: 5px;
 }
 
 #mapName #marquee {
