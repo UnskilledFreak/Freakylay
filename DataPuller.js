@@ -94,10 +94,11 @@ class StaticData {
     }
 
     getFullDifficultyLabel() {
-        if (this.CustomDifficultyLabel === '') {
-            return this.getDifficultyString();
+        let normalDifficultyString = this.getDifficultyString();
+        if (this.CustomDifficultyLabel === '' || this.CustomDifficultyLabel === normalDifficultyString) {
+            return normalDifficultyString;
         } else {
-            return this.CustomDifficultyLabel + ' - ' + this.getDifficultyString();
+            return this.CustomDifficultyLabel + ' - ' + normalDifficultyString;
         }
     }
 
@@ -612,7 +613,7 @@ class UI {
         this.getUiElements();
 
         this.health.setProgress(0, 1);
-        this.accuracy.setProgress(0, 100);
+        this.accuracy.setProgress(0, 0);
         this.setTime(0, 60)
 
         this.uiShown = true;
