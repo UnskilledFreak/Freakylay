@@ -93,6 +93,10 @@ body {
     max-width: 520px;
 }
 
+#infoText #artist {
+    line-height: 23px;
+}
+
 #previousBSR {
     display: inline-block;
 }
