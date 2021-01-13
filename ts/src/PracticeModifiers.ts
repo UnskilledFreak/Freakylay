@@ -1,12 +1,12 @@
-import {Helper} from "./Helper";
+namespace Freakylay {
+    export class PracticeModeModifiers {
 
-export class PracticeModeModifiers {
+        public songSpeedMul: number;
 
-    public songSpeedMul: number;
+        constructor(data: object) {
+            this.songSpeedMul = Helper.isset(data, 'songSpeedMul', 1.0);
 
-    constructor(data: object) {
-        this.songSpeedMul = Helper.isset(data, 'songSpeedMul', 1.0);
-
-        this.songSpeedMul = Math.round(this.songSpeedMul * 100) / 100;
+            this.songSpeedMul = Math.round(this.songSpeedMul * 100) / 100;
+        }
     }
 }

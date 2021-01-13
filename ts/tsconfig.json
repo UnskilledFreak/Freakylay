@@ -1,13 +1,15 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "system",
-    "removeComments": true,
-    "target": "es6",
+    "target": "es5",
     "sourceMap": true,
-    "outFile": "../DataPuller.js",
-    "inlineSources": true
+    "removeComments": true,
+    "outFile": "DataPuller.js",
+    "sourceRoot": "./",
+    "typeRoots": [
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "./**/*"
+  ]
 }

@@ -1,40 +1,37 @@
-import {Helper} from "./Helper";
-import {UI} from "./UI";
+namespace Freakylay {
+    export class SettingLine {
 
-declare var ui: UI;
+        static index = 0;
+        private element: HTMLInputElement;
 
-export class SettingLine {
+        constructor(name: string, setting: any, isDirectCallback: boolean = false) {
+            let line = Helper.create('div') as HTMLDivElement;
+            let label = Helper.create('label') as HTMLLabelElement;
+            this.element = Helper.create('input') as HTMLInputElement;
 
-    static index = 0;
-    private element: HTMLInputElement;
+            label.htmlFor = 'input_' + SettingLine.index;
+            label.innerHTML = name;
+            this.element.id = label.htmlFor;
+            this.element.type = 'checkbox';
 
-    constructor(name: string, setting: any, isDirectCallback: boolean = false) {
-        let line = Helper.create('div') as HTMLDivElement;
-        let label = Helper.create('label') as HTMLLabelElement;
-        this.element = Helper.create('input') as HTMLInputElement;
-
-        label.htmlFor = 'input_' + SettingLine.index;
-        label.innerHTML = name;
-        this.element.id = label.htmlFor;
-        this.element.type = 'checkbox';
-
-        if (!isDirectCallback) {
-            this.element.checked = ui.options[setting];
-        }
-
-        this.element.onclick = (e) => {
-            let checked = !!(e.target as HTMLInputElement).checked;
-            if (isDirectCallback) {
-                setting(checked);
-            } else {
-                ui.options[setting] = checked;
+            if (!isDirectCallback) {
+                this.element.checked = ui.options[setting];
             }
-            ui.appendNewStyles();
+
+            this.element.onclick = (e) => {
+                let checked = !!(e.target as HTMLInputElement).checked;
+                if (isDirectCallback) {
+                    setting(checked);
+                } else {
+                    ui.options[setting] = checked;
+                }
+                ui.appendNewStyles();
+            }
+
+            line.append(this.element, label);
+            ui.optionsLinesElement.append(line);
+
+            SettingLine.index++;
         }
-
-        line.append(this.element, label);
-        ui.optionsLinesElement.append(line);
-
-        SettingLine.index++;
     }
 }
