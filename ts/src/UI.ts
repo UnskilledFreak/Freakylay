@@ -1,4 +1,5 @@
 namespace Freakylay {
+
     export class UI {
 
         private inactiveClass: string;
@@ -6,11 +7,11 @@ namespace Freakylay {
         private levelWasPaused: boolean;
         private mapLength: number;
 
-        private staticData: StaticData;
-        private staticDataTest: StaticData;
+        private staticData: Freakylay.Data.StaticData;
+        private staticDataTest: Freakylay.Data.StaticData;
 
-        private liveData: LiveData;
-        private liveDataTest: LiveData;
+        private liveData: Freakylay.Data.LiveData;
+        private liveDataTest: Freakylay.Data.LiveData;
 
         private urlParams: URLSearchParams;
         private marquee: Marquee;
@@ -103,7 +104,7 @@ namespace Freakylay {
         constructor() {
             this.inactiveClass = 'inactive';
 
-            this.staticDataTest = new StaticData({});
+            this.staticDataTest = new Freakylay.Data.StaticData({});
             this.staticDataTest.BPM = 180;
             this.staticDataTest.BSRKey = '1234';
             this.staticDataTest.Difficulty = 'ExpertPlus';
@@ -126,13 +127,13 @@ namespace Freakylay {
             this.staticDataTest.PracticeModeModifiers.songSpeedMul = 1.2;
             //this.staticDataTest.PracticeModeModifiers.songSpeedMul = 0.8;
 
-            this.liveDataTest = new LiveData({});
-            this.liveDataTest.PlayerHealth = .5;
-            this.liveDataTest.TimeElapsed = 10;
-            this.liveDataTest.Accuracy = 50;
-            this.liveDataTest.Score = 1234567;
-            this.liveDataTest.Misses = 17;
-            this.liveDataTest.FullCombo = true;
+            this.liveDataTest = new Freakylay.Data.LiveData({});
+            this.liveDataTest.PlayerHealth.setValue(.5);
+            this.liveDataTest.TimeElapsed.setValue(10);
+            this.liveDataTest.Accuracy.setValue(50);
+            this.liveDataTest.Score.setValue(1234567);
+            this.liveDataTest.Misses.setValue(17);
+            this.liveDataTest.FullCombo.setValue(true);
 
             this.defaults = {
                 ip: '127.0.0.1',
@@ -209,9 +210,9 @@ namespace Freakylay {
             if (this.options.previewMode) {
                 this.previewGameData();
             } else {
-                let s = new StaticData({});
-                let g = new LiveData({});
-                g.InLevel = false;
+                let s = new Freakylay.Data.StaticData({});
+                let g = new Freakylay.Data.LiveData({});
+                g.InLevel.setValue(false);
                 this.updateStatic(s);
                 this.updateLive(g);
             }
@@ -503,7 +504,7 @@ namespace Freakylay {
         }
          */
 
-        public updateLive(liveData: LiveData): void {
+        public updateLive(liveData: Freakylay.Data.LiveData): void {
             this.liveData = liveData;
             // toggle ui
             if (this.options.previewMode || this.liveData.InLevel && !this.uiShown) {
@@ -513,30 +514,6 @@ namespace Freakylay {
                 Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
                 this.uiShown = true;
-                /*
-                this.timerAdjusted = false;
-                this.internalTimer = this.getTimeElapsed();
-
-                /*
-                this.internalInterval = window.setInterval(() => {
-                    if (this.liveData.LevelPaused) {
-                        this.levelWasPaused = true;
-                    } else if (!this.liveData.LevelPaused && !this.liveData.LevelFailed && !this.liveData.LevelFailed && !this.liveData.LevelQuit) {
-                        if (this.levelWasPaused) {
-                            this.levelWasPaused = false;
-                            this.internalTimer = this.getTimeElapsed();
-                        }
-                        if (!this.timerAdjusted && this.getTimeElapsed() !== this.internalTimer) {
-                            this.internalTimer = this.getTimeElapsed();
-                            this.timerAdjusted = true;
-                        } else {
-                            this.internalTimer++;
-                        }
-                    }
-                    this.setTime(this.internalTimer, this.mapLength);
-                }, 1000);
-                */
-
             } else if (!this.liveData.InLevel && this.uiShown) {
                 Helper.addClass(this.songInfoHolder, this.inactiveClass);
                 Helper.addClass(this.dataHolder, this.inactiveClass);
@@ -544,38 +521,36 @@ namespace Freakylay {
                 this.uiShown = false;
                 this.levelWasPaused = false;
                 this.marquee.stop();
-
-                //window.clearInterval(this.internalInterval);
             }
 
-            this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed, this.mapLength);
+            this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
 
             // down section
-            this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.toFixed(2)), 100)
+            this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
 
             let arrow = '';
 
             if (this.options.showScoreIncrease) {
-                let lS = this.liveData.Score;
+                let lS = this.liveData.Score.getValue();
                 let pR = this.staticData.PreviousRecord;
                 arrow = lS < pR ? '&darr;' : lS > pR ? '&uarr;' : '';
             }
 
             this.data.combo.innerHTML = '<span>Combo</span>' + this.liveData.Combo;
             this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses;
-            this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score).replace(/,/g, ' ');
+            this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
 
             //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
-            this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : parseInt(this.liveData.PlayerHealth.toFixed(0)), 100);
+            this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
 
             // block hit scores?
 
-            let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo;
+            let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
             Helper.visibility(this.modifiersHolder, hasFc);
             Helper.display(this.modifiers.fullCombo, hasFc, true);
         }
 
-        public updateStatic(staticData: StaticData): void {
+        public updateStatic(staticData: Freakylay.Data.StaticData): void {
             this.staticData = staticData;
 
             // calculate map length

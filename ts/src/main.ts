@@ -11,12 +11,12 @@ window.onload = () => {
     connection = new Freakylay.MultiConnection(ui.options.ip, 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         //console.log(data);
-        data = new Freakylay.LiveData(data);
+        data = new Freakylay.Data.LiveData(data);
         ui.updateLive(data);
     });
     connection.addEndpoint('BSDataPuller/StaticData', (data) => {
         //console.log(data);
-        data = new Freakylay.StaticData(data);
+        data = new Freakylay.Data.StaticData(data);
         ui.updateStatic(data);
     });
 

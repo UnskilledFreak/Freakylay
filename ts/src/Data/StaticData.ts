@@ -1,5 +1,9 @@
-namespace Freakylay {
-    export class StaticData {
+/// <reference path="./AbstractModifierList.ts" />
+
+namespace Freakylay.Data {
+    import AbstractModifierList = FreakyLay.Data.AbstractModifierList;
+
+    export class StaticData extends AbstractModifierList {
 
         public Hash: string;
         public SongName: string;
@@ -26,6 +30,7 @@ namespace Freakylay {
         public PreviousBSR: string;
 
         constructor(data: object) {
+            super();
             // Map
             this.Hash = Helper.isset(data, 'Hash', 'SongHash');
             this.SongName = Helper.isset(data, 'SongName', 'SongName');
@@ -51,7 +56,7 @@ namespace Freakylay {
             this.PracticeModeModifiers = new PracticeModeModifiers(Helper.isset(data, 'PracticeModeModifiers', {}))
 
             this.PreviousRecord = Helper.isset(data, 'PreviousRecord', 0);
-            this.PreviousBSR = Helper.isset(data, 'PreviousBSR', 0);
+            this.PreviousBSR = Helper.isset(data, 'PreviousBSR', '0000');
         }
 
         public getDifficultyString(): string {

@@ -29,8 +29,11 @@ namespace Freakylay {
             element.className = classes.filter(((value, index, array) => array.indexOf(value) === index)).join(' ');
         }
 
-        static isset(data: object, val: number | string, def: any): any {
-            return (typeof data[val] !== 'undefined' && data[val] !== null) ? data[val] : def;
+        static issetCheck(data: object, key: number | string): boolean {
+            return typeof data[key] !== 'undefined' && data[key] !== null;
+        }
+        static isset<T>(data: object, key: number | string, def: T): T {
+            return this.issetCheck(data, key) ? data[key] : def;
         }
 
         static clamp(input: number, min: number, max: number): number {
