@@ -79,7 +79,7 @@ namespace Freakylay {
             noObstacles: ModifierUiElement;
             fullCombo: ModifierUiElement;
             disappearingArrows: ModifierUiElement;
-            songSpeed: ModifierUiElement;
+            percentSpeed: ModifierUiElement;
             instantFail: ModifierUiElement;
             ghostNotes: ModifierUiElement;
             practiceMode: ModifierUiElement;
@@ -204,6 +204,7 @@ namespace Freakylay {
             this.modifiers.noArrows.switchDisplayName(!this.options.shortModifierNames);
             this.modifiers.practiceMode.switchDisplayName(!this.options.shortModifierNames);
             this.modifiers.fullCombo.switchDisplayName(!this.options.shortModifierNames);
+            this.updateModifiers();
 
             Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
             Helper.visibility(this.data.combo, this.options.showCombo);
@@ -394,7 +395,7 @@ namespace Freakylay {
             this.mapData.Modifiers.slowerSong.setValue(true);
             this.mapData.Modifiers.noArrows.setValue(true);
 
-            this.mapData.PracticeModeModifiers.songSpeedMul.setValue(1.3);
+            this.mapData.PracticeModeModifiers.songSpeedMul.setValue(0.8);
 
             this.liveData.Score.setValue(1234567);
             this.liveData.ScoreWithMultipliers.setValue(1234567);
@@ -422,7 +423,7 @@ namespace Freakylay {
                 noBombs: new ModifierUiElement('NB', 'NB', 'No Bombs'),
                 noArrows: new ModifierUiElement('NA', 'NA', 'No Arrows'),
                 practiceMode: new ModifierUiElement('PM', 'PM', 'Practice Mode'),
-                songSpeed: new ModifierUiElement('songSpeed', 'songSpeed', 'Speed'),
+                percentSpeed: new ModifierUiElement('percentSpeed', 'percentSpeed', 'Speed'),
                 fullCombo: new ModifierUiElement('FC', 'FC', 'Full Combo'),
             };
 
@@ -561,16 +562,16 @@ namespace Freakylay {
                 let identifier = readableSpeed > 0 ? '+' : '';
 
                 if (readableSpeed === 100) {
-                    Helper.display(this.modifiers.songSpeed.getElement(), false, true);
+                    Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
                 } else {
-                    Helper.display(this.modifiers.songSpeed.getElement(), true, true);
-                    this.modifiers.songSpeed.updateRawText((this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%');
+                    Helper.display(this.modifiers.percentSpeed.getElement(), true, true);
+                    this.modifiers.percentSpeed.updateRawText((this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%');
                 }
 
-                Helper.display(this.modifiers.songSpeed.getElement(), this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
+                Helper.display(this.modifiers.percentSpeed.getElement(), this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
             } else {
                 Helper.display(this.modifiers.speed.getElement(), false, true);
-                Helper.display(this.modifiers.songSpeed.getElement(), false, true);
+                Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
             }
         }
 
