@@ -49,7 +49,7 @@ namespace Freakylay.Data {
             this.Mapper = new DataKey('Mapper', '');
             this.BSRKey = new DataKey('BSRKey', 'BSRKey');
             this.coverImage = new DataKey('coverImage', 'img/BS_Logo.jpg');
-            this.Length = new DataKey('Length', 0);
+            this.Length = new DataKey('Length', 60);
             this.TimeScale = new DataKey('TimeScale', 0);
             this.MapType = new DataKey('MapType', 'Standard');
             this.Difficulty = new DataKey('Difficulty', 'ExpertPlus');

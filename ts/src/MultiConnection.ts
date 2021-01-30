@@ -33,8 +33,8 @@ namespace Freakylay {
             );
         }
 
-        public getUrl(a: boolean = false): string {
-            if (a) {
+        public getUrl(onlyIpAndPort: boolean = false): string {
+            if (onlyIpAndPort) {
                 return this.ip + ':' + this.port;
             }
             return 'ws:' + this.getUrl(true) + '/';

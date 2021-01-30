@@ -74,18 +74,18 @@ namespace Freakylay {
             showPrevBsr: boolean
         };
         private modifiers: {
-            noArrows: HTMLDivElement;
-            batteryEnergy: HTMLDivElement;
-            noObstacles: HTMLDivElement;
-            fullCombo: HTMLDivElement;
-            disappearingArrows: HTMLDivElement;
-            songSpeed: HTMLDivElement;
-            instantFail: HTMLDivElement;
-            ghostNotes: HTMLDivElement;
-            practiceMode: HTMLDivElement;
-            noFail: HTMLDivElement;
-            noBombs: HTMLDivElement;
-            speed: HTMLDivElement
+            noArrows: ModifierUiElement;
+            batteryEnergy: ModifierUiElement;
+            noObstacles: ModifierUiElement;
+            fullCombo: ModifierUiElement;
+            disappearingArrows: ModifierUiElement;
+            songSpeed: ModifierUiElement;
+            instantFail: ModifierUiElement;
+            ghostNotes: ModifierUiElement;
+            practiceMode: ModifierUiElement;
+            noFail: ModifierUiElement;
+            noBombs: ModifierUiElement;
+            speed: ModifierUiElement
         };
         private songInfo: {
             bsr: HTMLDivElement;
@@ -135,8 +135,8 @@ namespace Freakylay {
             this.urlParams = new URLSearchParams(location.search);
 
             this.options = {
-                backgroundColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
-                textColor: Helper.fromUrlColor(this.getUrlParam(this.urlParamStrings.textColor, this.defaults.textColor)),
+                backgroundColor: Helper.fromUrlColor(this.getUrlParameter(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
+                textColor: Helper.fromUrlColor(this.getUrlParameter(this.urlParamStrings.textColor, this.defaults.textColor)),
                 shortModifierNames: this.urlParams.has(this.urlParamStrings.shortModifierNames),
                 showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
                 previewMode: this.urlParams.has('options'),
@@ -144,7 +144,7 @@ namespace Freakylay {
                 showBpm: !this.urlParams.has(this.urlParamStrings.showBpm),
                 showNjs: !this.urlParams.has(this.urlParamStrings.showNjs),
                 showCombo: !this.urlParams.has(this.urlParamStrings.showCombo),
-                ip: this.getUrlParam(this.urlParamStrings.ip, this.defaults.ip),
+                ip: this.getUrlParameter(this.urlParamStrings.ip, this.defaults.ip),
                 flipLive: this.urlParams.has(this.urlParamStrings.flipLive),
                 flipStatic: this.urlParams.has(this.urlParamStrings.flipStatic),
                 flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers),
@@ -156,31 +156,36 @@ namespace Freakylay {
                 if (e.target !== this.songInfoHolder) {
                     return;
                 }
+
                 this.options.previewMode = !this.options.previewMode;
-                this.appendNewStyles();
+                if (this.options.previewMode) {
+                    this.setPreviewData();
+                } else {
+                    this.mapData = new MapData();
+                    this.liveData = new LiveData();
+                }
+
+                this.onStyleChange();
+                this.updateInternalUi();
             };
 
-            //this.levelWasPaused = false;
-            this.getUiElements();
+            this.loadAndBuildUiElements();
 
             this.health.setProgress(0, 1);
-            this.accuracy.setProgress(0, 0);
-            this.setTime(0, 60)
+            this.accuracy.setProgress(0, 100);
+            this.updateTimeCircleBar(0, 60)
 
             this.uiShown = true;
-            /*
-            this.internalTimer = -1;
-            this.internalInterval = 0;
-             */
 
-            this.appendNewStyles();
+            this.onStyleChange();
 
             window.setTimeout(() => {
                 this.calculateOptionPosition();
+                this.updateMap({});
             }, 100);
         }
 
-        public appendNewStyles(): void {
+        public onStyleChange(): void {
             document.body.style.color = this.options.textColor;
             document.querySelectorAll('.roundBar circle').forEach((element: HTMLElement) => {
                 element.style.stroke = this.options.textColor;
@@ -189,29 +194,16 @@ namespace Freakylay {
                 element.style.backgroundColor = this.options.backgroundColor;
             }, this);
 
-            if (this.options.shortModifierNames) {
-                this.modifiers.instantFail.innerHTML = 'IF';
-                this.modifiers.batteryEnergy.innerHTML = 'BE';
-                this.modifiers.disappearingArrows.innerHTML = 'DA';
-                this.modifiers.ghostNotes.innerHTML = 'GN';
-                this.modifiers.noFail.innerHTML = 'NF';
-                this.modifiers.noObstacles.innerHTML = 'NO';
-                this.modifiers.noBombs.innerHTML = 'NB';
-                this.modifiers.noArrows.innerHTML = 'NA';
-                this.modifiers.practiceMode.innerHTML = 'PM';
-                this.modifiers.fullCombo.innerHTML = 'FC';
-            } else {
-                this.modifiers.instantFail.innerHTML = 'Insta Fail';
-                this.modifiers.batteryEnergy.innerHTML = 'Battery Energy';
-                this.modifiers.disappearingArrows.innerHTML = 'Disappearing Arrows';
-                this.modifiers.ghostNotes.innerHTML = 'Ghost Notes';
-                this.modifiers.noFail.innerHTML = 'No Fail';
-                this.modifiers.noObstacles.innerHTML = 'No Obstacles';
-                this.modifiers.noBombs.innerHTML = 'No Bombs';
-                this.modifiers.noArrows.innerHTML = 'No Arrows';
-                this.modifiers.practiceMode.innerHTML = 'Practice Mode';
-                this.modifiers.fullCombo.innerHTML = 'Full Combo';
-            }
+            this.modifiers.instantFail.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.batteryEnergy.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.disappearingArrows.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.ghostNotes.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.noFail.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.noObstacles.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.noBombs.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.noArrows.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.practiceMode.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.fullCombo.switchDisplayName(!this.options.shortModifierNames);
 
             Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
             Helper.visibility(this.data.combo, this.options.showCombo);
@@ -237,18 +229,18 @@ namespace Freakylay {
                 options.push(this.urlParamStrings.textColor + '=' + tc);
             }
 
-            let switchRadius = (element, value) => {
+            let switchBorderRadius = (element, value) => {
                 Helper.toggleClass(element, !value, 'borderRadiusTopLeft');
                 Helper.toggleClass(element, !value, 'borderRadiusBottomLeft');
                 Helper.toggleClass(element, value, 'borderRadiusTopRight');
                 Helper.toggleClass(element, value, 'borderRadiusBottomRight');
             }
 
-            switchRadius(this.songInfo.bsr, this.options.flipStatic);
-            switchRadius(this.songInfo.mapper, this.options.flipStatic);
-            switchRadius(this.songInfo.difficulty, this.options.flipStatic);
-            switchRadius(this.songInfo.artist, this.options.flipStatic);
-            switchRadius(this.songInfo.songName, this.options.flipStatic);
+            switchBorderRadius(this.songInfo.bsr, this.options.flipStatic);
+            switchBorderRadius(this.songInfo.mapper, this.options.flipStatic);
+            switchBorderRadius(this.songInfo.difficulty, this.options.flipStatic);
+            switchBorderRadius(this.songInfo.artist, this.options.flipStatic);
+            switchBorderRadius(this.songInfo.songName, this.options.flipStatic);
 
             Helper.toggleClass(this.beatMapCover, !this.options.flipStatic, 'borderRadiusBottomRight');
             Helper.toggleClass(this.beatMapCover, this.options.flipStatic, 'borderRadiusBottomLeft');
@@ -297,7 +289,7 @@ namespace Freakylay {
             let optionsString = options.length > 0 ? '?' + options.join('&') : '';
 
             this.urlText.innerHTML = window.location.protocol + '//' + window.location.host + window.location.pathname + optionsString;
-            this.previewGameData();
+            //this.setPreviewData();
         }
 
         public buildOptionsPanel(): void {
@@ -305,10 +297,10 @@ namespace Freakylay {
                 this.options.backgroundColor,
                 c => {
                     this.options.backgroundColor = c;
-                    this.appendNewStyles();
+                    this.onStyleChange();
                 },
                 a => {
-                    return a < 127 || a > 230;
+                    return a > 10 && (a < 127 || a > 230);
                 }
             );
 
@@ -316,7 +308,7 @@ namespace Freakylay {
                 this.options.textColor,
                 c => {
                     this.options.textColor = c;
-                    this.appendNewStyles();
+                    this.onStyleChange();
                 },
                 a => {
                     return a < 127;
@@ -351,8 +343,17 @@ namespace Freakylay {
             textColor.createInputMenu(Helper.element('color') as HTMLDivElement);
         }
 
-        private previewGameData(): void {
+        public updateLive(liveData: {}): void {
+            this.liveData.update(liveData);
+            this.updateInternalUi();
+        }
 
+        public updateMap(mapData: {}): void {
+            this.mapData.update(mapData);
+            this.updateInternalUi();
+        }
+
+        private setPreviewData(): void {
             this.mapData.GameVersion.setValue('1.13.2');
             this.mapData.PluginVersion.setValue('2.0.0.0');
             this.mapData.InLevel.setValue(true);
@@ -375,7 +376,7 @@ namespace Freakylay {
             this.mapData.BPM.setValue(200);
             this.mapData.NJS.setValue(23);
             this.mapData.ModifiersMultiplier.setValue(1);
-            this.mapData.PracticeMode.setValue(false);
+            this.mapData.PracticeMode.setValue(true);
             this.mapData.PP.setValue(0);
             this.mapData.Star.setValue(0);
             this.mapData.IsMultiplayer.setValue(false);
@@ -408,21 +409,21 @@ namespace Freakylay {
             this.liveData.TimeElapsed.setValue(66);
         }
 
-        private getUiElements(): void {
+        private loadAndBuildUiElements(): void {
             this.modifiersHolder = Helper.element('modifiers') as HTMLDivElement;
             this.modifiers = {
-                instantFail: Helper.element('IF') as HTMLDivElement,
-                batteryEnergy: Helper.element('BE') as HTMLDivElement,
-                disappearingArrows: Helper.element('DA') as HTMLDivElement,
-                ghostNotes: Helper.element('GN') as HTMLDivElement,
-                speed: Helper.element('speed') as HTMLDivElement,
-                noFail: Helper.element('NF') as HTMLDivElement,
-                noObstacles: Helper.element('NO') as HTMLDivElement,
-                noBombs: Helper.element('NB') as HTMLDivElement,
-                noArrows: Helper.element('NA') as HTMLDivElement,
-                practiceMode: Helper.element('PM') as HTMLDivElement,
-                songSpeed: Helper.element('songSpeed') as HTMLDivElement,
-                fullCombo: Helper.element('FC') as HTMLDivElement
+                instantFail: new ModifierUiElement('IF', 'IF', 'Insta Fail'),
+                batteryEnergy: new ModifierUiElement('BE', 'BE', 'Battery Energy'),
+                disappearingArrows: new ModifierUiElement('DA', 'DA', 'Disappearing Arrows'),
+                ghostNotes: new ModifierUiElement('GN', 'GN', 'Ghost Notes'),
+                speed: new ModifierUiElement('speed', 'speed', 'Speed'),
+                noFail: new ModifierUiElement('NF', 'NF', 'No Fail'),
+                noObstacles: new ModifierUiElement('NO', 'NO', 'No Obstacles'),
+                noBombs: new ModifierUiElement('NB', 'NB', 'No Bombs'),
+                noArrows: new ModifierUiElement('NA', 'NA', 'No Arrows'),
+                practiceMode: new ModifierUiElement('PM', 'PM', 'Practice Mode'),
+                songSpeed: new ModifierUiElement('songSpeed', 'songSpeed', 'Speed'),
+                fullCombo: new ModifierUiElement('FC', 'FC', 'Full Combo'),
             };
 
             this.timer = new CircleBar(Helper.element('timerHolder') as HTMLElement);
@@ -484,7 +485,7 @@ namespace Freakylay {
             this.optionsElement.style.marginLeft = (-parseInt(styles.getPropertyValue('width')) / 2) + 'px';
         }
 
-        private getUrlParam(key: string, def: any): any {
+        private getUrlParameter<T>(key: string, def: string): string {
             if (!this.urlParams.has(key)) {
                 return def;
             }
@@ -492,7 +493,7 @@ namespace Freakylay {
             return x === null ? def : x;
         }
 
-        private setTime(current: number, total: number): void {
+        private updateTimeCircleBar(current: number, total: number): void {
             if (current > total) {
                 // uhm?
                 current = total;
@@ -502,35 +503,17 @@ namespace Freakylay {
             this.timer.setProgress(current, total);
         }
 
-        private static getDate(input: number): string {
-            let seconds = input % 60;
-            let minutes = Math.floor(input / 60);
-
-            let sSeconds = seconds < 10 ? '0' + seconds : seconds.toString();
-
-            return minutes < 0 ? sSeconds : minutes + ':' + sSeconds;
-        }
-
-        public updateLive(liveData: {}): void {
-            this.liveData.update(liveData);
-            this.updateInternalUi();
-        }
-
-        public updateMap(mapData: {}): void {
-            this.mapData.update(mapData);
-            this.updateInternalUi();
-        }
-
-        private updateInternalUi(): void {
-            // calculate map length
+        private calculateMapLength(): void {
             this.mapLength = this.mapData.Length.getValue();
+
             if (this.mapData.PracticeMode.getValue()) {
                 this.mapLength = parseInt((this.mapData.Length.getValue() / this.mapData.PracticeModeModifiers.songSpeedMul.getValue()).toString());
             } else if (this.mapData.Modifiers.fasterSong.getValue() || this.mapData.Modifiers.slowerSong.getValue()) {
                 this.mapLength = parseInt((this.mapData.Length.getValue() * (this.mapData.Modifiers.fasterSong ? .8 : 1.15)).toString());
             }
+        }
 
-            // toggle ui
+        private toggleUi(): void {
             if (this.options.previewMode || this.mapData.InLevel.getValue() && !this.uiShown) {
 
                 Helper.removeClass(this.songInfoHolder, this.inactiveClass);
@@ -546,17 +529,18 @@ namespace Freakylay {
                 this.levelWasPaused = false;
                 this.marquee.stop();
             }
+        }
 
-            // modifiers panel
+        private updateModifiers(): void {
             for (let modifier in this.mapData.Modifiers) {
                 // noinspection JSUnfilteredForInLoop
                 if (typeof this.modifiers[modifier] !== 'undefined') {
                     // noinspection JSUnfilteredForInLoop
-                    Helper.display(this.modifiers[modifier], this.mapData.Modifiers[modifier].getValue(), true);
+                    Helper.display(this.modifiers[modifier].getElement(), this.mapData.Modifiers[modifier].getValue(), true);
                 }
             }
 
-            Helper.display(this.modifiers.practiceMode, this.mapData.PracticeMode.getValue(), true);
+            Helper.display(this.modifiers.practiceMode.getElement(), this.mapData.PracticeMode.getValue(), true);
 
             // practice
             if (this.mapData.PracticeMode.getValue()) {
@@ -567,38 +551,30 @@ namespace Freakylay {
                     } else {
                         str = this.options.shortModifierNames ? 'SS' : 'Slower Song'
                     }
-                    this.modifiers.speed.innerHTML = str;
-                    Helper.display(this.modifiers.speed, true, true);
+                    this.modifiers.speed.updateRawText(str);
+                    Helper.display(this.modifiers.speed.getElement(), true, true);
                 } else {
-                    Helper.display(this.modifiers.speed, false, true);
+                    Helper.display(this.modifiers.speed.getElement(), false, true);
                 }
 
                 let readableSpeed = parseInt((this.mapData.PracticeModeModifiers.songSpeedMul.getValue() * 100 - 100).toFixed());
                 let identifier = readableSpeed > 0 ? '+' : '';
 
                 if (readableSpeed === 100) {
-                    Helper.display(this.modifiers.songSpeed, false, true);
+                    Helper.display(this.modifiers.songSpeed.getElement(), false, true);
                 } else {
-                    Helper.display(this.modifiers.songSpeed, true, true);
-                    this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
+                    Helper.display(this.modifiers.songSpeed.getElement(), true, true);
+                    this.modifiers.songSpeed.updateRawText((this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%');
                 }
 
-                Helper.display(this.modifiers.songSpeed, this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
+                Helper.display(this.modifiers.songSpeed.getElement(), this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
             } else {
-                Helper.display(this.modifiers.speed, false, true);
-                Helper.display(this.modifiers.songSpeed, false, true);
+                Helper.display(this.modifiers.speed.getElement(), false, true);
+                Helper.display(this.modifiers.songSpeed.getElement(), false, true);
             }
+        }
 
-            // full combo
-            /*
-            if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo.getValue()) {
-                allModifiersOff = false;
-            }
-            */
-
-            //Helper.visibility(this.modifiersHolder, !allModifiersOff);
-
-            // generic song info
+        private updateSongInfo(): void {
             Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
 
             this.data.previousBSR.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
@@ -617,9 +593,11 @@ namespace Freakylay {
 
             this.data.bpm.innerHTML = '<span>BPM</span>' + this.mapData.BPM.getValue();
             this.data.njs.innerHTML = '<span>NJS</span>' + this.mapData.NJS.getValue().toFixed(1);
+        }
 
+        private updateDownSection(): void {
             // previous record?
-            this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
+            this.updateTimeCircleBar(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
 
             // down section
             this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
@@ -637,15 +615,45 @@ namespace Freakylay {
             this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
 
             //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
-            this.health.setProgress(this.mapData.Modifiers.noFail ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
+            this.health.setProgress(this.mapData.Modifiers.noFail.getValue() ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
 
             // block hit scores?
+        }
+
+        private updateFullCombo(): void {
+
+            /*
+            if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo.getValue()) {
+                allModifiersOff = false;
+            }
+            */
+
+            //Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
             let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
             //Helper.visibility(this.modifiersHolder, hasFc);
-            Helper.display(this.modifiers.fullCombo, hasFc, true);
+            Helper.display(this.modifiers.fullCombo.getElement(), hasFc, true);
+        }
+
+        private updateInternalUi(): void {
+
+            this.calculateMapLength();
+            this.toggleUi();
+            this.updateModifiers();
+            this.updateSongInfo();
+            this.updateDownSection();
+            this.updateFullCombo();
 
             UI.insertModifierBreakLines();
+        }
+
+        private static getDate(input: number): string {
+            let seconds = input % 60;
+            let minutes = Math.floor(input / 60);
+
+            let sSeconds = seconds < 10 ? '0' + seconds : seconds.toString();
+
+            return minutes < 0 ? sSeconds : minutes + ':' + sSeconds;
         }
 
         // todo :: rework this so there is no need to do that again

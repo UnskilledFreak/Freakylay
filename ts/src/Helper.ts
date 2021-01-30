@@ -32,6 +32,7 @@ namespace Freakylay {
         static issetCheck(data: object, key: number | string): boolean {
             return typeof data[key] !== 'undefined' && data[key] !== null;
         }
+
         static isset<T>(data: object, key: number | string, def: T): T {
             return this.issetCheck(data, key) ? data[key] : def;
         }

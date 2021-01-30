@@ -3,6 +3,14 @@ An alternative and customizable overlay for [DataPuller Mod](https://github.com/
 
 Its based on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) with some tweaks and a completely new way of displaying scores, combo, player health, accuracy and much more!
 
+#Index:
+- [Features](#Features)
+- [Url and access](#Url)
+- [Customizing](#Customizing)
+- [Configuration](#Configuration)
+- [List of Parameters](#Parameters)
+- [Older Versions](#Versions)
+
 ## Features
 
 - change **background and font color like you want**, even with transparency
@@ -15,14 +23,14 @@ Its based on the [original overlay by kOF.Readie](https://github.com/kOFReadie/B
 - flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
 
-## Url - give me the Link:
+## Url
 It is hosted via HTTP so you can use the IP feature too:
 
 [http://u.unskilledfreak.zone/overlay/freakylay/](http://u.unskilledfreak.zone/overlay/freakylay/)
 
 See [Configuration](#Configuration) for more options. 
 
-## How do I customize it?
+## Customizing
 
 **Just double-click somewhere on the page!**
 
@@ -33,21 +41,29 @@ You can close the options panel simply by double-click somewhere else.
 
 The option panel will generate the URL by itself. Copy the URL and insert it into something useful like OBS or other recording or streaming software.
 
-### List of all parameters:
+## Parameters
 
-|Parameter|Info
+|Parameter|Info|Since DP Version|
+|---|---|---|
+|ip=\<ip\>|IP to connect to any game running DataPuller Mod in the local network, default is 127.0.0.1|0.0.2|
+|a|background color in rgba or hex|0.0.2|
+|b|text color in rgba or hex|0.0.2|
+|c|enable short modifier names (Instant Fail <> IF)|0.0.2|
+|d|display previous played BSR key if any|0.0.2|
+|e|enable miss counter|0.0.2|
+|f|do not display BPM|0.0.2|
+|g|do not display NJS|0.0.2|
+|h|do not display Combo|0.0.2|
+|i|display song info on the right side|0.0.2|
+|j|display counter section on the right side|0.0.2|
+|k|display modifiers on the right side|0.0.2|
+|l|shows an arrow next to the score, pointing up if a new high score can be set, pointing down if actual score is lower then previous one|1.0.0|
+|m|show full combo as modifier, will get removed when full combo breaks|1.0.0|
+
+### Versions
+Older versions of Freakylay are available via there tags inside the master branch. The tags are based on the compatible DataPuller Version.
+Every Version can be accessed by its DataPuller version number as sub directory.
+
+|DataPuller Version|Url|
 |---|---|
-|ip=\<ip\>|IP to connect to any game running DataPuller Mod in the local network, default is 127.0.0.1|
-|a|background color in rgba or hex|
-|b|text color in rgba or hex|
-|c|enable short modifier names (Instant Fail <> IF)|
-|d|display previous played BSR key if any|
-|e|enable miss counter|
-|f|do not display BPM|
-|g|do not display NJS|
-|h|do not display Combo|
-|i|display song info on the right side|
-|j|display counter section on the right side|
-|k|display modifiers on the right side|
-|l|shows an arrow next to the score, pointing up if a new high score can be set, pointing down if actual score is lower then previous one|
-|m|show full combo as modifier, will get removed when full combo breaks|
+|1.1.1|[http://u.unskilledfreak.zone/overlay/freakylay/1.1.1/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.1/)|

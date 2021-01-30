@@ -2,7 +2,7 @@ namespace Freakylay {
     export class SettingLine {
 
         static index = 0;
-        private element: HTMLInputElement;
+        private readonly element: HTMLInputElement;
 
         constructor(name: string, setting: any, isDirectCallback: boolean = false) {
             let line = Helper.create('div') as HTMLDivElement;
@@ -25,7 +25,7 @@ namespace Freakylay {
                 } else {
                     ui.options[setting] = checked;
                 }
-                ui.appendNewStyles();
+                ui.onStyleChange();
             }
 
             line.append(this.element, label);
