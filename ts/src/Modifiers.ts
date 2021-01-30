@@ -1,29 +1,57 @@
 namespace Freakylay {
     export class Modifiers {
 
-        public instantFail: boolean;
-        public batteryEnergy: boolean;
-        public disappearingArrows: boolean;
-        public ghostNotes: boolean;
-        public fasterSong: boolean;
-        public noFail: boolean;
-        public noObstacles: boolean;
-        public noBombs: boolean;
-        public slowerSong: boolean;
-        public noArrows: boolean;
+        public instantFail: DataKey<boolean>;
+        public batteryEnergy: DataKey<boolean>;
+        public disappearingArrows: DataKey<boolean>;
+        public ghostNotes: DataKey<boolean>;
+        public fasterSong: DataKey<boolean>;
+        public noFail: DataKey<boolean>;
+        public noObstacles: DataKey<boolean>;
+        public noBombs: DataKey<boolean>;
+        public slowerSong: DataKey<boolean>;
+        public noArrows: DataKey<boolean>;
 
-        constructor(data: object) {
+        constructor() {
             // those should get handled by there own classes
-            this.instantFail = Helper.isset(data, 'instaFail', false);
-            this.batteryEnergy = Helper.isset(data, 'batteryEnergy', false);
-            this.disappearingArrows = Helper.isset(data, 'disappearingArrows', false);
-            this.ghostNotes = Helper.isset(data, 'ghostNotes', false);
-            this.fasterSong = Helper.isset(data, 'fasterSong', false);
-            this.noFail = Helper.isset(data, 'noFail', false);
-            this.noObstacles = Helper.isset(data, 'noObstacles', false);
-            this.noBombs = Helper.isset(data, 'noBombs', false);
-            this.slowerSong = Helper.isset(data, 'slowerSong', false);
-            this.noArrows = Helper.isset(data, 'noArrows', false);
+            this.instantFail = new DataKey('instaFail', false);
+            this.batteryEnergy = new DataKey('batteryEnergy', false);
+            this.disappearingArrows = new DataKey('disappearingArrows', false);
+            this.ghostNotes = new DataKey('ghostNotes', false);
+            this.fasterSong = new DataKey('fasterSong', false);
+            this.noFail = new DataKey('noFail', false);
+            this.noObstacles = new DataKey('noObstacles', false);
+            this.noBombs = new DataKey('noBombs', false);
+            this.slowerSong = new DataKey('slowerSong', false);
+            this.noArrows = new DataKey('noArrows', false);
+        }
+
+        public update(data: {}): void {
+            this.instantFail.update(data);
+            this.batteryEnergy.update(data);
+            this.disappearingArrows.update(data);
+            this.ghostNotes.update(data);
+            this.fasterSong.update(data);
+            this.noFail.update(data);
+            this.noObstacles.update(data);
+            this.noBombs.update(data);
+            this.slowerSong.update(data);
+            this.noArrows.update(data);
+        }
+
+        public toList(): DataKey<any>[] {
+            return [
+                this.instantFail,
+                this.batteryEnergy,
+                this.disappearingArrows,
+                this.ghostNotes,
+                this.fasterSong,
+                this.noFail,
+                this.noObstacles,
+                this.noBombs,
+                this.slowerSong,
+                this.noArrows
+            ];
         }
     }
 }

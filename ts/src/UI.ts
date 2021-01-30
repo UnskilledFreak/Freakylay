@@ -1,4 +1,10 @@
+/// <reference path="./Data/MapData.ts" />
+/// <reference path="./Data/LiveData.ts" />
+
 namespace Freakylay {
+
+    import MapData = Freakylay.Data.MapData;
+    import LiveData = Freakylay.Data.LiveData;
 
     export class UI {
 
@@ -7,11 +13,8 @@ namespace Freakylay {
         private levelWasPaused: boolean;
         private mapLength: number;
 
-        private staticData: Freakylay.Data.StaticData;
-        private staticDataTest: Freakylay.Data.StaticData;
-
-        private liveData: Freakylay.Data.LiveData;
-        private liveDataTest: Freakylay.Data.LiveData;
+        private mapData: MapData;
+        private liveData: LiveData;
 
         private urlParams: URLSearchParams;
         private marquee: Marquee;
@@ -103,37 +106,8 @@ namespace Freakylay {
 
         constructor() {
             this.inactiveClass = 'inactive';
-
-            this.staticDataTest = new Freakylay.Data.StaticData({});
-            this.staticDataTest.BPM = 180;
-            this.staticDataTest.BSRKey = '1234';
-            this.staticDataTest.Difficulty = 'ExpertPlus';
-            this.staticDataTest.Length = 120;
-            this.staticDataTest.NJS = 20;
-            this.staticDataTest.PreviousBSR = 'affa';
-            this.staticDataTest.PreviousRecord = 123456;
-            this.staticDataTest.CustomDifficultyLabel = 'CustomDifficulty';
-
-            this.staticDataTest.Modifiers.batteryEnergy = true;
-            this.staticDataTest.Modifiers.disappearingArrows = true;
-            this.staticDataTest.Modifiers.ghostNotes = true;
-            this.staticDataTest.Modifiers.instantFail = false;
-            this.staticDataTest.Modifiers.noArrows = true;
-            this.staticDataTest.Modifiers.noBombs = false;
-            this.staticDataTest.Modifiers.noFail = false;
-            this.staticDataTest.Modifiers.noObstacles = true;
-
-            this.staticDataTest.PracticeMode = true;
-            this.staticDataTest.PracticeModeModifiers.songSpeedMul = 1.2;
-            //this.staticDataTest.PracticeModeModifiers.songSpeedMul = 0.8;
-
-            this.liveDataTest = new Freakylay.Data.LiveData({});
-            this.liveDataTest.PlayerHealth.setValue(.5);
-            this.liveDataTest.TimeElapsed.setValue(10);
-            this.liveDataTest.Accuracy.setValue(50);
-            this.liveDataTest.Score.setValue(1234567);
-            this.liveDataTest.Misses.setValue(17);
-            this.liveDataTest.FullCombo.setValue(true);
+            this.mapData = new MapData();
+            this.liveData = new LiveData();
 
             this.defaults = {
                 ip: '127.0.0.1',
@@ -204,18 +178,6 @@ namespace Freakylay {
             window.setTimeout(() => {
                 this.calculateOptionPosition();
             }, 100);
-        }
-
-        public init(): void {
-            if (this.options.previewMode) {
-                this.previewGameData();
-            } else {
-                let s = new Freakylay.Data.StaticData({});
-                let g = new Freakylay.Data.LiveData({});
-                g.InLevel.setValue(false);
-                this.updateStatic(s);
-                this.updateLive(g);
-            }
         }
 
         public appendNewStyles(): void {
@@ -390,8 +352,60 @@ namespace Freakylay {
         }
 
         private previewGameData(): void {
-            this.updateStatic(this.staticDataTest);
-            this.updateLive(this.liveDataTest);
+
+            this.mapData.GameVersion.setValue('1.13.2');
+            this.mapData.PluginVersion.setValue('2.0.0.0');
+            this.mapData.InLevel.setValue(true);
+            this.mapData.LevelPaused.setValue(false);
+            this.mapData.LevelFinished.setValue(false);
+            this.mapData.LevelFailed.setValue(false);
+            this.mapData.LevelQuit.setValue(false);
+            this.mapData.Hash.setValue('648B7FE961C398DE638FA1E614878F1194ADF92E');
+            this.mapData.SongName.setValue('SongName');
+            this.mapData.SongSubName.setValue('SongSubName');
+            this.mapData.SongAuthor.setValue('SongAuthor');
+            this.mapData.Mapper.setValue('Mapper');
+            this.mapData.BSRKey.setValue('d00c');
+            this.mapData.coverImage.setValue('img/BS_Logo.jpg');
+            this.mapData.Length.setValue(336);
+            this.mapData.TimeScale.setValue(0);
+            this.mapData.MapType.setValue('Standard');
+            this.mapData.Difficulty.setValue('ExpertPlus');
+            this.mapData.CustomDifficultyLabel.setValue('Freaky');
+            this.mapData.BPM.setValue(200);
+            this.mapData.NJS.setValue(23);
+            this.mapData.ModifiersMultiplier.setValue(1);
+            this.mapData.PracticeMode.setValue(false);
+            this.mapData.PP.setValue(0);
+            this.mapData.Star.setValue(0);
+            this.mapData.IsMultiplayer.setValue(false);
+            this.mapData.PreviousRecord.setValue(987123);
+            this.mapData.PreviousBSR.setValue('8e9c');
+
+            this.mapData.Modifiers.instantFail.setValue(true);
+            this.mapData.Modifiers.batteryEnergy.setValue(true);
+            this.mapData.Modifiers.disappearingArrows.setValue(true);
+            this.mapData.Modifiers.ghostNotes.setValue(true);
+            this.mapData.Modifiers.fasterSong.setValue(true);
+            this.mapData.Modifiers.noFail.setValue(true);
+            this.mapData.Modifiers.noObstacles.setValue(true);
+            this.mapData.Modifiers.noBombs.setValue(true);
+            this.mapData.Modifiers.slowerSong.setValue(true);
+            this.mapData.Modifiers.noArrows.setValue(true);
+
+            this.mapData.PracticeModeModifiers.songSpeedMul.setValue(1.3);
+
+            this.liveData.Score.setValue(1234567);
+            this.liveData.ScoreWithMultipliers.setValue(1234567);
+            this.liveData.MaxScore.setValue(2345678);
+            this.liveData.MaxScoreWithMultipliers.setValue(2345678);
+            this.liveData.Rank.setValue('SS');
+            this.liveData.FullCombo.setValue(true);
+            this.liveData.Combo.setValue(322);
+            this.liveData.Misses.setValue(0);
+            this.liveData.Accuracy.setValue(94.21564618131514);
+            this.liveData.PlayerHealth.setValue(100);
+            this.liveData.TimeElapsed.setValue(66);
         }
 
         private getUiElements(): void {
@@ -484,7 +498,6 @@ namespace Freakylay {
                 current = total;
             }
 
-            //this.timer.setText('<small>Time</small>' + this.getDate(current) + '<br>' + this.getDate(total));
             this.timer.setText(UI.getDate(current) + '<br>' + UI.getDate(total));
             this.timer.setProgress(current, total);
         }
@@ -495,26 +508,37 @@ namespace Freakylay {
 
             let sSeconds = seconds < 10 ? '0' + seconds : seconds.toString();
 
-            return minutes < 0 ? sSeconds : minutes + ':' + seconds;
+            return minutes < 0 ? sSeconds : minutes + ':' + sSeconds;
         }
 
-        /*
-        getTimeElapsed() {
-            return Math.round(this.liveData.TimeElapsed / this.staticData.PracticeModeModifiers.songSpeedMul);
+        public updateLive(liveData: {}): void {
+            this.liveData.update(liveData);
+            this.updateInternalUi();
         }
-         */
 
-        public updateLive(liveData: Freakylay.Data.LiveData): void {
-            this.liveData = liveData;
+        public updateMap(mapData: {}): void {
+            this.mapData.update(mapData);
+            this.updateInternalUi();
+        }
+
+        private updateInternalUi(): void {
+            // calculate map length
+            this.mapLength = this.mapData.Length.getValue();
+            if (this.mapData.PracticeMode.getValue()) {
+                this.mapLength = parseInt((this.mapData.Length.getValue() / this.mapData.PracticeModeModifiers.songSpeedMul.getValue()).toString());
+            } else if (this.mapData.Modifiers.fasterSong.getValue() || this.mapData.Modifiers.slowerSong.getValue()) {
+                this.mapLength = parseInt((this.mapData.Length.getValue() * (this.mapData.Modifiers.fasterSong ? .8 : 1.15)).toString());
+            }
+
             // toggle ui
-            if (this.options.previewMode || this.liveData.InLevel && !this.uiShown) {
+            if (this.options.previewMode || this.mapData.InLevel.getValue() && !this.uiShown) {
 
                 Helper.removeClass(this.songInfoHolder, this.inactiveClass);
                 Helper.removeClass(this.dataHolder, this.inactiveClass);
                 Helper.removeClass(this.modifiersHolder, this.inactiveClass);
 
                 this.uiShown = true;
-            } else if (!this.liveData.InLevel && this.uiShown) {
+            } else if (!this.mapData.InLevel.getValue() && this.uiShown) {
                 Helper.addClass(this.songInfoHolder, this.inactiveClass);
                 Helper.addClass(this.dataHolder, this.inactiveClass);
                 Helper.addClass(this.modifiersHolder, this.inactiveClass);
@@ -523,67 +547,22 @@ namespace Freakylay {
                 this.marquee.stop();
             }
 
-            this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
-
-            // down section
-            this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
-
-            let arrow = '';
-
-            if (this.options.showScoreIncrease) {
-                let lS = this.liveData.Score.getValue();
-                let pR = this.staticData.PreviousRecord;
-                arrow = lS < pR ? '&darr;' : lS > pR ? '&uarr;' : '';
-            }
-
-            this.data.combo.innerHTML = '<span>Combo</span>' + this.liveData.Combo;
-            this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses;
-            this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
-
-            //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
-            this.health.setProgress(this.staticData.Modifiers.noFail ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
-
-            // block hit scores?
-
-            let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
-            Helper.visibility(this.modifiersHolder, hasFc);
-            Helper.display(this.modifiers.fullCombo, hasFc, true);
-        }
-
-        public updateStatic(staticData: Freakylay.Data.StaticData): void {
-            this.staticData = staticData;
-
-            // calculate map length
-            this.mapLength = this.staticData.Length;
-            if (this.staticData.PracticeMode) {
-                this.mapLength = parseInt((this.staticData.Length / this.staticData.PracticeModeModifiers.songSpeedMul).toString());
-            } else if (this.staticData.Modifiers.fasterSong || this.staticData.Modifiers.slowerSong) {
-                this.mapLength = parseInt((this.staticData.Length * (this.staticData.Modifiers.fasterSong ? .8 : 1.15)).toString());
-            }
-
             // modifiers panel
-            let allModifiersOff = true;
-            for (let modifier in this.staticData.Modifiers) {
-
-                // noinspection JSUnfilteredForInLoop
-                if (this.staticData.Modifiers[modifier]) {
-                    allModifiersOff = false;
-                }
-
+            for (let modifier in this.mapData.Modifiers) {
                 // noinspection JSUnfilteredForInLoop
                 if (typeof this.modifiers[modifier] !== 'undefined') {
-                    Helper.display(this.modifiers[modifier], this.staticData.Modifiers[modifier], true);
+                    // noinspection JSUnfilteredForInLoop
+                    Helper.display(this.modifiers[modifier], this.mapData.Modifiers[modifier].getValue(), true);
                 }
             }
 
-            Helper.display(this.modifiers.practiceMode, this.staticData.PracticeMode, true);
+            Helper.display(this.modifiers.practiceMode, this.mapData.PracticeMode.getValue(), true);
 
             // practice
-            if (this.staticData.PracticeMode) {
-                allModifiersOff = false;
-                if (this.staticData.PracticeModeModifiers.songSpeedMul !== 1) {
+            if (this.mapData.PracticeMode.getValue()) {
+                if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() !== 1) {
                     let str;
-                    if (this.staticData.PracticeModeModifiers.songSpeedMul > 1) {
+                    if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() > 1) {
                         str = this.options.shortModifierNames ? 'FS' : 'Faster Song'
                     } else {
                         str = this.options.shortModifierNames ? 'SS' : 'Slower Song'
@@ -594,7 +573,7 @@ namespace Freakylay {
                     Helper.display(this.modifiers.speed, false, true);
                 }
 
-                let readableSpeed = parseInt((this.staticData.PracticeModeModifiers.songSpeedMul * 100 - 100).toFixed());
+                let readableSpeed = parseInt((this.mapData.PracticeModeModifiers.songSpeedMul.getValue() * 100 - 100).toFixed());
                 let identifier = readableSpeed > 0 ? '+' : '';
 
                 if (readableSpeed === 100) {
@@ -604,40 +583,67 @@ namespace Freakylay {
                     this.modifiers.songSpeed.innerHTML = (this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%';
                 }
 
-                Helper.display(this.modifiers.songSpeed, this.staticData.PracticeModeModifiers.songSpeedMul !== 1, true);
+                Helper.display(this.modifiers.songSpeed, this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
             } else {
                 Helper.display(this.modifiers.speed, false, true);
                 Helper.display(this.modifiers.songSpeed, false, true);
             }
 
             // full combo
-            if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo) {
+            /*
+            if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo.getValue()) {
                 allModifiersOff = false;
             }
+            */
 
-            Helper.visibility(this.modifiersHolder, !allModifiersOff);
+            //Helper.visibility(this.modifiersHolder, !allModifiersOff);
 
             // generic song info
-            Helper.toggleClass(this.beatMapCover, this.staticData.BSRKey.length === 0 || this.staticData.BSRKey === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
+            Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
 
-            this.data.previousBSR.innerHTML = this.staticData.PreviousBSR.length > 0 ? 'Prev-BSR: ' + this.staticData.PreviousBSR : '';
+            this.data.previousBSR.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
 
-            UI.hideSetting(this.songInfo.bsr, this.staticData.BSRKey === 'BSRKey' ? '' : this.staticData.BSRKey, 'BSR: ');
-            UI.hideSetting(this.songInfo.mapper, this.staticData.Mapper);
-            UI.hideSetting(this.songInfo.artist, this.staticData.getSongAuthorLine());
+            UI.hideSetting(this.songInfo.bsr, this.mapData.BSRKey.getValue() === 'BSRKey' ? '' : this.mapData.BSRKey.getValue(), 'BSR: ');
+            UI.hideSetting(this.songInfo.mapper, this.mapData.Mapper.getValue());
+            UI.hideSetting(this.songInfo.artist, this.mapData.getSongAuthorLine());
             //this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
-            this.marquee.setValue(this.staticData.SongName);
+            this.marquee.setValue(this.mapData.SongName.getValue());
 
             //Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
-            this.songInfo.difficulty.innerHTML = this.staticData.getFullDifficultyLabel();
-            this.songInfo.cover.style.backgroundImage = 'url(\'' + this.staticData.coverImage + '\')';
+            this.songInfo.difficulty.innerHTML = this.mapData.getFullDifficultyLabel();
+            this.songInfo.cover.style.backgroundImage = 'url(\'' + this.mapData.coverImage.getValue() + '\')';
 
-            this.data.bpm.innerHTML = '<span>BPM</span>' + this.staticData.BPM;
-            this.data.njs.innerHTML = '<span>NJS</span>' + this.staticData.NJS.toFixed(1);
+            this.data.bpm.innerHTML = '<span>BPM</span>' + this.mapData.BPM.getValue();
+            this.data.njs.innerHTML = '<span>NJS</span>' + this.mapData.NJS.getValue().toFixed(1);
 
             // previous record?
+            this.setTime(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
+
+            // down section
+            this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
+
+            let arrow = '';
+
+            if (this.options.showScoreIncrease) {
+                let lS = this.liveData.Score.getValue();
+                let pR = this.mapData.PreviousRecord.getValue();
+                arrow = lS < pR ? '&darr;' : lS > pR ? '&uarr;' : '';
+            }
+
+            this.data.combo.innerHTML = '<span>Combo</span>' + this.liveData.Combo.getValue();
+            this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses.getValue();
+            this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
+
+            //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
+            this.health.setProgress(this.mapData.Modifiers.noFail ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
+
+            // block hit scores?
+
+            let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
+            //Helper.visibility(this.modifiersHolder, hasFc);
+            Helper.display(this.modifiers.fullCombo, hasFc, true);
 
             UI.insertModifierBreakLines();
         }

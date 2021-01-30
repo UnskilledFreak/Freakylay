@@ -1,12 +1,16 @@
 namespace Freakylay {
     export class PracticeModeModifiers {
 
-        public songSpeedMul: number;
+        public songSpeedMul: DataKey<number>;
 
-        constructor(data: object) {
-            this.songSpeedMul = Helper.isset(data, 'songSpeedMul', 1.0);
+        constructor() {
+            this.songSpeedMul = new DataKey('songSpeedMul', 1.0);
 
-            this.songSpeedMul = Math.round(this.songSpeedMul * 100) / 100;
+            this.songSpeedMul.setValue(Math.round(this.songSpeedMul.getValue() * 100) / 100);
+        }
+
+        public update(data: {}): void {
+            this.songSpeedMul.update(data);
         }
     }
 }
