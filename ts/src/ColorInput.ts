@@ -32,17 +32,15 @@ namespace Freakylay {
                 a = parseInt(color.substring(7, 9), 16);
             } else {
                 let splitColor = color.replace(/ /g, '').split(',');
+
                 splitColor[splitColor.length - 1] = splitColor[splitColor.length - 1].substring(0, splitColor[splitColor.length - 1].length - 1);
-
-                prefix = splitColor[0].substring(0, 4).toLowerCase();
-
-                splitColor[0] = splitColor[0].substring(3);
+                let index = splitColor[0].indexOf('(');
+                prefix = splitColor[0].substring(0, index).toLowerCase();
+                splitColor[0] = splitColor[0].substring(index + 1);
 
                 if (prefix === 'rgb') {
-                    splitColor[0] = splitColor[0].substring(1);
                     a = 255;
                 } else {
-                    splitColor[0] = color[0].substring(2);
                     a = Math.round(parseFloat(splitColor[3]) * 255);
                 }
 
@@ -58,6 +56,7 @@ namespace Freakylay {
         }
 
         public createInputMenu(element: HTMLElement): void {
+
             this.rElement = this.input(this.r, 'r');
             this.gElement = this.input(this.g, 'g');
             this.bElement = this.input(this.b, 'b');
