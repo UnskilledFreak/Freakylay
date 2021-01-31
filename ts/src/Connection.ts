@@ -37,10 +37,15 @@ namespace Freakylay {
             };
             this.socket.onmessage = (message: Event) => {
                 this.onMessage(message);
-            }
+            };
             this.socket.onclose = () => {
                 this.onClose();
-            }
+            };
+            /*
+            this.socket.onerror = () => {
+                this.isConnected = false;
+            };
+            */
         }
 
         private onOpen(message: Event) {

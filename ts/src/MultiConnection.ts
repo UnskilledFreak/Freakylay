@@ -33,11 +33,11 @@ namespace Freakylay {
             );
         }
 
-        public getUrl(onlyIpAndPort: boolean = false): string {
-            if (onlyIpAndPort) {
-                return this.ip + ':' + this.port;
+        public getUrl(onlyIp: boolean = false): string {
+            if (onlyIp) {
+                return this.ip;
             }
-            return 'ws:' + this.getUrl(true) + '/';
+            return 'ws:' + this.getUrl(true) + ':' + this.port + '/';
         }
 
         public reconnect(ip: string = null, port: number = null): void {
@@ -48,9 +48,9 @@ namespace Freakylay {
                 this.port = port;
             }
 
-            for (let e of this.connections) {
-                e.reconnect(this.getUrl());
-            }
+            this.connections.forEach(conn => {
+                conn.reconnect(this.getUrl());
+            });
         }
 
         private static log(name: string, message: string): void {
