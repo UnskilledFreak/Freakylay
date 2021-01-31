@@ -81,24 +81,11 @@ namespace Freakylay {
         }
 
         static stringRepeat(input: string, length: number): string {
-            if (input.length >= length) {
-                return input;
-            }
-
             let ret = input;
-            let runs = Math.floor(length) - input.length;
-
-            for (let x = 0; x < runs; x++) {
+            while (ret.length < length) {
                 ret += input;
             }
 
-
-            // this crashes every browser...
-            /*
-            while (input.length < length) {
-                ret += input;
-            }
-            */
             return ret;
         }
     }
