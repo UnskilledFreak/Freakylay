@@ -27,7 +27,6 @@ namespace Freakylay {
                     this.element.innerHTML = actualVal.substr(1) + first;
                 }, this.animationSpeed);
             }
-
         }
 
         public stop(): void {
