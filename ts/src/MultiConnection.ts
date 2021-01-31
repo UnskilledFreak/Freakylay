@@ -15,9 +15,7 @@ namespace Freakylay {
             this.connections[name] = new Connection(
                 this.getUrl() + name,
                 (data) => {
-                    //console.log('Heartbeat from ' + name);
-                    data = JSON.parse(data.data);
-                    callback(data);
+                    callback(JSON.parse(data.data));
                 },
                 () => {
                     MultiConnection.log(name, 'connected!');

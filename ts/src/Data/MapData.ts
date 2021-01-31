@@ -103,20 +103,18 @@ namespace Freakylay.Data {
         }
 
         public getDifficultyString(): string {
-            switch (this.Difficulty.getValue()) {
-                case 'ExpertPlus':
-                    return 'Expert+';
-                default:
-                    return this.Difficulty.getValue();
-            }
+            let diff = this.Difficulty.getValue();
+            return diff == 'ExpertPlus' ? 'Expert+' : diff;
         }
 
         public getFullDifficultyLabel(): string {
             let normalDifficultyString = this.getDifficultyString();
-            if (this.CustomDifficultyLabel.getValue() === '' || this.CustomDifficultyLabel.getValue() === normalDifficultyString) {
+            let custom = this.CustomDifficultyLabel.getValue();
+
+            if (custom === '' || custom === normalDifficultyString) {
                 return normalDifficultyString;
             } else {
-                return this.CustomDifficultyLabel.getValue() + ' - ' + normalDifficultyString;
+                return custom + ' - ' + normalDifficultyString;
             }
         }
 
