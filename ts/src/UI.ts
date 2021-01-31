@@ -8,9 +8,8 @@ namespace Freakylay {
 
     export class UI {
 
-        private inactiveClass: string;
+        private readonly inactiveClass: string;
         private uiShown: boolean;
-        private levelWasPaused: boolean;
         private mapLength: number;
 
         private mapData: MapData;
@@ -40,7 +39,7 @@ namespace Freakylay {
             ip: string;
             textColor: string
         };
-        private urlParamStrings: {
+        private readonly urlParamStrings: {
             backgroundColor: string;
             showNjs: string;
             ip: string;
@@ -59,7 +58,7 @@ namespace Freakylay {
         public options: {
             backgroundColor: string;
             showNjs: boolean;
-            ip: any;
+            ip: string;
             shortModifierNames: boolean;
             textColor: string;
             previewMode: boolean;
@@ -158,30 +157,23 @@ namespace Freakylay {
                 }
 
                 this.options.previewMode = !this.options.previewMode;
-                if (this.options.previewMode) {
-                    this.setPreviewData();
-                } else {
-                    this.mapData = new MapData();
-                    this.liveData = new LiveData();
-                }
-
-                this.onStyleChange();
-                this.updateInternalUi();
+                this.openOptionPanel();
             };
 
             this.loadAndBuildUiElements();
 
-            this.health.setProgress(0, 1);
+            this.uiShown = true;
+
+            this.updateMap({});
+            this.updateLive({});
+
+            this.health.setProgress(0, 100);
             this.accuracy.setProgress(0, 100);
             this.updateTimeCircleBar(0, 60)
 
-            this.uiShown = true;
-
-            this.onStyleChange();
-
             window.setTimeout(() => {
                 this.calculateOptionPosition();
-                this.updateMap({});
+                this.openOptionPanel();
             }, 100);
         }
 
@@ -204,7 +196,8 @@ namespace Freakylay {
             this.modifiers.noArrows.switchDisplayName(!this.options.shortModifierNames);
             this.modifiers.practiceMode.switchDisplayName(!this.options.shortModifierNames);
             this.modifiers.fullCombo.switchDisplayName(!this.options.shortModifierNames);
-            this.updateModifiers();
+
+            this.updateInternalUi();
 
             Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
             Helper.visibility(this.data.combo, this.options.showCombo);
@@ -212,10 +205,11 @@ namespace Freakylay {
             Helper.display(this.data.njs, this.options.showNjs, true);
             Helper.display(this.data.miss, this.options.missCounter, true);
 
-            Helper.display(this.optionsElement, this.options.previewMode);
-
             if (this.options.previewMode) {
-                this.calculateOptionPosition();
+                //this.calculateOptionPosition();
+                this.setPreviewData();
+            } else {
+                this.mapData.InLevel.setValue(false);
             }
 
             let options = [];
@@ -245,6 +239,7 @@ namespace Freakylay {
 
             Helper.toggleClass(this.beatMapCover, !this.options.flipStatic, 'borderRadiusBottomRight');
             Helper.toggleClass(this.beatMapCover, this.options.flipStatic, 'borderRadiusBottomLeft');
+
             if (this.options.flipStatic) {
                 Helper.toggleClass(this.beatMapCover, !this.options.showPrevBsr, 'borderRadiusTopLeft');
             } else {
@@ -255,7 +250,7 @@ namespace Freakylay {
             Helper.toggleClass(this.modifiersHolder, this.options.flipModifiers, 'flip');
             Helper.toggleClass(this.dataHolder, this.options.flipLive, 'flip');
 
-            if (this.options.ip !== this.defaults.ip) {
+            if (this.options.ip != this.defaults.ip) {
                 options.push(this.urlParamStrings.ip + '=' + this.options.ip);
             }
 
@@ -318,9 +313,6 @@ namespace Freakylay {
 
             new SettingLine('Short Modifiers', 'shortModifierNames');
             new SettingLine('Miss Counter', 'missCounter');
-
-            //this.optionsLinesElement.append(Helper.create('hr'));
-
             new SettingLine('Previous BSR', 'showPrevBsr');
             new SettingLine('BPM', 'showBpm');
             new SettingLine('NJS', 'showNjs');
@@ -345,12 +337,24 @@ namespace Freakylay {
         }
 
         public updateLive(liveData: {}): void {
+            if (this.options.previewMode) {
+                return;
+            }
             this.liveData.update(liveData);
             this.updateInternalUi();
         }
 
         public updateMap(mapData: {}): void {
+            if (this.options.previewMode) {
+                return;
+            }
             this.mapData.update(mapData);
+            this.updateInternalUi();
+        }
+
+        private openOptionPanel(): void {
+            Helper.display(this.optionsElement, this.options.previewMode);
+            this.onStyleChange();
             this.updateInternalUi();
         }
 
@@ -472,12 +476,10 @@ namespace Freakylay {
             this.ipText = Helper.element('ip') as HTMLInputElement;
             this.changeIp = Helper.element('changeIp') as HTMLInputElement;
             this.changeIp.onclick = () => {
-                let f = this.ipText.value.split(':');
-                if (!f[1] || typeof f[1] === 'undefined') {
-                    f[1] = "2946";
-                }
-                connection.reconnect(f[0], parseInt(f[1]));
-            }
+                this.options.ip = this.ipText.value;
+                connection.reconnect(this.ipText.value);
+                this.onStyleChange();
+            };
         }
 
         private calculateOptionPosition(): void {
@@ -495,11 +497,7 @@ namespace Freakylay {
         }
 
         private updateTimeCircleBar(current: number, total: number): void {
-            if (current > total) {
-                // uhm?
-                current = total;
-            }
-
+            current = Helper.clamp(current, 0, total);
             this.timer.setText(UI.getDate(current) + '<br>' + UI.getDate(total));
             this.timer.setProgress(current, total);
         }
@@ -514,20 +512,30 @@ namespace Freakylay {
             }
         }
 
+        private showUi(): void {
+            Helper.removeClass(this.songInfoHolder, this.inactiveClass);
+            Helper.removeClass(this.dataHolder, this.inactiveClass);
+            Helper.removeClass(this.modifiersHolder, this.inactiveClass)
+            this.uiShown = true;
+        }
+
+        private hideUi(): void {
+            Helper.addClass(this.songInfoHolder, this.inactiveClass);
+            Helper.addClass(this.dataHolder, this.inactiveClass);
+            Helper.addClass(this.modifiersHolder, this.inactiveClass);
+            this.uiShown = false;
+        }
+
         private toggleUi(): void {
-            if (this.options.previewMode || this.mapData.InLevel.getValue() && !this.uiShown) {
+            if (this.options.previewMode) {
+                this.showUi();
+                return;
+            }
 
-                Helper.removeClass(this.songInfoHolder, this.inactiveClass);
-                Helper.removeClass(this.dataHolder, this.inactiveClass);
-                Helper.removeClass(this.modifiersHolder, this.inactiveClass);
-
-                this.uiShown = true;
+            if (this.mapData.InLevel.getValue() && !this.uiShown) {
+                this.showUi();
             } else if (!this.mapData.InLevel.getValue() && this.uiShown) {
-                Helper.addClass(this.songInfoHolder, this.inactiveClass);
-                Helper.addClass(this.dataHolder, this.inactiveClass);
-                Helper.addClass(this.modifiersHolder, this.inactiveClass);
-                this.uiShown = false;
-                this.levelWasPaused = false;
+                this.hideUi();
                 this.marquee.stop();
             }
         }
@@ -583,11 +591,8 @@ namespace Freakylay {
             UI.hideSetting(this.songInfo.bsr, this.mapData.BSRKey.getValue() === 'BSRKey' ? '' : this.mapData.BSRKey.getValue(), 'BSR: ');
             UI.hideSetting(this.songInfo.mapper, this.mapData.Mapper.getValue());
             UI.hideSetting(this.songInfo.artist, this.mapData.getSongAuthorLine());
-            //this.hideSetting(this.songInfo.songName, this.staticData.SongName);
 
             this.marquee.setValue(this.mapData.SongName.getValue());
-
-            //Helper.toggleClass(this.songInfo.songName, !this.options.flipLive && this.staticData.SongName.length > 26, 'small');
 
             this.songInfo.difficulty.innerHTML = this.mapData.getFullDifficultyLabel();
             this.songInfo.cover.style.backgroundImage = 'url(\'' + this.mapData.coverImage.getValue() + '\')';
@@ -597,14 +602,13 @@ namespace Freakylay {
         }
 
         private updateDownSection(): void {
-            // previous record?
             this.updateTimeCircleBar(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
 
             // down section
             this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
 
+            // previous record?
             let arrow = '';
-
             if (this.options.showScoreIncrease) {
                 let lS = this.liveData.Score.getValue();
                 let pR = this.mapData.PreviousRecord.getValue();
@@ -615,24 +619,13 @@ namespace Freakylay {
             this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses.getValue();
             this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
 
-            //this.health.setProgress(this.staticData.PracticeMode ? 100 : this.liveData.PlayerHealth.toFixed(0), 100);
             this.health.setProgress(this.mapData.Modifiers.noFail.getValue() ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
 
             // block hit scores?
         }
 
         private updateFullCombo(): void {
-
-            /*
-            if (this.options.showFullComboModifier && typeof this.liveData !== 'undefined' && this.liveData.FullCombo.getValue()) {
-                allModifiersOff = false;
-            }
-            */
-
-            //Helper.visibility(this.modifiersHolder, !allModifiersOff);
-
             let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
-            //Helper.visibility(this.modifiersHolder, hasFc);
             Helper.display(this.modifiers.fullCombo.getElement(), hasFc, true);
         }
 
@@ -681,7 +674,7 @@ namespace Freakylay {
             if (value.length > 0) {
                 Helper.visibility(element, true);
                 element.innerHTML = prefix + value;
-                return
+                return;
             }
 
             Helper.visibility(element, false);
