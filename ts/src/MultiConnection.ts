@@ -48,7 +48,7 @@ namespace Freakylay {
 
             this.connections.forEach(conn => {
                 conn.reconnect(this.getUrl());
-            });
+            }, this);
         }
 
         private static log(name: string, message: string): void {

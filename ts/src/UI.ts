@@ -105,6 +105,7 @@ namespace Freakylay {
 
         constructor() {
             this.inactiveClass = 'inactive';
+
             this.mapData = new MapData();
             this.liveData = new LiveData();
 
@@ -157,23 +158,26 @@ namespace Freakylay {
                 }
 
                 this.options.previewMode = !this.options.previewMode;
+
                 this.openOptionPanel();
+                this.onStyleChange();
             };
 
             this.loadAndBuildUiElements();
 
             this.uiShown = true;
 
-            this.updateMap({});
-            this.updateLive({});
-
             this.health.setProgress(0, 100);
             this.accuracy.setProgress(0, 100);
             this.updateTimeCircleBar(0, 60)
 
             window.setTimeout(() => {
+                this.buildOptionsPanel();
                 this.calculateOptionPosition();
                 this.openOptionPanel();
+                this.updateMap({});
+                this.updateLive({});
+                this.onStyleChange();
             }, 100);
         }
 
@@ -197,8 +201,6 @@ namespace Freakylay {
             this.modifiers.practiceMode.switchDisplayName(!this.options.shortModifierNames);
             this.modifiers.fullCombo.switchDisplayName(!this.options.shortModifierNames);
 
-            this.updateInternalUi();
-
             Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
             Helper.visibility(this.data.combo, this.options.showCombo);
             Helper.display(this.data.bpm, this.options.showBpm, true);
@@ -206,10 +208,10 @@ namespace Freakylay {
             Helper.display(this.data.miss, this.options.missCounter, true);
 
             if (this.options.previewMode) {
-                //this.calculateOptionPosition();
                 this.setPreviewData();
             } else {
                 this.mapData.InLevel.setValue(false);
+                this.updateMap();
             }
 
             let options = [];
@@ -336,26 +338,28 @@ namespace Freakylay {
             textColor.createInputMenu(Helper.element('color') as HTMLDivElement);
         }
 
-        public updateLive(liveData: {}): void {
-            if (this.options.previewMode) {
-                return;
+        public updateLive(liveData: {} = null): void {
+            if (liveData != null) {
+                this.liveData.update(liveData);
             }
-            this.liveData.update(liveData);
-            this.updateInternalUi();
+
+            this.updateDownSection();
+            this.updateFullCombo();
         }
 
-        public updateMap(mapData: {}): void {
-            if (this.options.previewMode) {
-                return;
+        public updateMap(mapData: {} = null): void {
+            if (mapData != null) {
+                this.mapData.update(mapData);
             }
-            this.mapData.update(mapData);
-            this.updateInternalUi();
+
+            this.calculateMapLength();
+            this.updateModifiers();
+            this.toggleUi();
+            this.updateSongInfo();
         }
 
         private openOptionPanel(): void {
             Helper.display(this.optionsElement, this.options.previewMode);
-            this.onStyleChange();
-            this.updateInternalUi();
         }
 
         private setPreviewData(): void {
@@ -412,6 +416,9 @@ namespace Freakylay {
             this.liveData.Accuracy.setValue(94.21564618131514);
             this.liveData.PlayerHealth.setValue(100);
             this.liveData.TimeElapsed.setValue(66);
+
+            this.updateMap();
+            this.updateLive();
         }
 
         private loadAndBuildUiElements(): void {
@@ -584,6 +591,7 @@ namespace Freakylay {
         }
 
         private updateSongInfo(): void {
+
             Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
 
             this.data.previousBSR.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
@@ -595,6 +603,7 @@ namespace Freakylay {
             this.marquee.setValue(this.mapData.SongName.getValue());
 
             this.songInfo.difficulty.innerHTML = this.mapData.getFullDifficultyLabel();
+
             this.songInfo.cover.style.backgroundImage = 'url(\'' + this.mapData.coverImage.getValue() + '\')';
 
             this.data.bpm.innerHTML = '<span>BPM</span>' + this.mapData.BPM.getValue();
@@ -627,16 +636,6 @@ namespace Freakylay {
         private updateFullCombo(): void {
             let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
             Helper.display(this.modifiers.fullCombo.getElement(), hasFc, true);
-        }
-
-        private updateInternalUi(): void {
-
-            this.calculateMapLength();
-            this.toggleUi();
-            this.updateModifiers();
-            this.updateSongInfo();
-            this.updateDownSection();
-            this.updateFullCombo();
 
             UI.insertModifierBreakLines();
         }
@@ -661,7 +660,7 @@ namespace Freakylay {
                 } else {
                     x.remove();
                 }
-            });
+            }, this);
 
             for (let e of modifiers) {
                 if (e.style.display === 'inline-block') {
