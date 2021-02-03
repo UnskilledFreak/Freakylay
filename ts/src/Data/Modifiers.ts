@@ -1,4 +1,9 @@
-namespace Freakylay {
+/// <reference path="../Internal/DataKey.ts" />
+
+namespace Freakylay.Data {
+
+    import DataKey = Freakylay.Internal.DataKey;
+
     export class Modifiers {
 
         public instantFail: DataKey<boolean>;
@@ -37,21 +42,6 @@ namespace Freakylay {
             this.noBombs.update(data);
             this.slowerSong.update(data);
             this.noArrows.update(data);
-        }
-
-        public toList(): DataKey<any>[] {
-            return [
-                this.instantFail,
-                this.batteryEnergy,
-                this.disappearingArrows,
-                this.ghostNotes,
-                this.fasterSong,
-                this.noFail,
-                this.noObstacles,
-                this.noBombs,
-                this.slowerSong,
-                this.noArrows
-            ];
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace Freakylay {
+namespace Freakylay.Internal {
     export class UrlParam {
 
         private key: string;

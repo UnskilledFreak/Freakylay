@@ -1,10 +1,22 @@
+/// <reference path="./Internal/Helper.ts" />
 /// <reference path="./Data/MapData.ts" />
 /// <reference path="./Data/LiveData.ts" />
+/// <reference path="./UiElement/Marquee.ts" />
+/// <reference path="./UiElement/CircleBar.ts" />
+/// <reference path="./UiElement/ModifierUiElement.ts" />
+/// <reference path="./UiElement/ColorInput.ts" />
+/// <reference path="./UiElement/SettingLine.ts" />
 
 namespace Freakylay {
 
     import MapData = Freakylay.Data.MapData;
     import LiveData = Freakylay.Data.LiveData;
+    import Marquee = Freakylay.UiElement.Marquee;
+    import CircleBar = Freakylay.UiElement.CircleBar;
+    import ModifierUiElement = Freakylay.UiElement.ModifierUiElement;
+    import Helper = Freakylay.Internal.Helper;
+    import ColorInput = Freakylay.UiElement.ColorInput;
+    import SettingLine = Freakylay.UiElement.SettingLine;
 
     export class UI {
 

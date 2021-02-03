@@ -1,4 +1,9 @@
-namespace Freakylay {
+/// <reference path="../Internal/DataKey.ts" />
+
+namespace Freakylay.Data {
+
+    import DataKey = Freakylay.Internal.DataKey;
+
     export class PracticeModeModifiers {
 
         public songSpeedMul: DataKey<number>;

@@ -1,4 +1,8 @@
+/// <reference path="../Internal/DataKey.ts" />
+
 namespace Freakylay.Data {
+    import DataKey = Freakylay.Internal.DataKey;
+
     export class LiveData {
         public Score: DataKey<number>;
         public ScoreWithMultipliers: DataKey<number>;

@@ -1,4 +1,8 @@
-namespace Freakylay {
+/// <reference path="../Internal/Helper.ts" />
+
+namespace Freakylay.UiElement {
+    import Helper = Freakylay.Internal.Helper;
+
     export class ModifierUiElement {
         private element: HTMLDivElement;
         private shortDescription: string;

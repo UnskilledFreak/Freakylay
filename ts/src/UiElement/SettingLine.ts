@@ -1,4 +1,8 @@
-namespace Freakylay {
+/// <reference path="../Internal/Helper.ts" />
+
+namespace Freakylay.UiElement {
+    import Helper = Freakylay.Internal.Helper;
+
     export class SettingLine {
 
         static index = 0;

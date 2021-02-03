@@ -1,4 +1,8 @@
-namespace Freakylay {
+/// <reference path="../Internal/Helper.ts" />
+
+namespace Freakylay.UiElement {
+    import Helper = Freakylay.Internal.Helper;
+
     export class ColorInput {
 
         static Instance = 0;
@@ -65,7 +69,7 @@ namespace Freakylay {
             this.aInfoElement.innerHTML = 'Not recommended';
             Helper.visibility(this.aInfoElement, false);
 
-            let change = () => {
+            let change = (): void => {
                 this.internalChange();
             };
 

@@ -1,4 +1,4 @@
-let connection: Freakylay.MultiConnection;
+let connection: Freakylay.Connector.MultiConnection;
 let ui: Freakylay.UI;
 
 window.onload = () => {
@@ -6,7 +6,7 @@ window.onload = () => {
 
     ui = new Freakylay.UI();
 
-    connection = new Freakylay.MultiConnection(ui.options.ip, 2946);
+    connection = new Freakylay.Connector.MultiConnection(ui.options.ip, 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         ui.updateLive(data);
     });

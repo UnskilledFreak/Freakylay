@@ -1,4 +1,4 @@
-namespace Freakylay {
+namespace Freakylay.Connector {
     export class MultiConnection {
 
         private connections: Connection[];
@@ -17,13 +17,8 @@ namespace Freakylay {
                 (data) => {
                     callback(JSON.parse(data.data));
                 },
+                () => {},
                 () => {
-                    MultiConnection.log(name, 'connected!');
-                },
-                () => {
-                    MultiConnection.log(name, 'lost connection');
-                    MultiConnection.log(name, 'reconnecting in 5 seconds');
-
                     window.setTimeout(() => {
                         this.addEndpoint(name, callback);
                     }, 5000);
@@ -49,10 +44,6 @@ namespace Freakylay {
             this.connections.forEach(conn => {
                 conn.reconnect(this.getUrl());
             }, this);
-        }
-
-        private static log(name: string, message: string): void {
-            console.log('[' + name + '] ' + message);
         }
     }
 }

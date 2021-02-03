@@ -1,4 +1,8 @@
-namespace Freakylay {
+/// <reference path="../Internal/Helper.ts" />
+
+namespace Freakylay.UiElement {
+    import Helper = Freakylay.Internal.Helper;
+
     export class Marquee {
 
         private animationSpeed: number = 250;
@@ -12,7 +16,7 @@ namespace Freakylay {
             this.width = 0;
         }
 
-        public setValue(val): void {
+        public setValue(val: string): void {
             this.stop();
             this.element.innerHTML = val;
 

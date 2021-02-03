@@ -1,4 +1,10 @@
+/// <reference path="../Internal/DataKey.ts" />
+/// <reference path="../Internal/Helper.ts" />
+
 namespace Freakylay.Data {
+
+    import DataKey = Freakylay.Internal.DataKey;
+    import Helper = Freakylay.Internal.Helper;
 
     export class MapData {
 

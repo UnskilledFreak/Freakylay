@@ -1,4 +1,8 @@
-namespace Freakylay {
+/// <reference path="../Internal/Helper.ts" />
+
+namespace Freakylay.UiElement {
+    import Helper = Freakylay.Internal.Helper;
+
     export class CircleBar {
 
         private parent: HTMLElement;
@@ -35,7 +39,7 @@ namespace Freakylay {
             this.parent.append(this.text, svg);
         }
 
-        public setProgress(current: number, total: number) {
+        public setProgress(current: number, total: number): void {
             let progress = current / total;
             this.bar.style.strokeDashoffset = this.getCircumference(progress);
 
@@ -44,15 +48,15 @@ namespace Freakylay {
             }
         }
 
-        public setText(text: string) {
+        public setText(text: string): void {
             this.text.innerHTML = text;
         }
 
-        private getCircumference(input: number) {
+        private getCircumference(input: number): string {
             return Helper.clamp((1 - input) * this.circumference, 0, this.circumference) + 'px';
         }
 
-        private static getCircle(size: number, radius: number) {
+        private static getCircle(size: number, radius: number): SVGCircleElement {
             let c = Helper.svg('circle') as SVGCircleElement;
 
             c.cx.baseVal.value = size;

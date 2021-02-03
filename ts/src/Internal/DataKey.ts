@@ -1,9 +1,9 @@
-namespace Freakylay {
+namespace Freakylay.Internal {
     export class DataKey<T> {
 
-        private key: string;
+        private readonly key: string;
+        private readonly defaultValue: T;
         private value: T;
-        private defaultValue: T;
 
         constructor(key: string, defaultValue: T) {
             this.key = key;

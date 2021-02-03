@@ -1,4 +1,4 @@
-namespace Freakylay {
+namespace Freakylay.Internal {
     export class Helper {
         static SvgNamespace = 'http://www.w3.org/2000/svg';
 
