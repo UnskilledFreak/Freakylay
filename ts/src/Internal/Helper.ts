@@ -49,29 +49,6 @@ namespace Freakylay.Internal {
             element.style.display = display ? (isInline ? 'inline-block' : 'block') : 'none';
         }
 
-        static fromUrlColor(input: string): string {
-            if (input.substring(0, 3) === 'rgb') {
-                return input;
-            }
-
-            if (input.match(/[^0-9A-Fa-f]/g) === null) {
-                return '#' + input;
-            }
-
-            return '#000000';
-        }
-
-        static toUrlColor(input: string): string {
-            if (input.substring(0, 1) === '#') {
-                return input.substring(1);
-            }
-            if (input.substring(0, 3) === 'rgb') {
-                return input;
-            }
-
-            return '000000';
-        }
-
         static toggleClass(element: HTMLElement | SVGElement, value: any, className: string): void {
             if (!!value) {
                 Helper.addClass(element, className);

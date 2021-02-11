@@ -1,85 +1,63 @@
 /// <reference path="../Internal/Helper.ts" />
+/// <reference path="../Data/Color.ts" />
 
 namespace Freakylay.UiElement {
     import Helper = Freakylay.Internal.Helper;
+    import Color = Freakylay.Data.Color;
 
     export class ColorInput {
 
         static Instance = 0;
         private instance: number;
-        private changeEvent: (string) => void;
+        private color: Color;
+        private changeEvent: (Color) => void;
         private alphaCheck: (number) => boolean;
-        private r: number;
-        private g: number;
-        private b: number;
-        private a: number;
         private rElement: HTMLInputElement;
         private gElement: HTMLInputElement;
         private bElement: HTMLInputElement;
         private aElement: HTMLInputElement;
         private aInfoElement: HTMLSpanElement;
 
-        constructor(color: string, changeEvent: (string) => void, alphaCheck: (number) => boolean) {
+        constructor(color: Color, changeEvent: (Color) => void, alphaCheck: (number) => boolean) {
 
             this.instance = ColorInput.Instance;
             ColorInput.Instance++;
 
+            this.color = color;
             this.changeEvent = changeEvent;
             this.alphaCheck = alphaCheck;
-
-            let r, g, b, a, prefix;
-            if (color.substring(0, 1) === '#') {
-                color = color.length === 7 ? color + 'FF' : color;
-                r = parseInt(color.substring(1, 3), 16);
-                g = parseInt(color.substring(3, 5), 16);
-                b = parseInt(color.substring(5, 7), 16);
-                a = parseInt(color.substring(7, 9), 16);
-            } else {
-                let splitColor = color.replace(/ /g, '').split(',');
-
-                splitColor[splitColor.length - 1] = splitColor[splitColor.length - 1].substring(0, splitColor[splitColor.length - 1].length - 1);
-                let index = splitColor[0].indexOf('(');
-                prefix = splitColor[0].substring(0, index).toLowerCase();
-                splitColor[0] = splitColor[0].substring(index + 1);
-
-                if (prefix === 'rgb') {
-                    a = 255;
-                } else {
-                    a = Math.round(parseFloat(splitColor[3]) * 255);
-                }
-
-                r = parseInt(splitColor[0]);
-                g = parseInt(splitColor[1]);
-                b = parseInt(splitColor[2]);
-            }
-
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
         }
 
         public createInputMenu(element: HTMLElement): void {
 
-            this.rElement = this.input(this.r, 'r');
-            this.gElement = this.input(this.g, 'g');
-            this.bElement = this.input(this.b, 'b');
-            this.aElement = this.input(this.a, 'a');
+            this.rElement = this.input(this.color.r, 'r');
+            this.gElement = this.input(this.color.g, 'g');
+            this.bElement = this.input(this.color.b, 'b');
+            this.aElement = this.input(this.color.a, 'a');
+
             this.aInfoElement = Helper.create('span') as HTMLSpanElement;
             this.aInfoElement.innerHTML = 'Not recommended';
+
             Helper.visibility(this.aInfoElement, false);
 
-            let change = (): void => {
-                this.internalChange();
-            };
 
-            this.rElement.oninput = change;
-            this.gElement.oninput = change;
-            this.bElement.oninput = change;
+            this.rElement.oninput = () => {
+                this.color.r = parseInt(this.rElement.value);
+                this.changeEvent(this.color);
+            };
+            this.gElement.oninput = () => {
+                this.color.g = parseInt(this.gElement.value);
+                this.changeEvent(this.color);
+            };
+            this.bElement.oninput = () => {
+                this.color.b = parseInt(this.bElement.value);
+                this.changeEvent(this.color);
+            };
             this.aElement.oninput = () => {
                 let a = parseInt(this.aElement.value);
                 Helper.visibility(this.aInfoElement, this.alphaCheck(a));
-                change();
+                this.color.a = a;
+                this.changeEvent(this.color);
             };
 
             element.append(
@@ -93,28 +71,6 @@ namespace Freakylay.UiElement {
                 this.aElement,
                 this.aInfoElement
             );
-        }
-
-        private internalChange(): void {
-            this.changeEvent(this.getColor());
-        }
-
-        private getColor(): string {
-            let r = parseInt(this.rElement.value);
-            let g = parseInt(this.gElement.value);
-            let b = parseInt(this.bElement.value);
-            let a = parseInt(this.aElement.value);
-
-            if (a === 255) {
-                return '#' + ColorInput.to2digitHex(r) + ColorInput.to2digitHex(g) + ColorInput.to2digitHex(b);
-            }
-
-            return 'rgba(' + [r, g, b, (a / 255).toFixed(2)].join(', ') + ')';
-        }
-
-        private static to2digitHex(input: number): string {
-            let sInput = input.toString(16);
-            return sInput.length === 1 ? '0' + sInput : sInput;
         }
 
         private input(value: number, id: string): HTMLInputElement {

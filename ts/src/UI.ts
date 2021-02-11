@@ -1,6 +1,7 @@
 /// <reference path="./Internal/Helper.ts" />
 /// <reference path="./Data/MapData.ts" />
 /// <reference path="./Data/LiveData.ts" />
+/// <reference path="./Data/Color.ts" />
 /// <reference path="./UiElement/Marquee.ts" />
 /// <reference path="./UiElement/CircleBar.ts" />
 /// <reference path="./UiElement/ModifierUiElement.ts" />
@@ -17,6 +18,7 @@ namespace Freakylay {
     import Helper = Freakylay.Internal.Helper;
     import ColorInput = Freakylay.UiElement.ColorInput;
     import SettingLine = Freakylay.UiElement.SettingLine;
+    import Color = Freakylay.Data.Color;
 
     export class UI {
 
@@ -65,14 +67,15 @@ namespace Freakylay {
             showBpm: string;
             showScoreIncrease: string;
             flipModifiers: string;
-            showPrevBsr: string
+            showPrevBsr: string,
+            showTimeString: string
         };
         public options: {
-            backgroundColor: string;
+            backgroundColor: Color;
+            textColor: Color;
             showNjs: boolean;
             ip: string;
             shortModifierNames: boolean;
-            textColor: string;
             previewMode: boolean;
             flipLive: boolean;
             showCombo: boolean;
@@ -82,20 +85,21 @@ namespace Freakylay {
             showBpm: boolean;
             showScoreIncrease: boolean;
             flipModifiers: boolean;
-            showPrevBsr: boolean
+            showPrevBsr: boolean,
+            showTimeString: boolean
         };
         private modifiers: {
-            noArrows: ModifierUiElement;
-            batteryEnergy: ModifierUiElement;
-            noObstacles: ModifierUiElement;
-            fullCombo: ModifierUiElement;
-            disappearingArrows: ModifierUiElement;
-            percentSpeed: ModifierUiElement;
-            instantFail: ModifierUiElement;
-            ghostNotes: ModifierUiElement;
-            practiceMode: ModifierUiElement;
-            noFail: ModifierUiElement;
-            noBombs: ModifierUiElement;
+            noArrows: ModifierUiElement,
+            batteryEnergy: ModifierUiElement,
+            noObstacles: ModifierUiElement,
+            fullCombo: ModifierUiElement,
+            disappearingArrows: ModifierUiElement,
+            percentSpeed: ModifierUiElement,
+            instantFail: ModifierUiElement,
+            ghostNotes: ModifierUiElement,
+            practiceMode: ModifierUiElement,
+            noFail: ModifierUiElement,
+            noBombs: ModifierUiElement,
             speed: ModifierUiElement
         };
         private songInfo: {
@@ -141,14 +145,15 @@ namespace Freakylay {
                 flipLive: 'j',
                 flipModifiers: 'k',
                 showScoreIncrease: 'l',
-                showFullComboModifier: 'm'
+                showFullComboModifier: 'm',
+                showTimeString: 'n'
             };
 
             this.urlParams = new URLSearchParams(location.search);
 
             this.options = {
-                backgroundColor: Helper.fromUrlColor(this.getUrlParameter(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
-                textColor: Helper.fromUrlColor(this.getUrlParameter(this.urlParamStrings.textColor, this.defaults.textColor)),
+                backgroundColor: Color.fromUrl(this.getUrlParameter(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
+                textColor: Color.fromUrl(this.getUrlParameter(this.urlParamStrings.textColor, this.defaults.textColor)),
                 shortModifierNames: this.urlParams.has(this.urlParamStrings.shortModifierNames),
                 showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
                 previewMode: this.urlParams.has('options'),
@@ -161,7 +166,8 @@ namespace Freakylay {
                 flipStatic: this.urlParams.has(this.urlParamStrings.flipStatic),
                 flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers),
                 showScoreIncrease: this.urlParams.has(this.urlParamStrings.showScoreIncrease),
-                showFullComboModifier: this.urlParams.has(this.urlParamStrings.showFullComboModifier)
+                showFullComboModifier: this.urlParams.has(this.urlParamStrings.showFullComboModifier),
+                showTimeString: this.urlParams.has(this.urlParamStrings.showTimeString)
             };
 
             document.body.ondblclick = (e) => {
@@ -194,12 +200,12 @@ namespace Freakylay {
         }
 
         public onStyleChange(): void {
-            document.body.style.color = this.options.textColor;
+            document.body.style.color = this.options.textColor.toRgb();
             document.querySelectorAll('.roundBar circle').forEach((element: HTMLElement) => {
-                element.style.stroke = this.options.textColor;
+                element.style.stroke = this.options.textColor.toRgb();
             }, this);
             document.querySelectorAll('.backGroundColor').forEach((element: HTMLElement) => {
-                element.style.backgroundColor = this.options.backgroundColor;
+                element.style.backgroundColor = this.options.backgroundColor.toRgb();
             }, this);
 
             this.modifiers.instantFail.switchDisplayName(!this.options.shortModifierNames);
@@ -228,15 +234,8 @@ namespace Freakylay {
 
             let options = [];
 
-            let bg = Helper.toUrlColor(this.options.backgroundColor);
-            if (bg !== this.defaults.backgroundColor) {
-                options.push(this.urlParamStrings.backgroundColor + '=' + bg);
-            }
-
-            let tc = Helper.toUrlColor(this.options.textColor);
-            if (tc !== this.defaults.textColor) {
-                options.push(this.urlParamStrings.textColor + '=' + tc);
-            }
+            options.push(this.urlParamStrings.backgroundColor + '=' + this.options.backgroundColor.toUrl());
+            options.push(this.urlParamStrings.textColor + '=' + this.options.textColor.toUrl());
 
             let switchBorderRadius = (element, value) => {
                 Helper.toggleClass(element, !value, 'borderRadiusTopLeft');
@@ -333,6 +332,7 @@ namespace Freakylay {
             new SettingLine('Combo', 'showCombo');
             new SettingLine('Score arrow pointing up or down depending on last score', 'showScoreIncrease');
             new SettingLine('Full Combo modifier', 'showFullComboModifier');
+            new SettingLine('Display current time only', 'showTimeString');
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -517,7 +517,13 @@ namespace Freakylay {
 
         private updateTimeCircleBar(current: number, total: number): void {
             current = Helper.clamp(current, 0, total);
-            this.timer.setText(UI.getDate(current) + '<br>' + UI.getDate(total));
+            let text = '';
+            if (this.options.showTimeString) {
+                text = 'Time<br>' + UI.getDate(current);
+            } else {
+                text = UI.getDate(current) + '<br>' + UI.getDate(total);
+            }
+            this.timer.setText(text);
             this.timer.setProgress(current, total);
         }
 
