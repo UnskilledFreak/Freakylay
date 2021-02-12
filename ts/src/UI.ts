@@ -183,7 +183,7 @@ namespace Freakylay {
             this.modifiers.fullCombo.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
 
             Helper.visibility(this.data.previousBSR, this.urlOptions.showPrevBsr.getValue());
-            Helper.visibility(this.data.combo, this.urlOptions.showCombo.getValue());
+            Helper.display(this.data.combo, this.urlOptions.showCombo.getValue(), true);
             Helper.display(this.data.bpm, this.urlOptions.showBpm.getValue(), true);
             Helper.display(this.data.njs, this.urlOptions.showNjs.getValue(), true);
             Helper.display(this.data.miss, this.urlOptions.missCounter.getValue(), true);
