@@ -67,5 +67,9 @@ namespace Freakylay.Internal {
 
             return ret;
         }
+
+        static areColorsEqual(a: Color, b: Color): boolean {
+            return a.toRgb() == b.toRgb();
+        }
     }
 }

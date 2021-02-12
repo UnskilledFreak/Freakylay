@@ -5,21 +5,43 @@ namespace Freakylay.Internal {
 
     export class UrlParam<T> {
 
-        private key: string;
         private default: T;
-        private hasKey: boolean;
         private value: T;
 
-        constructor(manager: UrlManager, key: string, def: T) {
+        private readonly key: string;
+        private readonly hasKey: boolean;
+        private readonly compareFn: (obj: any, def: any) => boolean;
+
+        constructor(manager: UrlManager, key: string, def: T, compareFn: (obj: T, def: T) => boolean = null) {
 
             this.key = key;
             this.default = def;
             this.hasKey = manager.urlParams.has(this.key);
+            this.value = this.default;
+            this.compareFn = compareFn;
 
-            this.value = (this.hasKey ? manager.urlParams.get(this.key) : this.default) as T;
+            if (this.hasKey) {
+                let val = manager.urlParams.get(this.key);
+                if (this.default instanceof Color) {
+                    this.value = (Color.fromUrl(val) as unknown) as T;
+                } else {
+                    this.value = (val as unknown) as T;
+                }
+            } else {
+                if (this.default instanceof Color) {
+                    this.value = (this.default.clone() as unknown) as T;
+                }
+            }
         }
 
         public isDefaultValue(): boolean {
+            if (typeof this.value == 'object') {
+                if (this.compareFn == null) {
+                    throw new Error('comparer must be an callback for given type ' + typeof this.value);
+                }
+
+                return this.compareFn(this.value, this.default);
+            }
             return this.value == this.default;
         }
 
@@ -33,6 +55,17 @@ namespace Freakylay.Internal {
 
         public setValue(val: T): void {
             this.value = val;
+        }
+
+        public getDefault(): T {
+            return this.default;
+        }
+
+        public getCheckedValue(): T {
+            if (this.isSet()) {
+                return this.getValue();
+            }
+            return this.getDefault();
         }
 
         public getUrlValue(): string {

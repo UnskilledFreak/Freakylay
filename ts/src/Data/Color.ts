@@ -16,7 +16,7 @@ namespace Freakylay.Data {
         public toRgb(): string {
             let inner = [this.r, this.g, this.b];
             if (this.a != 255) {
-                inner.push(this.a / 255);
+                inner.push(Math.round(this.a / 255 * 100) / 100);
                 return 'rgba(' + inner.join(',') + ')'
             }
 
@@ -77,6 +77,10 @@ namespace Freakylay.Data {
             }
 
             return '000000';
+        }
+
+        public clone(): Color {
+            return new Color(this.r, this.g, this.b, this.a);
         }
     }
 }

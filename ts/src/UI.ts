@@ -222,7 +222,7 @@ namespace Freakylay {
             Helper.toggleClass(this.modifiersHolder, this.urlOptions.flipModifiers.getValue(), 'flip');
             Helper.toggleClass(this.dataHolder, this.urlOptions.flipLive.getValue(), 'flip');
 
-            let options = [];
+            let options: string[] = [];
 
             if (!this.urlOptions.backgroundColor.isDefaultValue()) {
                 options.push(this.urlOptions.backgroundColor.getUrlValue());
@@ -328,7 +328,7 @@ namespace Freakylay {
         }
 
         public getUrlIp(): string {
-            return this.urlOptions.ip.getValue();
+            return this.urlOptions.ip.getCheckedValue();
         }
 
         private openOptionPanel(): void {
