@@ -1,4 +1,5 @@
 /// <reference path="./Internal/Helper.ts" />
+/// <reference path="./Internal/UrlManager.ts" />
 /// <reference path="./Data/MapData.ts" />
 /// <reference path="./Data/LiveData.ts" />
 /// <reference path="./Data/Color.ts" />
@@ -19,12 +20,16 @@ namespace Freakylay {
     import ColorInput = Freakylay.UiElement.ColorInput;
     import SettingLine = Freakylay.UiElement.SettingLine;
     import Color = Freakylay.Data.Color;
+    import UrlManager = Freakylay.Internal.UrlManager;
+    import UrlParam = Freakylay.Internal.UrlParam;
 
     export class UI {
 
         private readonly inactiveClass: string;
         private uiShown: boolean;
         private mapLength: number;
+
+        private readonly urlManager: UrlManager;
 
         private mapData: MapData;
         private liveData: LiveData;
@@ -48,46 +53,25 @@ namespace Freakylay {
         public ipText: HTMLInputElement;
         public optionsLinesElement: HTMLDivElement;
 
-        private defaults: {
-            backgroundColor: string;
-            ip: string;
-            textColor: string
-        };
-        private readonly urlParamStrings: {
-            backgroundColor: string;
-            showNjs: string;
-            ip: string;
-            shortModifierNames: string;
-            textColor: string;
-            flipLive: string;
-            showCombo: string;
-            flipStatic: string;
-            showFullComboModifier: string;
-            missCounter: string;
-            showBpm: string;
-            showScoreIncrease: string;
-            flipModifiers: string;
-            showPrevBsr: string,
-            showTimeString: string
-        };
-        public options: {
-            backgroundColor: Color;
-            textColor: Color;
-            showNjs: boolean;
-            ip: string;
-            shortModifierNames: boolean;
-            previewMode: boolean;
-            flipLive: boolean;
-            showCombo: boolean;
-            flipStatic: boolean;
-            showFullComboModifier: boolean;
-            missCounter: boolean;
-            showBpm: boolean;
-            showScoreIncrease: boolean;
-            flipModifiers: boolean;
-            showPrevBsr: boolean,
-            showTimeString: boolean
-        };
+        private readonly urlOptions: {
+            ip: UrlParam<string>,
+            backgroundColor: UrlParam<Color>,
+            textColor: UrlParam<Color>,
+            shortModifierNames: UrlParam<boolean>,
+            showPrevBsr: UrlParam<boolean>,
+            missCounter: UrlParam<boolean>,
+            showBpm: UrlParam<boolean>,
+            showNjs: UrlParam<boolean>,
+            showCombo: UrlParam<boolean>,
+            flipStatic: UrlParam<boolean>,
+            flipLive: UrlParam<boolean>,
+            flipModifiers: UrlParam<boolean>,
+            showScoreIncrease: UrlParam<boolean>,
+            showFullComboModifier: UrlParam<boolean>,
+            showTimeString: UrlParam<boolean>,
+            previewMode: UrlParam<boolean>
+        }
+
         private modifiers: {
             noArrows: ModifierUiElement,
             batteryEnergy: ModifierUiElement,
@@ -120,62 +104,41 @@ namespace Freakylay {
         };
 
         constructor() {
+
             this.inactiveClass = 'inactive';
 
             this.mapData = new MapData();
             this.liveData = new LiveData();
 
-            this.defaults = {
-                ip: '127.0.0.1',
-                textColor: 'ffffff',
-                backgroundColor: 'rgba(255,133,255,0.7)'
-            };
+            this.urlManager = new UrlManager();
 
-            this.urlParamStrings = {
-                ip: 'ip',
-                backgroundColor: 'a',
-                textColor: 'b',
-                shortModifierNames: 'c',
-                showPrevBsr: 'd',
-                missCounter: 'e',
-                showBpm: 'f',
-                showNjs: 'g',
-                showCombo: 'h',
-                flipStatic: 'i',
-                flipLive: 'j',
-                flipModifiers: 'k',
-                showScoreIncrease: 'l',
-                showFullComboModifier: 'm',
-                showTimeString: 'n'
-            };
+            this.urlOptions = {
+                ip: this.urlManager.registerOptionParam('ip', '127.0.0.1'),
+                backgroundColor: this.urlManager.registerOptionParam('a', Color.fromUrl('rgba(255,133,255,0.7)')),
+                textColor: this.urlManager.registerOptionParam('b', Color.fromUrl('ffffff')),
+                shortModifierNames: this.urlManager.registerOptionParam('c', false),
+                showPrevBsr: this.urlManager.registerOptionParam('d', false),
+                missCounter: this.urlManager.registerOptionParam('e', true),
+                showBpm: this.urlManager.registerOptionParam('f', true),
+                showNjs: this.urlManager.registerOptionParam('g', true),
+                showCombo: this.urlManager.registerOptionParam('h', true),
+                flipStatic: this.urlManager.registerOptionParam('i', false),
+                flipLive: this.urlManager.registerOptionParam('j', false),
+                flipModifiers: this.urlManager.registerOptionParam('k', false),
+                showScoreIncrease: this.urlManager.registerOptionParam('l', true),
+                showFullComboModifier: this.urlManager.registerOptionParam('m', true),
+                showTimeString: this.urlManager.registerOptionParam('n', false),
+                previewMode: this.urlManager.registerOptionParam('options', false),
+            }
 
             this.urlParams = new URLSearchParams(location.search);
-
-            this.options = {
-                backgroundColor: Color.fromUrl(this.getUrlParameter(this.urlParamStrings.backgroundColor, this.defaults.backgroundColor)),
-                textColor: Color.fromUrl(this.getUrlParameter(this.urlParamStrings.textColor, this.defaults.textColor)),
-                shortModifierNames: this.urlParams.has(this.urlParamStrings.shortModifierNames),
-                showPrevBsr: this.urlParams.has(this.urlParamStrings.showPrevBsr),
-                previewMode: this.urlParams.has('options'),
-                missCounter: !this.urlParams.has(this.urlParamStrings.missCounter),
-                showBpm: !this.urlParams.has(this.urlParamStrings.showBpm),
-                showNjs: !this.urlParams.has(this.urlParamStrings.showNjs),
-                showCombo: !this.urlParams.has(this.urlParamStrings.showCombo),
-                ip: this.getUrlParameter(this.urlParamStrings.ip, this.defaults.ip),
-                flipLive: this.urlParams.has(this.urlParamStrings.flipLive),
-                flipStatic: this.urlParams.has(this.urlParamStrings.flipStatic),
-                flipModifiers: this.urlParams.has(this.urlParamStrings.flipModifiers),
-                showScoreIncrease: this.urlParams.has(this.urlParamStrings.showScoreIncrease),
-                showFullComboModifier: this.urlParams.has(this.urlParamStrings.showFullComboModifier),
-                showTimeString: this.urlParams.has(this.urlParamStrings.showTimeString)
-            };
 
             document.body.ondblclick = (e) => {
                 if (e.target !== this.songInfoHolder) {
                     return;
                 }
 
-                this.options.previewMode = !this.options.previewMode;
+                this.urlOptions.previewMode.setValue(!this.urlOptions.previewMode.getValue());
 
                 this.openOptionPanel();
                 this.onStyleChange();
@@ -200,112 +163,106 @@ namespace Freakylay {
         }
 
         public onStyleChange(): void {
-            document.body.style.color = this.options.textColor.toRgb();
+            document.body.style.color = this.urlOptions.textColor.getValue().toRgb();
             document.querySelectorAll('.roundBar circle').forEach((element: HTMLElement) => {
-                element.style.stroke = this.options.textColor.toRgb();
+                element.style.stroke = this.urlOptions.textColor.getValue().toRgb();
             }, this);
             document.querySelectorAll('.backGroundColor').forEach((element: HTMLElement) => {
-                element.style.backgroundColor = this.options.backgroundColor.toRgb();
+                element.style.backgroundColor = this.urlOptions.backgroundColor.getValue().toRgb();
             }, this);
 
-            this.modifiers.instantFail.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.batteryEnergy.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.disappearingArrows.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.ghostNotes.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.noFail.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.noObstacles.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.noBombs.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.noArrows.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.practiceMode.switchDisplayName(!this.options.shortModifierNames);
-            this.modifiers.fullCombo.switchDisplayName(!this.options.shortModifierNames);
+            this.modifiers.instantFail.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.batteryEnergy.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.disappearingArrows.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.ghostNotes.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.noFail.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.noObstacles.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.noBombs.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.noArrows.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.practiceMode.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            this.modifiers.fullCombo.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
 
-            Helper.visibility(this.data.previousBSR, this.options.showPrevBsr);
-            Helper.visibility(this.data.combo, this.options.showCombo);
-            Helper.display(this.data.bpm, this.options.showBpm, true);
-            Helper.display(this.data.njs, this.options.showNjs, true);
-            Helper.display(this.data.miss, this.options.missCounter, true);
+            Helper.visibility(this.data.previousBSR, this.urlOptions.showPrevBsr.getValue());
+            Helper.visibility(this.data.combo, this.urlOptions.showCombo.getValue());
+            Helper.display(this.data.bpm, this.urlOptions.showBpm.getValue(), true);
+            Helper.display(this.data.njs, this.urlOptions.showNjs.getValue(), true);
+            Helper.display(this.data.miss, this.urlOptions.missCounter.getValue(), true);
 
-            if (this.options.previewMode) {
+            if (this.urlOptions.previewMode.getValue()) {
                 this.setPreviewData();
             } else {
                 this.mapData.InLevel.setValue(false);
                 this.updateMap();
             }
 
+            let switchBorderRadius = (element: HTMLElement | SVGElement, value: UrlParam<boolean>) => {
+                let v = value.getValue();
+                Helper.toggleClass(element, !v, 'borderRadiusTopLeft');
+                Helper.toggleClass(element, !v, 'borderRadiusBottomLeft');
+                Helper.toggleClass(element, v, 'borderRadiusTopRight');
+                Helper.toggleClass(element, v, 'borderRadiusBottomRight');
+            }
+
+            switchBorderRadius(this.songInfo.bsr, this.urlOptions.flipStatic);
+            switchBorderRadius(this.songInfo.mapper, this.urlOptions.flipStatic);
+            switchBorderRadius(this.songInfo.difficulty, this.urlOptions.flipStatic);
+            switchBorderRadius(this.songInfo.artist, this.urlOptions.flipStatic);
+            switchBorderRadius(this.songInfo.songName, this.urlOptions.flipStatic);
+
+            Helper.toggleClass(this.beatMapCover, !this.urlOptions.flipStatic.getValue(), 'borderRadiusBottomRight');
+            Helper.toggleClass(this.beatMapCover, this.urlOptions.flipStatic.getValue(), 'borderRadiusBottomLeft');
+
+            if (this.urlOptions.flipStatic.getValue()) {
+                Helper.toggleClass(this.beatMapCover, !this.urlOptions.showPrevBsr.getValue(), 'borderRadiusTopLeft');
+            } else {
+                Helper.toggleClass(this.beatMapCover, !this.urlOptions.showPrevBsr.getValue(), 'borderRadiusTopRight');
+            }
+
+            Helper.toggleClass(this.songInfoHolder, this.urlOptions.flipStatic.getValue(), 'flip');
+            Helper.toggleClass(this.modifiersHolder, this.urlOptions.flipModifiers.getValue(), 'flip');
+            Helper.toggleClass(this.dataHolder, this.urlOptions.flipLive.getValue(), 'flip');
+
             let options = [];
 
-            options.push(this.urlParamStrings.backgroundColor + '=' + this.options.backgroundColor.toUrl());
-            options.push(this.urlParamStrings.textColor + '=' + this.options.textColor.toUrl());
-
-            let switchBorderRadius = (element, value) => {
-                Helper.toggleClass(element, !value, 'borderRadiusTopLeft');
-                Helper.toggleClass(element, !value, 'borderRadiusBottomLeft');
-                Helper.toggleClass(element, value, 'borderRadiusTopRight');
-                Helper.toggleClass(element, value, 'borderRadiusBottomRight');
+            if (!this.urlOptions.backgroundColor.isDefaultValue()) {
+                options.push(this.urlOptions.backgroundColor.getUrlValue());
+            }
+            if (!this.urlOptions.textColor.isDefaultValue()) {
+                options.push(this.urlOptions.textColor.getUrlValue());
+            }
+            if (!this.urlOptions.ip.isDefaultValue()) {
+                options.push(this.urlOptions.ip.getUrlValue());
             }
 
-            switchBorderRadius(this.songInfo.bsr, this.options.flipStatic);
-            switchBorderRadius(this.songInfo.mapper, this.options.flipStatic);
-            switchBorderRadius(this.songInfo.difficulty, this.options.flipStatic);
-            switchBorderRadius(this.songInfo.artist, this.options.flipStatic);
-            switchBorderRadius(this.songInfo.songName, this.options.flipStatic);
-
-            Helper.toggleClass(this.beatMapCover, !this.options.flipStatic, 'borderRadiusBottomRight');
-            Helper.toggleClass(this.beatMapCover, this.options.flipStatic, 'borderRadiusBottomLeft');
-
-            if (this.options.flipStatic) {
-                Helper.toggleClass(this.beatMapCover, !this.options.showPrevBsr, 'borderRadiusTopLeft');
-            } else {
-                Helper.toggleClass(this.beatMapCover, !this.options.showPrevBsr, 'borderRadiusTopRight');
-            }
-
-            Helper.toggleClass(this.songInfoHolder, this.options.flipStatic, 'flip');
-            Helper.toggleClass(this.modifiersHolder, this.options.flipModifiers, 'flip');
-            Helper.toggleClass(this.dataHolder, this.options.flipLive, 'flip');
-
-            if (this.options.ip != this.defaults.ip) {
-                options.push(this.urlParamStrings.ip + '=' + this.options.ip);
-            }
-
-            let pushData = [
-                'shortModifierNames',
-                'showPrevBsr',
-                '!missCounter',
-                '!showBpm',
-                '!showNjs',
-                '!showCombo',
-                'flipStatic',
-                'flipLive',
-                'flipModifiers',
-                'showScoreIncrease',
-                'showFullComboModifier'
-            ];
-
-            for (let x of pushData) {
-                if (x.substring(0, 1) === '!') {
-                    x = x.substring(1, x.length);
-                    if (!this.options[x]) {
-                        options.push(this.urlParamStrings[x]);
-                    }
-                    continue;
+            [
+                this.urlOptions.shortModifierNames,
+                this.urlOptions.showPrevBsr,
+                this.urlOptions.missCounter,
+                this.urlOptions.showBpm,
+                this.urlOptions.showNjs,
+                this.urlOptions.showCombo,
+                this.urlOptions.flipStatic,
+                this.urlOptions.flipLive,
+                this.urlOptions.flipModifiers,
+                this.urlOptions.showScoreIncrease,
+                this.urlOptions.showFullComboModifier,
+                this.urlOptions.showTimeString
+            ].forEach(x => {
+                if (!x.isDefaultValue()) {
+                    options.push(x.getUrlValue());
                 }
-
-                if (this.options[x]) {
-                    options.push(this.urlParamStrings[x]);
-                }
-            }
+            });
 
             let optionsString = options.length > 0 ? '?' + options.join('&') : '';
 
             this.urlText.innerHTML = window.location.protocol + '//' + window.location.host + window.location.pathname + optionsString;
-            //this.setPreviewData();
         }
 
         public buildOptionsPanel(): void {
             let backgroundColor = new ColorInput(
-                this.options.backgroundColor,
+                this.urlOptions.backgroundColor.getValue(),
                 c => {
-                    this.options.backgroundColor = c;
+                    this.urlOptions.backgroundColor.setValue(c);
                     this.onStyleChange();
                 },
                 a => {
@@ -314,9 +271,9 @@ namespace Freakylay {
             );
 
             let textColor = new ColorInput(
-                this.options.textColor,
+                this.urlOptions.textColor.getValue(),
                 c => {
-                    this.options.textColor = c;
+                    this.urlOptions.textColor.setValue(c);
                     this.onStyleChange();
                 },
                 a => {
@@ -324,27 +281,27 @@ namespace Freakylay {
                 }
             );
 
-            new SettingLine('Short Modifiers', 'shortModifierNames');
-            new SettingLine('Miss Counter', 'missCounter');
-            new SettingLine('Previous BSR', 'showPrevBsr');
-            new SettingLine('BPM', 'showBpm');
-            new SettingLine('NJS', 'showNjs');
-            new SettingLine('Combo', 'showCombo');
-            new SettingLine('Score arrow pointing up or down depending on last score', 'showScoreIncrease');
-            new SettingLine('Full Combo modifier', 'showFullComboModifier');
-            new SettingLine('Display current time only', 'showTimeString');
+            new SettingLine('Short Modifiers', this.urlOptions.shortModifierNames);
+            new SettingLine('Miss Counter', this.urlOptions.missCounter);
+            new SettingLine('Previous BSR', this.urlOptions.showPrevBsr);
+            new SettingLine('BPM', this.urlOptions.showBpm);
+            new SettingLine('NJS', this.urlOptions.showNjs);
+            new SettingLine('Combo', this.urlOptions.showCombo);
+            new SettingLine('Score arrow pointing up or down depending on last score', this.urlOptions.showScoreIncrease);
+            new SettingLine('Full Combo modifier', this.urlOptions.showFullComboModifier);
+            new SettingLine('Display current time only', this.urlOptions.showTimeString);
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
-            new SettingLine('Flip SongInfo to left', 'flipStatic');
-            new SettingLine('Flip Modifiers to left', 'flipModifiers');
-            new SettingLine('Flip Counter section to top', 'flipLive');
+            new SettingLine('Flip SongInfo to left', this.urlOptions.flipStatic);
+            new SettingLine('Flip Modifiers to left', this.urlOptions.flipModifiers);
+            new SettingLine('Flip Counter section to top', this.urlOptions.flipLive);
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
-            new SettingLine('Test with Background Image', (checked) => {
+            new SettingLine('Test with Background Image', null,(checked) => {
                 document.body.style.backgroundImage = checked ? 'url(img/beat-saber-5.jpg)' : 'none';
-            }, true);
+            });
 
             backgroundColor.createInputMenu(Helper.element('bgColor') as HTMLDivElement);
             textColor.createInputMenu(Helper.element('color') as HTMLDivElement);
@@ -370,8 +327,12 @@ namespace Freakylay {
             this.updateSongInfo();
         }
 
+        public getUrlIp(): string {
+            return this.urlOptions.ip.getValue();
+        }
+
         private openOptionPanel(): void {
-            Helper.display(this.optionsElement, this.options.previewMode);
+            Helper.display(this.optionsElement, this.urlOptions.previewMode.getValue());
         }
 
         private setPreviewData(): void {
@@ -495,8 +456,8 @@ namespace Freakylay {
             this.ipText = Helper.element('ip') as HTMLInputElement;
             this.changeIp = Helper.element('changeIp') as HTMLInputElement;
             this.changeIp.onclick = () => {
-                this.options.ip = this.ipText.value;
-                connection.reconnect(this.ipText.value);
+                this.urlOptions.ip.setValue(this.ipText.value);
+                connection.reconnect(this.urlOptions.ip.getValue());
                 this.onStyleChange();
             };
         }
@@ -518,7 +479,7 @@ namespace Freakylay {
         private updateTimeCircleBar(current: number, total: number): void {
             current = Helper.clamp(current, 0, total);
             let text = '';
-            if (this.options.showTimeString) {
+            if (this.urlOptions.showTimeString.getValue()) {
                 text = 'Time<br>' + UI.getDate(current);
             } else {
                 text = UI.getDate(current) + '<br>' + UI.getDate(total);
@@ -552,7 +513,7 @@ namespace Freakylay {
         }
 
         private toggleUi(): void {
-            if (this.options.previewMode) {
+            if (this.urlOptions.previewMode.getValue()) {
                 this.showUi();
                 return;
             }
@@ -581,9 +542,9 @@ namespace Freakylay {
                 if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() !== 1) {
                     let str;
                     if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() > 1) {
-                        str = this.options.shortModifierNames ? 'FS' : 'Faster Song'
+                        str = this.urlOptions.shortModifierNames.getValue() ? 'FS' : 'Faster Song'
                     } else {
-                        str = this.options.shortModifierNames ? 'SS' : 'Slower Song'
+                        str = this.urlOptions.shortModifierNames.getValue() ? 'SS' : 'Slower Song'
                     }
                     this.modifiers.speed.updateRawText(str);
                     Helper.display(this.modifiers.speed.getElement(), true, true);
@@ -598,7 +559,7 @@ namespace Freakylay {
                     Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
                 } else {
                     Helper.display(this.modifiers.percentSpeed.getElement(), true, true);
-                    this.modifiers.percentSpeed.updateRawText((this.options.shortModifierNames ? '' : 'Speed: ') + identifier + readableSpeed + '%');
+                    this.modifiers.percentSpeed.updateRawText((this.urlOptions.shortModifierNames.getValue() ? '' : 'Speed: ') + identifier + readableSpeed + '%');
                 }
 
                 Helper.display(this.modifiers.percentSpeed.getElement(), this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
@@ -610,7 +571,7 @@ namespace Freakylay {
 
         private updateSongInfo(): void {
 
-            Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.options.flipStatic ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
+            Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.urlOptions.flipStatic.getValue() ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
 
             this.data.previousBSR.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
 
@@ -629,14 +590,14 @@ namespace Freakylay {
         }
 
         private updateDownSection(): void {
-            this.updateTimeCircleBar(this.options.previewMode ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
+            this.updateTimeCircleBar(this.urlOptions.previewMode.getValue() ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
 
             // down section
             this.accuracy.setProgress(parseFloat(this.liveData.Accuracy.getValue().toFixed(2)), 100)
 
             // previous record?
             let arrow = '';
-            if (this.options.showScoreIncrease) {
+            if (this.urlOptions.showScoreIncrease.getValue()) {
                 let lS = this.liveData.Score.getValue();
                 let pR = this.mapData.PreviousRecord.getValue();
                 arrow = lS < pR ? '&darr;' : lS > pR ? '&uarr;' : '';
@@ -652,7 +613,7 @@ namespace Freakylay {
         }
 
         private updateFullCombo(): void {
-            let hasFc = this.options.showFullComboModifier && this.liveData.FullCombo.getValue();
+            let hasFc = this.urlOptions.showFullComboModifier.getValue() && this.liveData.FullCombo.getValue();
             Helper.display(this.modifiers.fullCombo.getElement(), hasFc, true);
 
             UI.insertModifierBreakLines();

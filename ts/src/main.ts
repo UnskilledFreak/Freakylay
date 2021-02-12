@@ -6,7 +6,7 @@ window.onload = () => {
 
     ui = new Freakylay.UI();
 
-    connection = new Freakylay.Connector.MultiConnection(ui.options.ip, 2946);
+    connection = new Freakylay.Connector.MultiConnection(ui.getUrlIp(), 2946);
     connection.addEndpoint('BSDataPuller/LiveData', (data) => {
         ui.updateLive(data);
     });

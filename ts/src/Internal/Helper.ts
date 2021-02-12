@@ -1,4 +1,6 @@
 namespace Freakylay.Internal {
+    import Color = Freakylay.Data.Color;
+
     export class Helper {
         static SvgNamespace = 'http://www.w3.org/2000/svg';
 
@@ -49,8 +51,8 @@ namespace Freakylay.Internal {
             element.style.display = display ? (isInline ? 'inline-block' : 'block') : 'none';
         }
 
-        static toggleClass(element: HTMLElement | SVGElement, value: any, className: string): void {
-            if (!!value) {
+        static toggleClass(element: HTMLElement | SVGElement, value: boolean, className: string): void {
+            if (value) {
                 Helper.addClass(element, className);
             } else {
                 Helper.removeClass(element, className);

@@ -1,26 +1,50 @@
+/// <reference path="../Data/Color.ts">
+
 namespace Freakylay.Internal {
-    export class UrlParam {
+    import Color = Freakylay.Data.Color;
+
+    export class UrlParam<T> {
 
         private key: string;
-        private default: any;
+        private default: T;
         private hasKey: boolean;
-        private value: any;
+        private value: T;
 
-        constructor(key: string, def: any, valueCallback: (any) => void = null) {
-            let p = new URLSearchParams(location.search);
+        constructor(manager: UrlManager, key: string, def: T) {
 
             this.key = key;
             this.default = def;
-            this.hasKey = p.has(this.key);
-            this.value = this.hasKey ? p.get(this.key) : this.default;
+            this.hasKey = manager.urlParams.has(this.key);
 
-            if (typeof valueCallback === 'function') {
-                this.value = valueCallback(this.value);
-            }
+            this.value = (this.hasKey ? manager.urlParams.get(this.key) : this.default) as T;
         }
 
-        public isDefaultValue() {
-            return this.value === this.default;
+        public isDefaultValue(): boolean {
+            return this.value == this.default;
+        }
+
+        public isSet(): boolean {
+            return this.hasKey && !this.isDefaultValue();
+        }
+
+        public getValue(): T {
+            return this.value;
+        }
+
+        public setValue(val: T): void {
+            this.value = val;
+        }
+
+        public getUrlValue(): string {
+            let s = this.key;
+
+            if (this.value instanceof Color) {
+                s += '=' + this.value.toUrl();
+            } else if (typeof this.value == 'string') {
+                s += '=' + this.getValue();
+            }
+
+            return s;
         }
     }
 }
