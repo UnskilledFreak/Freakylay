@@ -271,8 +271,21 @@ body {
     top: -100px;
 }
 
+/** react to different resolutions **/
 @media screen and (max-width: 1280px) {
     body {
         zoom: 75%;
+    }
+}
+
+@media screen and (max-width: 2560px) {
+    body {
+        zoom: 110%;
+    }
+}
+
+@media screen and (max-width: 2160px) {
+    body {
+        zoom: 125%;
     }
 }
