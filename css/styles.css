@@ -278,13 +278,13 @@ body {
     }
 }
 
-@media screen and (max-width: 2560px) {
+@media screen and (min-width: 1921px) and (max-width: 2560px) {
     body {
         zoom: 110%;
     }
 }
 
-@media screen and (max-width: 2160px) {
+@media screen and (min-width: 2561px) and (max-width: 2160px) {
     body {
         zoom: 125%;
     }
