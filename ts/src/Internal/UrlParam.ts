@@ -25,7 +25,11 @@ namespace Freakylay.Internal {
                 if (this.default instanceof Color) {
                     this.value = (Color.fromUrl(val) as unknown) as T;
                 } else {
-                    this.value = (val as unknown) as T;
+                    if (typeof this.default === 'boolean') {
+                        this.value = (this.hasKey as unknown) as T;
+                    } else {
+                        this.value = (val as unknown) as T;
+                    }
                 }
             } else {
                 if (this.default instanceof Color) {
