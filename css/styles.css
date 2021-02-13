@@ -84,7 +84,7 @@ body {
     float: left;
 }
 
-#previousBSRWrapper .line,
+.previousBSRWrapper .line,
 #infoText .line {
     padding: 3px 10px 3px 10px;
     width: fit-content;
@@ -97,7 +97,7 @@ body {
     line-height: 23px;
 }
 
-#previousBSR {
+#previousBSRTop {
     display: inline-block;
 }
 
@@ -228,8 +228,6 @@ body {
 }
 
 /** flip **/
-
-
 #songInfo.flip {
     text-align: left;
 }
@@ -239,8 +237,11 @@ body {
     left: 5px;
     width: 50%;
 }
-#songInfo.flip #previousBSRWrapper {
+#songInfo.flip .previousBSRWrapper {
     width: 100%;
+}
+#songInfo.flip .previousBSRWrapper .line {
+    margin-left: inherit;
 }
 
 #songInfo.flip #beatMapCover {
@@ -271,10 +272,36 @@ body {
     top: -100px;
 }
 
+/** flip top **/
+#songInfo.top .textBottom {
+    top: 5px;
+}
+#songInfo.top #infoText {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#songInfo.top #previousBSRTop {
+    display: none;
+}
+#songInfo.top #previousBSRBottom {
+    display: block;
+}
+
+#songInfo:not(.top) #previousBSRTop {
+    display: block;
+}
+#songInfo:not(.top) #previousBSRBottom {
+    display: none;
+}
+
 /** react to different resolutions **/
 @media screen and (max-width: 1280px) {
     body {
         zoom: 75%;
+    }
+    #songInfo.top #bsr {
+        line-height: 23px;
     }
 }
 

@@ -25,7 +25,15 @@ namespace Freakylay {
 
     export class UI {
 
-        private readonly inactiveClass: string;
+        private readonly css: {
+            inactiveClass: string,
+            borderRadiusTopLeft: string,
+            borderRadiusTopRight: string,
+            borderRadiusBottomLeft: string,
+            borderRadiusBottomRight: string,
+            flip: string,
+        };
+
         private uiShown: boolean;
         private mapLength: number;
 
@@ -69,7 +77,8 @@ namespace Freakylay {
             showScoreIncrease: UrlParam<boolean>,
             showFullComboModifier: UrlParam<boolean>,
             showTimeString: UrlParam<boolean>,
-            previewMode: UrlParam<boolean>
+            previewMode: UrlParam<boolean>,
+            songInfoOnTop: UrlParam<boolean>
         }
 
         private modifiers: {
@@ -96,7 +105,8 @@ namespace Freakylay {
         };
         private data: {
             score: HTMLDivElement;
-            previousBSR: HTMLDivElement;
+            previousBSRTop: HTMLDivElement;
+            previousBSRBottom: HTMLDivElement;
             njs: HTMLDivElement;
             combo: HTMLDivElement;
             bpm: HTMLDivElement;
@@ -105,7 +115,14 @@ namespace Freakylay {
 
         constructor() {
 
-            this.inactiveClass = 'inactive';
+            this.css = {
+                inactiveClass: 'inactive',
+                borderRadiusTopLeft: 'borderRadiusTopLeft',
+                borderRadiusTopRight: 'borderRadiusTopRight',
+                borderRadiusBottomLeft: 'borderRadiusBottomLeft',
+                borderRadiusBottomRight: 'borderRadiusBottomRight',
+                flip: 'flip',
+            };
 
             this.mapData = new MapData();
             this.liveData = new LiveData();
@@ -129,6 +146,7 @@ namespace Freakylay {
                 showFullComboModifier: this.urlManager.registerOptionParam('m', true),
                 showTimeString: this.urlManager.registerOptionParam('n', false),
                 previewMode: this.urlManager.registerOptionParam('options', false),
+                songInfoOnTop: this.urlManager.registerOptionParam('o', false),
             }
 
             this.urlParams = new URLSearchParams(location.search);
@@ -182,7 +200,8 @@ namespace Freakylay {
             this.modifiers.practiceMode.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
             this.modifiers.fullCombo.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
 
-            Helper.visibility(this.data.previousBSR, this.urlOptions.showPrevBsr.getValue());
+            Helper.visibility(this.data.previousBSRTop, this.urlOptions.showPrevBsr.getValue());
+            Helper.visibility(this.data.previousBSRBottom, this.urlOptions.showPrevBsr.getValue());
             Helper.display(this.data.combo, this.urlOptions.showCombo.getValue(), true);
             Helper.display(this.data.bpm, this.urlOptions.showBpm.getValue(), true);
             Helper.display(this.data.njs, this.urlOptions.showNjs.getValue(), true);
@@ -195,32 +214,47 @@ namespace Freakylay {
                 this.updateMap();
             }
 
-            let switchBorderRadius = (element: HTMLElement | SVGElement, value: UrlParam<boolean>) => {
-                let v = value.getValue();
-                Helper.toggleClass(element, !v, 'borderRadiusTopLeft');
-                Helper.toggleClass(element, !v, 'borderRadiusBottomLeft');
-                Helper.toggleClass(element, v, 'borderRadiusTopRight');
-                Helper.toggleClass(element, v, 'borderRadiusBottomRight');
+            let flipBorderRadius = (element: HTMLElement | SVGElement, flip: UrlParam<boolean>) => {
+                let v = flip.getValue();
+                Helper.toggleClass(element, !v, this.css.borderRadiusTopLeft);
+                Helper.toggleClass(element, !v, this.css.borderRadiusBottomLeft);
+                Helper.toggleClass(element, v, this.css.borderRadiusTopRight);
+                Helper.toggleClass(element, v, this.css.borderRadiusBottomRight);
             }
 
-            switchBorderRadius(this.songInfo.bsr, this.urlOptions.flipStatic);
-            switchBorderRadius(this.songInfo.mapper, this.urlOptions.flipStatic);
-            switchBorderRadius(this.songInfo.difficulty, this.urlOptions.flipStatic);
-            switchBorderRadius(this.songInfo.artist, this.urlOptions.flipStatic);
-            switchBorderRadius(this.songInfo.songName, this.urlOptions.flipStatic);
+            flipBorderRadius(this.songInfo.bsr, this.urlOptions.flipStatic);
+            flipBorderRadius(this.songInfo.mapper, this.urlOptions.flipStatic);
+            flipBorderRadius(this.songInfo.difficulty, this.urlOptions.flipStatic);
+            flipBorderRadius(this.songInfo.artist, this.urlOptions.flipStatic);
+            flipBorderRadius(this.songInfo.songName, this.urlOptions.flipStatic);
 
-            Helper.toggleClass(this.beatMapCover, !this.urlOptions.flipStatic.getValue(), 'borderRadiusBottomRight');
-            Helper.toggleClass(this.beatMapCover, this.urlOptions.flipStatic.getValue(), 'borderRadiusBottomLeft');
+            let flipOption = this.urlOptions.flipStatic.getValue();
+            let topOption = this.urlOptions.songInfoOnTop.getValue();
+            Helper.toggleClass(this.beatMapCover, !flipOption && !topOption, this.css.borderRadiusBottomRight);
+            Helper.toggleClass(this.beatMapCover, flipOption && !topOption, this.css.borderRadiusBottomLeft);
+            Helper.toggleClass(this.beatMapCover, !flipOption && topOption, this.css.borderRadiusTopRight);
+            Helper.toggleClass(this.beatMapCover, flipOption && topOption, this.css.borderRadiusTopLeft);
 
-            if (this.urlOptions.flipStatic.getValue()) {
-                Helper.toggleClass(this.beatMapCover, !this.urlOptions.showPrevBsr.getValue(), 'borderRadiusTopLeft');
+            let showPrevBsrOption = !this.urlOptions.showPrevBsr.getValue();
+            if (flipOption) {
+                if (topOption) {
+                    Helper.toggleClass(this.beatMapCover, showPrevBsrOption, this.css.borderRadiusBottomLeft);
+                } else {
+                    Helper.toggleClass(this.beatMapCover, showPrevBsrOption, this.css.borderRadiusTopLeft);
+                }
             } else {
-                Helper.toggleClass(this.beatMapCover, !this.urlOptions.showPrevBsr.getValue(), 'borderRadiusTopRight');
+                if (topOption) {
+                    Helper.toggleClass(this.beatMapCover, showPrevBsrOption, this.css.borderRadiusBottomRight);
+                } else {
+                    Helper.toggleClass(this.beatMapCover, showPrevBsrOption, this.css.borderRadiusTopRight);
+                }
             }
 
-            Helper.toggleClass(this.songInfoHolder, this.urlOptions.flipStatic.getValue(), 'flip');
-            Helper.toggleClass(this.modifiersHolder, this.urlOptions.flipModifiers.getValue(), 'flip');
-            Helper.toggleClass(this.dataHolder, this.urlOptions.flipLive.getValue(), 'flip');
+            Helper.toggleClass(this.songInfoHolder, this.urlOptions.flipStatic.getValue(), this.css.flip);
+            Helper.toggleClass(this.modifiersHolder, this.urlOptions.flipModifiers.getValue(), this.css.flip);
+            Helper.toggleClass(this.dataHolder, this.urlOptions.flipLive.getValue(), this.css.flip);
+
+            Helper.toggleClass(this.songInfoHolder, this.urlOptions.songInfoOnTop.getValue(), 'top');
 
             let options: string[] = [];
 
@@ -246,7 +280,8 @@ namespace Freakylay {
                 this.urlOptions.flipModifiers,
                 this.urlOptions.showScoreIncrease,
                 this.urlOptions.showFullComboModifier,
-                this.urlOptions.showTimeString
+                this.urlOptions.showTimeString,
+                this.urlOptions.songInfoOnTop,
             ].forEach(x => {
                 if (!x.isDefaultValue()) {
                     options.push(x.getUrlValue());
@@ -296,10 +331,11 @@ namespace Freakylay {
             new SettingLine('Flip SongInfo to left', this.urlOptions.flipStatic);
             new SettingLine('Flip Modifiers to left', this.urlOptions.flipModifiers);
             new SettingLine('Flip Counter section to top', this.urlOptions.flipLive);
+            new SettingLine('Flip SongInfo to top', this.urlOptions.songInfoOnTop);
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
-            new SettingLine('Test with Background Image', null,(checked) => {
+            new SettingLine('Test with Background Image', null, (checked) => {
                 document.body.style.backgroundImage = checked ? 'url(img/beat-saber-5.jpg)' : 'none';
             });
 
@@ -436,7 +472,8 @@ namespace Freakylay {
             this.data = {
                 score: Helper.element('score') as HTMLDivElement,
                 combo: Helper.element('combo') as HTMLDivElement,
-                previousBSR: Helper.element('previousBSR') as HTMLDivElement,
+                previousBSRTop: Helper.element('previousBSRTop') as HTMLDivElement,
+                previousBSRBottom: Helper.element('previousBSRBottom') as HTMLDivElement,
                 njs: Helper.element('njs') as HTMLDivElement,
                 bpm: Helper.element('bpm') as HTMLDivElement,
                 miss: Helper.element('miss') as HTMLDivElement,
@@ -499,16 +536,16 @@ namespace Freakylay {
         }
 
         private showUi(): void {
-            Helper.removeClass(this.songInfoHolder, this.inactiveClass);
-            Helper.removeClass(this.dataHolder, this.inactiveClass);
-            Helper.removeClass(this.modifiersHolder, this.inactiveClass)
+            Helper.removeClass(this.songInfoHolder, this.css.inactiveClass);
+            Helper.removeClass(this.dataHolder, this.css.inactiveClass);
+            Helper.removeClass(this.modifiersHolder, this.css.inactiveClass)
             this.uiShown = true;
         }
 
         private hideUi(): void {
-            Helper.addClass(this.songInfoHolder, this.inactiveClass);
-            Helper.addClass(this.dataHolder, this.inactiveClass);
-            Helper.addClass(this.modifiersHolder, this.inactiveClass);
+            Helper.addClass(this.songInfoHolder, this.css.inactiveClass);
+            Helper.addClass(this.dataHolder, this.css.inactiveClass);
+            Helper.addClass(this.modifiersHolder, this.css.inactiveClass);
             this.uiShown = false;
         }
 
@@ -571,9 +608,10 @@ namespace Freakylay {
 
         private updateSongInfo(): void {
 
-            Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.urlOptions.flipStatic.getValue() ? 'borderRadiusTopRight' : 'borderRadiusTopLeft');
+            Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.urlOptions.flipStatic.getValue() ? this.css.borderRadiusTopRight : this.css.borderRadiusTopLeft);
 
-            this.data.previousBSR.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
+            this.data.previousBSRTop.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
+            this.data.previousBSRBottom.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
 
             UI.hideSetting(this.songInfo.bsr, this.mapData.BSRKey.getValue() === 'BSRKey' ? '' : this.mapData.BSRKey.getValue(), 'BSR: ');
             UI.hideSetting(this.songInfo.mapper, this.mapData.Mapper.getValue());
