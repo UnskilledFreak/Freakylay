@@ -46,19 +46,23 @@ The option panel will generate the URL by itself. Copy the URL and insert it int
 |Parameter|Info|DataPuller Version|Freakylay Version|
 |---|---|---|---|
 |ip=\<ip\>|IP to connect to any game running DataPuller Mod in the local network, default is 127.0.0.1|0.0.2|0.1.0|
-|a|background color in rgba or hex|0.0.2|0.1.0|
-|b|text color in rgba or hex|0.0.2|0.1.0|
+|a=color|background color in rgba or hex|0.0.2|0.1.0|
+|b=color|text color in rgba or hex|0.0.2|0.1.0|
 |c|enable short modifier names (Instant Fail <> IF)|0.0.2|0.1.0|
 |d|display previous played BSR key if any|0.0.2|0.1.0|
 |e|enable miss counter|0.0.2|0.2.0|
 |f|do not display BPM|0.0.2|0.2.1|
 |g|do not display NJS|0.0.2|0.2.1|
 |h|do not display Combo|0.0.2|0.2.1|
-|i|display song info on the right side|0.0.2|0.3.0|
+|i|display song info on the right side, able to combine with top (o)|0.0.2|0.3.0|
 |j|display counter section on the right side|0.0.2|0.3.0|
 |k|display modifiers on the right side|0.0.2|0.2.0|
 |l|shows an arrow next to the score, pointing up if a new high score can be set, pointing down if actual score is lower then previous one|1.0.0|1.0.0|
 |m|show full combo as modifier, will get removed when full combo breaks|1.0.0|1.1.0|
+|n|display only current time to match other circular bar's style|2.0.2|2.1.0|
+|o|display song info on top, able to combine with flip (i)|2.0.2|2.1.0|
+|p|display default difficulty only when no custom difficulty exist|2.0.2|2.1.0|
+|q|hide all modifiers, overrides full combo (m) and modifier flip (k)|2.0.2|2.1.0|
 
 ## Versions
 Older versions of Freakylay are available via there tags inside the master branch. The tags are based on the compatible DataPuller Version.
@@ -69,6 +73,7 @@ The latest version of this overlay can always be found at the `latest` subdirect
 
 |Freakylay Version|DataPuller Version|Url|
 |---|---|---|
+|2.1.0|2.0.2|currently in development|
 |2.0.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)|
 |1.1.0|1.1.1|[http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/)|
 
