@@ -43,7 +43,11 @@ namespace Freakylay {
         private liveData: LiveData;
 
         private urlParams: URLSearchParams;
-        private marquee: Marquee;
+        private marquee: {
+            songName: Marquee,
+            songArtist: Marquee,
+            difficulty: Marquee,
+        };
 
         private timer: CircleBar;
         private health: CircleBar;
@@ -123,6 +127,12 @@ namespace Freakylay {
                 borderRadiusBottomRight: 'borderRadiusBottomRight',
                 flip: 'flip',
             };
+
+            this.marquee = {
+                songName: null,
+                songArtist: null,
+                difficulty: null
+            }
 
             this.mapData = new MapData();
             this.liveData = new LiveData();
@@ -380,9 +390,9 @@ namespace Freakylay {
             this.mapData.LevelFailed.setValue(false);
             this.mapData.LevelQuit.setValue(false);
             this.mapData.Hash.setValue('648B7FE961C398DE638FA1E614878F1194ADF92E');
-            this.mapData.SongName.setValue('SongName');
-            this.mapData.SongSubName.setValue('SongSubName');
-            this.mapData.SongAuthor.setValue('SongAuthor');
+            this.mapData.SongName.setValue('SongName SongName SongName SongName SongName SongName ');
+            this.mapData.SongSubName.setValue('SongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubName');
+            this.mapData.SongAuthor.setValue('SongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthor');
             this.mapData.Mapper.setValue('Mapper');
             this.mapData.BSRKey.setValue('d00c');
             this.mapData.coverImage.setValue('img/BS_Logo.jpg');
@@ -483,7 +493,9 @@ namespace Freakylay {
             this.optionsLinesElement = Helper.element('optionsLines') as HTMLDivElement;
             this.urlText = Helper.element('urlText') as HTMLAreaElement;
 
-            this.marquee = new Marquee();
+            this.marquee.songName = new Marquee(Helper.element('marqueeSongName') as HTMLDivElement);
+            this.marquee.songArtist = new Marquee(Helper.element('marqueeSongArtist') as HTMLDivElement);
+            this.marquee.difficulty = new Marquee(Helper.element('marqueeDifficulty') as HTMLDivElement);
 
             this.urlText.onclick = () => {
                 this.urlText.focus(); //.select();
@@ -559,7 +571,9 @@ namespace Freakylay {
                 this.showUi();
             } else if (!this.mapData.InLevel.getValue() && this.uiShown) {
                 this.hideUi();
-                this.marquee.stop();
+                this.marquee.songName.stop();
+                this.marquee.songArtist.stop();
+                this.marquee.difficulty.stop();
             }
         }
 
@@ -615,11 +629,10 @@ namespace Freakylay {
 
             UI.hideSetting(this.songInfo.bsr, this.mapData.BSRKey.getValue() === 'BSRKey' ? '' : this.mapData.BSRKey.getValue(), 'BSR: ');
             UI.hideSetting(this.songInfo.mapper, this.mapData.Mapper.getValue());
-            UI.hideSetting(this.songInfo.artist, this.mapData.getSongAuthorLine());
 
-            this.marquee.setValue(this.mapData.SongName.getValue());
-
-            this.songInfo.difficulty.innerHTML = this.mapData.getFullDifficultyLabel();
+            this.marquee.songName.setValue(this.mapData.SongName.getValue());
+            this.marquee.songArtist.setValue(this.mapData.getSongAuthorLine());
+            this.marquee.difficulty.setValue(this.mapData.getFullDifficultyLabel());
 
             this.songInfo.cover.style.backgroundImage = 'url(\'' + this.mapData.coverImage.getValue() + '\')';
 

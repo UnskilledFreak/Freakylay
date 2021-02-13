@@ -10,8 +10,8 @@ namespace Freakylay.UiElement {
         private internalTimer: number;
         private width: number;
 
-        constructor() {
-            this.element = Helper.element('marquee') as HTMLDivElement;
+        constructor(element: HTMLDivElement) {
+            this.element = element;
             this.internalTimer = null;
             this.width = 0;
         }

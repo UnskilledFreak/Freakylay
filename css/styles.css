@@ -109,7 +109,7 @@ body {
     padding-right: 5px;
 }
 
-#mapName #marquee {
+.marquee {
     width: max-content;
     white-space: pre;
 }
