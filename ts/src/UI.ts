@@ -82,7 +82,8 @@ namespace Freakylay {
             showFullComboModifier: UrlParam<boolean>,
             showTimeString: UrlParam<boolean>,
             previewMode: UrlParam<boolean>,
-            songInfoOnTop: UrlParam<boolean>
+            songInfoOnTop: UrlParam<boolean>,
+            hideDefaultDifficulty: UrlParam<boolean>
         }
 
         private modifiers: {
@@ -157,6 +158,7 @@ namespace Freakylay {
                 showTimeString: this.urlManager.registerOptionParam('n', false),
                 previewMode: this.urlManager.registerOptionParam('options', false),
                 songInfoOnTop: this.urlManager.registerOptionParam('o', false),
+                hideDefaultDifficulty: this.urlManager.registerOptionParam('p', false),
             }
 
             this.urlParams = new URLSearchParams(location.search);
@@ -292,6 +294,7 @@ namespace Freakylay {
                 this.urlOptions.showFullComboModifier,
                 this.urlOptions.showTimeString,
                 this.urlOptions.songInfoOnTop,
+                this.urlOptions.hideDefaultDifficulty,
             ].forEach(x => {
                 if (!x.isDefaultValue()) {
                     options.push(x.getUrlValue());
@@ -335,6 +338,7 @@ namespace Freakylay {
             new SettingLine('Score arrow pointing up or down depending on last score', this.urlOptions.showScoreIncrease);
             new SettingLine('Full Combo modifier', this.urlOptions.showFullComboModifier);
             new SettingLine('Display current time only', this.urlOptions.showTimeString);
+            new SettingLine('Display default difficulty only when no custom difficulty exist', this.urlOptions.hideDefaultDifficulty);
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -628,7 +632,7 @@ namespace Freakylay {
 
             this.marquee.songName.setValue(this.mapData.SongName.getValue());
             this.marquee.songArtist.setValue(this.mapData.getSongAuthorLine());
-            this.marquee.difficulty.setValue(this.mapData.getFullDifficultyLabel());
+            this.marquee.difficulty.setValue(this.mapData.getFullDifficultyLabel(this.urlOptions.hideDefaultDifficulty.getValue()));
 
             this.songInfo.cover.style.backgroundImage = 'url(\'' + this.mapData.coverImage.getValue() + '\')';
 

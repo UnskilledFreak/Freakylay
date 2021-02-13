@@ -113,9 +113,13 @@ namespace Freakylay.Data {
             return diff == 'ExpertPlus' ? 'Expert+' : diff;
         }
 
-        public getFullDifficultyLabel(): string {
+        public getFullDifficultyLabel(hideDefaultDifficulty: boolean): string {
             let normalDifficultyString = this.getDifficultyString();
             let custom = this.CustomDifficultyLabel.getValue();
+
+            if (hideDefaultDifficulty) {
+                return custom.length > 0 ? custom : normalDifficultyString;
+            }
 
             if (custom === '' || custom === normalDifficultyString) {
                 return normalDifficultyString;
