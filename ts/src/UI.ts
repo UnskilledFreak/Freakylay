@@ -297,6 +297,7 @@ namespace Freakylay {
                 this.urlOptions.showTimeString,
                 this.urlOptions.songInfoOnTop,
                 this.urlOptions.hideDefaultDifficulty,
+                this.urlOptions.hideAllModifiers,
             ].forEach(x => {
                 if (!x.isDefaultValue()) {
                     options.push(x.getUrlValue());
