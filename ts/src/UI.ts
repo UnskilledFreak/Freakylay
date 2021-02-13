@@ -390,9 +390,12 @@ namespace Freakylay {
             this.mapData.LevelFailed.setValue(false);
             this.mapData.LevelQuit.setValue(false);
             this.mapData.Hash.setValue('648B7FE961C398DE638FA1E614878F1194ADF92E');
-            this.mapData.SongName.setValue('SongName SongName SongName SongName SongName SongName ');
-            this.mapData.SongSubName.setValue('SongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubName');
-            this.mapData.SongAuthor.setValue('SongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthor');
+            //this.mapData.SongName.setValue('SongName SongName SongName SongName SongName SongName ');
+            this.mapData.SongName.setValue('SongName');
+            //this.mapData.SongSubName.setValue('SongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubNameSongSubName');
+            this.mapData.SongSubName.setValue('SongSubName');
+            //this.mapData.SongAuthor.setValue('SongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthorSongAuthor');
+            this.mapData.SongAuthor.setValue('SongAuthor');
             this.mapData.Mapper.setValue('Mapper');
             this.mapData.BSRKey.setValue('d00c');
             this.mapData.coverImage.setValue('img/BS_Logo.jpg');
@@ -400,6 +403,7 @@ namespace Freakylay {
             this.mapData.TimeScale.setValue(0);
             this.mapData.MapType.setValue('Standard');
             this.mapData.Difficulty.setValue('ExpertPlus');
+            //this.mapData.CustomDifficultyLabel.setValue('Freaky yeaah meow meow');
             this.mapData.CustomDifficultyLabel.setValue('Freaky');
             this.mapData.BPM.setValue(200);
             this.mapData.NJS.setValue(23);
@@ -517,17 +521,9 @@ namespace Freakylay {
             this.optionsElement.style.marginLeft = (-parseInt(styles.getPropertyValue('width')) / 2) + 'px';
         }
 
-        private getUrlParameter<T>(key: string, def: string): string {
-            if (!this.urlParams.has(key)) {
-                return def;
-            }
-            let x = this.urlParams.get(key);
-            return x === null ? def : x;
-        }
-
         private updateTimeCircleBar(current: number, total: number): void {
             current = Helper.clamp(current, 0, total);
-            let text = '';
+            let text: string;
             if (this.urlOptions.showTimeString.getValue()) {
                 text = 'Time<br>' + UI.getDate(current);
             } else {

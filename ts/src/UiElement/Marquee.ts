@@ -24,7 +24,8 @@ namespace Freakylay.UiElement {
             let width = parseInt(styles.getPropertyValue('width'));
 
             if (width > 400) {
-                this.element.innerHTML += Helper.stringRepeat(' ', Math.floor(val.length / 2));
+                //this.element.innerHTML += Helper.stringRepeat(' ', Math.floor(val.length / 2));
+                this.element.innerHTML += Helper.stringRepeat(' ', 10);
                 this.internalTimer = window.setInterval(() => {
                     let actualVal = this.element.innerHTML;
                     let first = actualVal.substr(0, 1);
