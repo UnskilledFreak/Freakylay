@@ -132,7 +132,8 @@ namespace Freakylay.Data {
             let name = this.SongAuthor.getValue();
 
             if (this.SongSubName.getValue().length > 0) {
-                name += ' <small>' + this.SongSubName.getValue() + '</small>';
+                //name += ' <small>' + this.SongSubName.getValue() + '</small>';
+                name += ' - ' + this.SongSubName.getValue();
             }
 
             return name;
