@@ -83,7 +83,8 @@ namespace Freakylay {
             showTimeString: UrlParam<boolean>,
             previewMode: UrlParam<boolean>,
             songInfoOnTop: UrlParam<boolean>,
-            hideDefaultDifficulty: UrlParam<boolean>
+            hideDefaultDifficulty: UrlParam<boolean>,
+            hideAllModifiers: UrlParam<boolean>
         }
 
         private modifiers: {
@@ -159,6 +160,7 @@ namespace Freakylay {
                 previewMode: this.urlManager.registerOptionParam('options', false),
                 songInfoOnTop: this.urlManager.registerOptionParam('o', false),
                 hideDefaultDifficulty: this.urlManager.registerOptionParam('p', false),
+                hideAllModifiers: this.urlManager.registerOptionParam('q', false),
             }
 
             this.urlParams = new URLSearchParams(location.search);
@@ -337,8 +339,9 @@ namespace Freakylay {
             new SettingLine('Combo', this.urlOptions.showCombo);
             new SettingLine('Score arrow pointing up or down depending on last score', this.urlOptions.showScoreIncrease);
             new SettingLine('Full Combo modifier', this.urlOptions.showFullComboModifier);
-            new SettingLine('Display current time only', this.urlOptions.showTimeString);
-            new SettingLine('Display default difficulty only when no custom difficulty exist', this.urlOptions.hideDefaultDifficulty);
+            new SettingLine('Current time only', this.urlOptions.showTimeString);
+            new SettingLine('Default difficulty only when no custom difficulty exist', this.urlOptions.hideDefaultDifficulty);
+            new SettingLine('Hide all modifiers', this.urlOptions.hideAllModifiers);
 
             this.optionsLinesElement.append(Helper.create('hr'));
 
@@ -578,15 +581,16 @@ namespace Freakylay {
         }
 
         private updateModifiers(): void {
+            let hideAllModifiers = this.urlOptions.hideAllModifiers.getValue()
             for (let modifier in this.mapData.Modifiers) {
                 // noinspection JSUnfilteredForInLoop
                 if (typeof this.modifiers[modifier] !== 'undefined') {
                     // noinspection JSUnfilteredForInLoop
-                    Helper.display(this.modifiers[modifier].getElement(), this.mapData.Modifiers[modifier].getValue(), true);
+                    Helper.display(this.modifiers[modifier].getElement(), hideAllModifiers ? false : this.mapData.Modifiers[modifier].getValue(), true);
                 }
             }
 
-            Helper.display(this.modifiers.practiceMode.getElement(), this.mapData.PracticeMode.getValue(), true);
+            Helper.display(this.modifiers.practiceMode.getElement(), hideAllModifiers ? false : this.mapData.PracticeMode.getValue(), true);
 
             // practice
             if (this.mapData.PracticeMode.getValue()) {
@@ -598,7 +602,7 @@ namespace Freakylay {
                         str = this.urlOptions.shortModifierNames.getValue() ? 'SS' : 'Slower Song'
                     }
                     this.modifiers.speed.updateRawText(str);
-                    Helper.display(this.modifiers.speed.getElement(), true, true);
+                    Helper.display(this.modifiers.speed.getElement(), !hideAllModifiers, true);
                 } else {
                     Helper.display(this.modifiers.speed.getElement(), false, true);
                 }
@@ -609,11 +613,11 @@ namespace Freakylay {
                 if (readableSpeed === 100) {
                     Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
                 } else {
-                    Helper.display(this.modifiers.percentSpeed.getElement(), true, true);
+                    Helper.display(this.modifiers.percentSpeed.getElement(), !hideAllModifiers, true);
                     this.modifiers.percentSpeed.updateRawText((this.urlOptions.shortModifierNames.getValue() ? '' : 'Speed: ') + identifier + readableSpeed + '%');
                 }
 
-                Helper.display(this.modifiers.percentSpeed.getElement(), this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
+                Helper.display(this.modifiers.percentSpeed.getElement(), hideAllModifiers ? false : this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
             } else {
                 Helper.display(this.modifiers.speed.getElement(), false, true);
                 Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
@@ -665,6 +669,9 @@ namespace Freakylay {
 
         private updateFullCombo(): void {
             let hasFc = this.urlOptions.showFullComboModifier.getValue() && this.liveData.FullCombo.getValue();
+            if (this.urlOptions.hideAllModifiers.getValue()) {
+                hasFc = false;
+            }
             Helper.display(this.modifiers.fullCombo.getElement(), hasFc, true);
 
             UI.insertModifierBreakLines();
