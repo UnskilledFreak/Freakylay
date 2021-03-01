@@ -3,6 +3,7 @@
 /// <reference path="./Data/MapData.ts" />
 /// <reference path="./Data/LiveData.ts" />
 /// <reference path="./Data/Color.ts" />
+/// <reference path="./Data/Pulsoid.ts" />
 /// <reference path="./UiElement/Marquee.ts" />
 /// <reference path="./UiElement/CircleBar.ts" />
 /// <reference path="./UiElement/ModifierUiElement.ts" />
@@ -22,6 +23,7 @@ namespace Freakylay {
     import Color = Freakylay.Data.Color;
     import UrlManager = Freakylay.Internal.UrlManager;
     import UrlParam = Freakylay.Internal.UrlParam;
+    import Pulsoid = Freakylay.Data.Pulsoid;
 
     export class UI {
 
@@ -41,7 +43,7 @@ namespace Freakylay {
 
         private mapData: MapData;
         private liveData: LiveData;
-
+        private pulsoidHandler: Pulsoid;
         private urlParams: URLSearchParams;
         private marquee: {
             songName: Marquee,
@@ -52,6 +54,7 @@ namespace Freakylay {
         private timer: CircleBar;
         private health: CircleBar;
         private accuracy: CircleBar;
+        private pulsoid: CircleBar;
 
         private urlText: HTMLAreaElement;
         private changeIp: HTMLInputElement;
@@ -64,6 +67,7 @@ namespace Freakylay {
 
         public ipText: HTMLInputElement;
         public optionsLinesElement: HTMLDivElement;
+        private pulsoidFeedUrlInput: HTMLInputElement;
 
         private readonly urlOptions: {
             ip: UrlParam<string>,
@@ -84,7 +88,8 @@ namespace Freakylay {
             previewMode: UrlParam<boolean>,
             songInfoOnTop: UrlParam<boolean>,
             hideDefaultDifficulty: UrlParam<boolean>,
-            hideAllModifiers: UrlParam<boolean>
+            hideAllModifiers: UrlParam<boolean>,
+            pulsoidFeed: UrlParam<string>
         }
 
         private modifiers: {
@@ -140,6 +145,7 @@ namespace Freakylay {
             this.liveData = new LiveData();
 
             this.urlManager = new UrlManager();
+            this.pulsoidHandler = new Pulsoid();
 
             this.urlOptions = {
                 ip: this.urlManager.registerOptionParam('ip', '127.0.0.1'),
@@ -161,6 +167,7 @@ namespace Freakylay {
                 songInfoOnTop: this.urlManager.registerOptionParam('o', false),
                 hideDefaultDifficulty: this.urlManager.registerOptionParam('p', false),
                 hideAllModifiers: this.urlManager.registerOptionParam('q', false),
+                pulsoidFeed: this.urlManager.registerOptionParam('r', ''),
             }
 
             this.urlParams = new URLSearchParams(location.search);
@@ -191,6 +198,17 @@ namespace Freakylay {
                 this.updateMap({});
                 this.updateLive({});
                 this.onStyleChange();
+                this.pulsoidHandler.start();
+
+                window.addEventListener(Pulsoid.EVENT, (ev: CustomEvent) => {
+                    let max = 210;
+                    let min = 60;
+                    let bpm = parseInt(ev.detail);
+
+                    let currentProgress = Helper.clamp(bpm - min, min, max - min);
+                    this.pulsoid.setProgress(currentProgress, max - min);
+                    this.pulsoid.setText('Heart:<br>' + bpm);
+                });
             }, 100);
         }
 
@@ -331,6 +349,9 @@ namespace Freakylay {
                     return a < 127;
                 }
             );
+
+            this.pulsoidFeedUrlInput.value = this.urlOptions.pulsoidFeed.getValue();
+            this.pulsoidHandler.setUrl(this.pulsoidFeedUrlInput.value);
 
             new SettingLine('Short Modifiers', this.urlOptions.shortModifierNames);
             new SettingLine('Miss Counter', this.urlOptions.missCounter);
@@ -479,6 +500,8 @@ namespace Freakylay {
                 return '<small>Accuracy</small>' + percent + '%';
             });
 
+            this.pulsoid = new CircleBar(Helper.element('pulsoidHolder') as HTMLElement);
+
             this.songInfoHolder = Helper.element('songInfo') as HTMLDivElement;
             this.beatMapCover = Helper.element('beatMapCover') as HTMLDivElement;
             this.songInfo = {
@@ -521,6 +544,11 @@ namespace Freakylay {
                 connection.reconnect(this.urlOptions.ip.getValue());
                 this.onStyleChange();
             };
+
+            this.pulsoidFeedUrlInput = Helper.element('pulsoidFeed') as HTMLInputElement;
+            (Helper.element('pulsoidFeedButton') as HTMLInputElement).onclick = () => {
+                this.pulsoidHandler.setUrl(this.pulsoidFeedUrlInput.value);
+            }
         }
 
         private calculateOptionPosition(): void {
@@ -663,7 +691,8 @@ namespace Freakylay {
             this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses.getValue();
             this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
 
-            this.health.setProgress(this.mapData.Modifiers.noFail.getValue() ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
+            //this.health.setProgress(this.mapData.Modifiers.noFail.getValue() ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
+            this.health.setProgress(parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
 
             // block hit scores?
         }
