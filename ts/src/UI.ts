@@ -378,21 +378,21 @@ namespace Freakylay {
             new SettingLine('Default difficulty only when no custom difficulty exist', this.urlOptions.hideDefaultDifficulty);
             new SettingLine('Hide all modifiers', this.urlOptions.hideAllModifiers);
 
-            this.optionsLinesElement.append(Helper.create('hr'));
+            this.optionsLinesElement.append(Helper.create<HTMLHRElement>('hr'));
 
             new SettingLine('Flip SongInfo to left', this.urlOptions.flipStatic);
             new SettingLine('Flip Modifiers to left', this.urlOptions.flipModifiers);
             new SettingLine('Flip Counter section to top', this.urlOptions.flipLive);
             new SettingLine('Flip SongInfo to top', this.urlOptions.songInfoOnTop);
 
-            this.optionsLinesElement.append(Helper.create('hr'));
+            this.optionsLinesElement.append(Helper.create<HTMLHRElement>('hr'));
 
             new SettingLine('Test with Background Image', null, (checked) => {
                 document.body.style.backgroundImage = checked ? 'url(img/beat-saber-5.jpg)' : 'none';
             });
 
-            backgroundColor.createInputMenu(Helper.element('bgColor') as HTMLDivElement);
-            textColor.createInputMenu(Helper.element('color') as HTMLDivElement);
+            backgroundColor.createInputMenu(Helper.element<HTMLDivElement>('bgColor'));
+            textColor.createInputMenu(Helper.element<HTMLDivElement>('color'));
         }
 
         public updateLive(liveData: {} = null): void {
@@ -487,7 +487,7 @@ namespace Freakylay {
         }
 
         private loadAndBuildUiElements(): void {
-            this.modifiersHolder = Helper.element('modifiers') as HTMLDivElement;
+            this.modifiersHolder = Helper.element<HTMLDivElement>('modifiers');
             this.modifiers = {
                 instantFail: new ModifierUiElement('IF', 'IF', 'Insta Fail'),
                 batteryEnergy: new ModifierUiElement('BE', 'BE', 'Battery Energy'),
@@ -503,63 +503,63 @@ namespace Freakylay {
                 fullCombo: new ModifierUiElement('FC', 'FC', 'Full Combo'),
             };
 
-            this.timer = new CircleBar(Helper.element('timerHolder') as HTMLElement);
+            this.timer = new CircleBar(Helper.element<HTMLElement>('timerHolder'));
 
-            this.health = new CircleBar(Helper.element('healthHolder') as HTMLElement, percent => {
+            this.health = new CircleBar(Helper.element<HTMLElement>('healthHolder'), percent => {
                 return '<small>Health</small>' + parseFloat(percent).toFixed(0) + '%';
             });
 
-            this.accuracy = new CircleBar(Helper.element('accuracyHolder') as HTMLElement, percent => {
+            this.accuracy = new CircleBar(Helper.element<HTMLElement>('accuracyHolder'), percent => {
                 return '<small>Accuracy</small>' + percent + '%';
             });
 
-            this.pulsoid = new CircleBar(Helper.element('pulsoidHolder') as HTMLElement);
+            this.pulsoid = new CircleBar(Helper.element<HTMLElement>('pulsoidHolder'));
 
-            this.songInfoHolder = Helper.element('songInfo') as HTMLDivElement;
-            this.beatMapCover = Helper.element('beatMapCover') as HTMLDivElement;
+            this.songInfoHolder = Helper.element<HTMLDivElement>('songInfo');
+            this.beatMapCover = Helper.element<HTMLDivElement>('beatMapCover');
             this.songInfo = {
-                bsr: Helper.element('bsr') as HTMLDivElement,
-                mapper: Helper.element('mapper') as HTMLDivElement,
-                difficulty: Helper.element('difficulty') as HTMLDivElement,
-                artist: Helper.element('artist') as HTMLDivElement,
-                songName: Helper.element('mapName') as HTMLDivElement,
-                cover: Helper.element('cover') as HTMLDivElement
+                bsr: Helper.element<HTMLDivElement>('bsr'),
+                mapper: Helper.element<HTMLDivElement>('mapper'),
+                difficulty: Helper.element<HTMLDivElement>('difficulty'),
+                artist: Helper.element<HTMLDivElement>('artist'),
+                songName: Helper.element<HTMLDivElement>('mapName'),
+                cover: Helper.element<HTMLDivElement>('cover')
             };
 
-            this.dataHolder = Helper.element('downSection') as HTMLDivElement;
+            this.dataHolder = Helper.element<HTMLDivElement>('downSection');
             this.data = {
-                score: Helper.element('score') as HTMLDivElement,
-                combo: Helper.element('combo') as HTMLDivElement,
-                previousBSRTop: Helper.element('previousBSRTop') as HTMLDivElement,
-                previousBSRBottom: Helper.element('previousBSRBottom') as HTMLDivElement,
-                njs: Helper.element('njs') as HTMLDivElement,
-                bpm: Helper.element('bpm') as HTMLDivElement,
-                miss: Helper.element('miss') as HTMLDivElement,
+                score: Helper.element<HTMLDivElement>('score'),
+                combo: Helper.element<HTMLDivElement>('combo'),
+                previousBSRTop: Helper.element<HTMLDivElement>('previousBSRTop'),
+                previousBSRBottom: Helper.element<HTMLDivElement>('previousBSRBottom'),
+                njs: Helper.element<HTMLDivElement>('njs'),
+                bpm: Helper.element<HTMLDivElement>('bpm'),
+                miss: Helper.element<HTMLDivElement>('miss'),
             };
 
-            this.optionsElement = Helper.element('options') as HTMLDivElement;
-            this.optionsLinesElement = Helper.element('optionsLines') as HTMLDivElement;
-            this.urlText = Helper.element('urlText') as HTMLAreaElement;
+            this.optionsElement = Helper.element<HTMLDivElement>('options');
+            this.optionsLinesElement = Helper.element<HTMLDivElement>('optionsLines');
+            this.urlText = Helper.element<HTMLAreaElement>('urlText');
 
-            this.marquee.songName = new Marquee(Helper.element('marqueeSongName') as HTMLDivElement);
-            this.marquee.songArtist = new Marquee(Helper.element('marqueeSongArtist') as HTMLDivElement);
-            this.marquee.difficulty = new Marquee(Helper.element('marqueeDifficulty') as HTMLDivElement);
+            this.marquee.songName = new Marquee(Helper.element<HTMLDivElement>('marqueeSongName'));
+            this.marquee.songArtist = new Marquee(Helper.element<HTMLDivElement>('marqueeSongArtist'));
+            this.marquee.difficulty = new Marquee(Helper.element<HTMLDivElement>('marqueeDifficulty'));
 
             this.urlText.onclick = () => {
                 this.urlText.focus(); //.select();
                 document.execCommand('copy');
             };
 
-            this.ipText = Helper.element('ip') as HTMLInputElement;
-            this.changeIp = Helper.element('changeIp') as HTMLInputElement;
+            this.ipText = Helper.element<HTMLInputElement>('ip');
+            this.changeIp = Helper.element<HTMLInputElement>('changeIp');
             this.changeIp.onclick = () => {
                 this.urlOptions.ip.setValue(this.ipText.value);
                 connection.reconnect(this.urlOptions.ip.getValue());
                 this.onStyleChange();
             };
 
-            this.pulsoidFeedUrlInput = Helper.element('pulsoidFeed') as HTMLInputElement;
-            (Helper.element('pulsoidFeedButton') as HTMLInputElement).onclick = () => {
+            this.pulsoidFeedUrlInput = Helper.element<HTMLInputElement>('pulsoidFeed');
+            (Helper.element<HTMLInputElement>('pulsoidFeedButton')).onclick = () => {
                 this.pulsoidHandler.setUrl(this.pulsoidFeedUrlInput.value);
                 this.urlOptions.pulsoidFeed.setValue(this.pulsoidHandler.getUrl());
                 this.onStyleChange();
@@ -746,7 +746,7 @@ namespace Freakylay {
 
             for (let e of modifiers) {
                 if (e.style.display === 'inline-block') {
-                    e.parentNode.insertBefore(Helper.create('br'), e.nextSibling);
+                    e.parentNode.insertBefore(Helper.create<HTMLBRElement>('br'), e.nextSibling);
                 }
             }
         }

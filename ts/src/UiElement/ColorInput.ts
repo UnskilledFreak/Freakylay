@@ -40,7 +40,7 @@ namespace Freakylay.UiElement {
             this.bElement = this.input(this.color.b, 'b');
             this.aElement = this.input(this.color.a, 'a');
 
-            this.aInfoElement = Helper.create('span') as HTMLSpanElement;
+            this.aInfoElement = Helper.create<HTMLSpanElement>('span');
             this.aInfoElement.innerHTML = 'Not recommended';
 
             name.append(this.aInfoElement);
@@ -87,7 +87,7 @@ namespace Freakylay.UiElement {
         }
 
         private input(value: number, id: string): HTMLInputElement {
-            let i = Helper.create('input') as HTMLInputElement;
+            let i = Helper.create<HTMLInputElement>('input');
             i.type = 'range';
             i.min = '0';
             i.max = '255';
@@ -98,7 +98,7 @@ namespace Freakylay.UiElement {
         }
 
         private static label(text: string, id: string): HTMLLabelElement {
-            let l = Helper.create('label') as HTMLLabelElement;
+            let l = Helper.create<HTMLLabelElement>('label');
             l.htmlFor = id;
             l.innerHTML = text;
 
