@@ -4,8 +4,8 @@ namespace Freakylay.Internal {
     export class Helper {
         static SvgNamespace = 'http://www.w3.org/2000/svg';
 
-        static element(selector: string): Element {
-            return document.querySelector('#' + selector);
+        static element<T>(selector: string): T {
+            return document.querySelector('#' + selector) as unknown as T;
         }
 
         static create<T>(tag: string, namespace: string = ''): T {
@@ -16,8 +16,8 @@ namespace Freakylay.Internal {
             return document.createElementNS(namespace, tag) as unknown as T;
         }
 
-        static svg(tag: string): SVGElement {
-            return Helper.create(tag, this.SvgNamespace) as SVGElement;
+        static svg<T>(tag: string): T {
+            return Helper.create<T>(tag, this.SvgNamespace);
         }
 
         static addClass(element: Element, className: string): void {

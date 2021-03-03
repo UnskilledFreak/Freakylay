@@ -19,11 +19,11 @@ namespace Freakylay.UiElement {
             let radius = half - padding;
 
             this.circumference = radius * Math.PI * 2;
-            this.text = Helper.create('div') as HTMLDivElement;
-            this.bar = CircleBar.getCircle(half, radius) as SVGCircleElement;
+            this.text = Helper.create<HTMLDivElement>('div');
+            this.bar = CircleBar.getCircle(half, radius);
             this.bar.style.strokeDasharray = this.circumference + 'px , ' + this.circumference + 'px';
 
-            let svg = Helper.svg('svg');
+            let svg = Helper.svg<SVGElement>('svg');
             svg.style.width = size + 'px';
             svg.style.height = size + 'px';
 
@@ -57,7 +57,7 @@ namespace Freakylay.UiElement {
         }
 
         private static getCircle(size: number, radius: number): SVGCircleElement {
-            let c = Helper.svg('circle') as SVGCircleElement;
+            let c = Helper.svg<SVGCircleElement>('circle');
 
             c.cx.baseVal.value = size;
             c.cy.baseVal.value = size;

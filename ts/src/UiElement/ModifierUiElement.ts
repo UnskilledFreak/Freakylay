@@ -9,7 +9,7 @@ namespace Freakylay.UiElement {
         private longDescription: string;
 
         constructor(id: string, shortDescription: string, longDescription: string) {
-            this.element = Helper.element(id) as HTMLDivElement;
+            this.element = Helper.element<HTMLDivElement>(id);
             this.shortDescription = shortDescription;
             this.longDescription = longDescription;
         }
