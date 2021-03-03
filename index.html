@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Freakylay</title>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title>Freakylay</title>
+    <meta property="og:site_name" content="Freakylay">
+    <meta property="og:title" content="Freakylay - An alternative DataPuller Overlay">
+    <meta property="og:description" content="An easy to use costumizeable overlay with many features like colors, circular bars and many more.">
+
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link rel="stylesheet" type="text/css" href="css/css.css">
 
@@ -74,13 +79,13 @@
 </div>
 
 <div id="options" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
-    <div>
+    <div class="text">
         <label for="ip">IP:</label>
         <input id="ip" type="text">
         <input type="button" id="changeIp" value="apply">
     </div>
-    <div>
-        <label for="ip">Pulsoid Feed (JSON):</label>
+    <div class="text">
+        <label for="pulsoidFeed">Pulsoid Feed (JSON):</label>
         <input id="pulsoidFeed" type="text">
         <input type="button" id="pulsoidFeedButton" value="apply">
         <br><div id="pulsoidHint">See config for 'Feed reference' at <a target="_blank" href="https://pulsoid.net/ui/configuration">https://pulsoid.net/ui/configuration</a></div>
@@ -88,11 +93,11 @@
     <hr>
     <div>
         <div>Background Color</div>
-        <div id="bgColor"></div>
+        <div class="colorInputs" id="bgColor"></div>
     </div>
     <div>
         <div>Text Color</div>
-        <div id="color"></div>
+        <div class="colorInputs" id="color"></div>
     </div>
     <hr>
     <div id="optionsLines"></div>
