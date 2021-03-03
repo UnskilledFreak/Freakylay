@@ -168,6 +168,11 @@ body {
     transition: 1s all;
 }
 
+#downSection.pulsoid {
+    width: 590px;
+    margin-left: -295px;
+}
+
 #downSection.inactive {
     bottom: -100px;
 }
@@ -224,9 +229,46 @@ body {
     left: 50%;
     padding: 10px;
 }
+#options #pulsoidHint {
+    font-size: 10px;
+}
 
+#options #bgColor div:first-child > span,
+#options #color div:first-child > span {
+    float: right;
+}
+
+#options input[type=checkbox],
 #options input[type=checkbox] ~ label {
     cursor: pointer;
+}
+
+#options .text {
+    line-height: 40px;
+}
+
+#options .text label {
+    display: inline-block;
+    width: 180px;
+}
+#options .text input[type=text] {
+    width: 320px;
+}
+
+#options .text input[type=button] {
+    padding: 6px 16px 6px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+}
+#options .text input[type=button]:hover {
+    font-size: 20px;
+}
+
+#options textarea {
+    width: 99%;
+    height: 50px;
+    resize: none;
 }
 
 /** flip **/

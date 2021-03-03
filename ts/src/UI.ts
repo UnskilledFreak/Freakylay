@@ -340,6 +340,7 @@ namespace Freakylay {
 
         public buildOptionsPanel(): void {
             let backgroundColor = new ColorInput(
+                'Background Color',
                 this.urlOptions.backgroundColor.getValue(),
                 c => {
                     this.urlOptions.backgroundColor.setValue(c);
@@ -351,6 +352,7 @@ namespace Freakylay {
             );
 
             let textColor = new ColorInput(
+                'Text Color',
                 this.urlOptions.textColor.getValue(),
                 c => {
                     this.urlOptions.textColor.setValue(c);

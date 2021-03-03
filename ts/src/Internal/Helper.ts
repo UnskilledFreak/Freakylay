@@ -8,12 +8,12 @@ namespace Freakylay.Internal {
             return document.querySelector('#' + selector);
         }
 
-        static create(tag: string, namespace: string = ''): Element {
+        static create<T>(tag: string, namespace: string = ''): T {
             if (namespace === '') {
-                return document.createElement(tag);
+                return document.createElement(tag) as unknown as T;
             }
 
-            return document.createElementNS(namespace, tag);
+            return document.createElementNS(namespace, tag) as unknown as T;
         }
 
         static svg(tag: string): SVGElement {

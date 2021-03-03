@@ -17,18 +17,23 @@ namespace Freakylay.UiElement {
         private bElement: HTMLInputElement;
         private aElement: HTMLInputElement;
         private aInfoElement: HTMLSpanElement;
+        private name: string;
 
-        constructor(color: Color, changeEvent: (Color) => void, alphaCheck: (number) => boolean) {
+        constructor(name: string, color: Color, changeEvent: (Color) => void, alphaCheck: (number) => boolean) {
 
             this.instance = ColorInput.Instance;
             ColorInput.Instance++;
 
+            this.name = name;
             this.color = color;
             this.changeEvent = changeEvent;
             this.alphaCheck = alphaCheck;
         }
 
         public createInputMenu(element: HTMLElement): void {
+
+            let name = Helper.create<HTMLDivElement>('div');
+            name.innerHTML = this.name;
 
             this.rElement = this.input(this.color.r, 'r');
             this.gElement = this.input(this.color.g, 'g');
@@ -38,8 +43,12 @@ namespace Freakylay.UiElement {
             this.aInfoElement = Helper.create('span') as HTMLSpanElement;
             this.aInfoElement.innerHTML = 'Not recommended';
 
+            name.append(this.aInfoElement);
+
             Helper.visibility(this.aInfoElement, false);
 
+            let colorHolder = Helper.create<HTMLDivElement>('div');
+            Helper.addClass(colorHolder, 'colorInputs');
 
             this.rElement.oninput = () => {
                 this.color.r = parseInt(this.rElement.value);
@@ -60,7 +69,7 @@ namespace Freakylay.UiElement {
                 this.changeEvent(this.color);
             };
 
-            element.append(
+            colorHolder.append(
                 ColorInput.label('R:', this.rElement.id),
                 this.rElement,
                 ColorInput.label('G:', this.gElement.id),
@@ -69,8 +78,12 @@ namespace Freakylay.UiElement {
                 this.bElement,
                 ColorInput.label('A:', this.aElement.id),
                 this.aElement,
-                this.aInfoElement
             );
+
+            element.append(
+                name,
+                colorHolder
+            )
         }
 
         private input(value: number, id: string): HTMLInputElement {
