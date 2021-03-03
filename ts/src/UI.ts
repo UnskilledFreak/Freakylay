@@ -173,7 +173,7 @@ namespace Freakylay {
             this.urlParams = new URLSearchParams(location.search);
 
             document.body.ondblclick = (e) => {
-                if (e.target !== this.songInfoHolder) {
+                if (e.target !== this.songInfoHolder && this.uiShown) {
                     return;
                 }
 
