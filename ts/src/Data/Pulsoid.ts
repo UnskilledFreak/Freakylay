@@ -8,6 +8,7 @@ namespace Freakylay.Data {
 
         private url: string;
         private lastCheck: Date;
+        private timer;
 
         constructor() {
             this.url = '';
@@ -16,6 +17,15 @@ namespace Freakylay.Data {
 
         public setUrl(url: string): void {
             this.url = url.trim().replace(/ /g, '');
+
+            if (this.url == '' && this.timer > 0) {
+                this.sendEvent(0);
+                window.clearTimeout(this.timer);
+            }
+        }
+
+        public getUrl(): string {
+            return this.url;
         }
 
         public start(): void {
@@ -26,48 +36,45 @@ namespace Freakylay.Data {
             return this.url.length > 0;
         }
 
+        private sendEvent(bpm: number): void {
+            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: bpm}))
+        }
+
         private pulsoidData(): void {
             if (!this.isInitialized()) {
-                console.log('pulsoid not initialized');
                 this.fetchFeed(10000);
                 return;
             }
 
-            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: 123}));
-            this.fetchFeed();
-            /*
             let request = new XMLHttpRequest();
 
-            request.onreadystatechange = (ev: Event) => {
+            request.onreadystatechange = () => {
                 if (request.readyState != 4) {
                     return;
                 }
-                console.log(request);
+
                 let data = JSON.parse(request.responseText);
                 let measured = new Date(data.measured_at);
+                let bpm = parseInt(data.bpm);
 
                 if (measured >= this.lastCheck) {
-                    window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: data.bpm}))
+                    this.sendEvent(bpm);
                     this.lastCheck = measured;
                 }
 
-                this.fetchFeed();
+                this.fetchFeed(1000);
             };
 
-            request.open('GET', this.url, true);
-
-            //request.setRequestHeader('Access-Control-Allow-Origin', '*');
-            //request.setRequestHeader('Origin', window.location.href);
+            // im so sorry to bypass CORS with this little hack but idk how to get CORS done via a local running script
+            request.open('GET', 'http://u.unskilledfreak.zone/overlay/freakylay/pulsoid.php?pFeed=' + this.url, true);
             request.setRequestHeader('Accept', 'application/json');
-
             request.send(null);
-            */
         }
 
-        private fetchFeed(timeout: number = 1000): void {
-            window.setTimeout(() => {
+        private fetchFeed(timeout: number): void {
+            this.timer = window.setTimeout(() => {
                 this.pulsoidData();
-            }, 1000);
+            }, timeout);
         }
     }
 

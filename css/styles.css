@@ -161,10 +161,10 @@ body {
 #downSection {
     position: absolute;
     height: 90px;
-    width: 590px;
+    width: 500px;
     bottom: 5px;
     left: 50%;
-    margin-left: -295px;
+    margin-left: -250px;
     transition: 1s all;
 }
 
@@ -224,11 +224,7 @@ body {
     left: 50%;
     padding: 10px;
 }
-#options #pulsoidHint {
-    font-size: 10px;
-}
 
-#options input[type=checkbox],
 #options input[type=checkbox] ~ label {
     cursor: pointer;
 }

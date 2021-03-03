@@ -80,7 +80,6 @@ namespace Freakylay.UiElement {
             i.max = '255';
             i.value = value.toString();
             i.id = 'in_' + this.instance + id;
-            i.style.width = '80px';
 
             return i;
         }

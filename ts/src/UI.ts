@@ -201,13 +201,20 @@ namespace Freakylay {
                 this.pulsoidHandler.start();
 
                 window.addEventListener(Pulsoid.EVENT, (ev: CustomEvent) => {
+
                     let max = 210;
                     let min = 60;
-                    let bpm = parseInt(ev.detail);
+                    let bpm = ev.detail;
+
+                    if (bpm == 0) {
+                        Helper.removeClass(this.dataHolder, 'pulsoid');
+                        return;
+                    }
+                    Helper.addClass(this.dataHolder, 'pulsoid');
 
                     let currentProgress = Helper.clamp(bpm - min, min, max - min);
                     this.pulsoid.setProgress(currentProgress, max - min);
-                    this.pulsoid.setText('Heart:<br>' + bpm);
+                    this.pulsoid.setText('Heart<br>' + bpm);
                 });
             }, 100);
         }
@@ -321,6 +328,10 @@ namespace Freakylay {
                     options.push(x.getUrlValue());
                 }
             });
+
+            if (this.pulsoidHandler.isInitialized()) {
+                options.push(this.urlOptions.pulsoidFeed.getUrlValue());
+            }
 
             let optionsString = options.length > 0 ? '?' + options.join('&') : '';
 
@@ -548,6 +559,8 @@ namespace Freakylay {
             this.pulsoidFeedUrlInput = Helper.element('pulsoidFeed') as HTMLInputElement;
             (Helper.element('pulsoidFeedButton') as HTMLInputElement).onclick = () => {
                 this.pulsoidHandler.setUrl(this.pulsoidFeedUrlInput.value);
+                this.urlOptions.pulsoidFeed.setValue(this.pulsoidHandler.getUrl());
+                this.onStyleChange();
             }
         }
 
