@@ -18,10 +18,14 @@ namespace Freakylay.Data {
         public setUrl(url: string): void {
             this.url = url.trim().replace(/ /g, '');
 
+            window.clearTimeout(this.timer);
+
             if (this.url == '' && this.timer > 0) {
                 this.sendEvent(0);
-                window.clearTimeout(this.timer);
+                return;
             }
+
+            this.pulsoidData();
         }
 
         public getUrl(): string {

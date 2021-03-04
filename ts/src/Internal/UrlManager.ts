@@ -6,9 +6,11 @@ namespace Freakylay.Internal {
     export class UrlManager {
 
         public urlParams: URLSearchParams;
+        private registeredParameters: UrlParam<any>[];
 
         constructor() {
             this.urlParams = new URLSearchParams(location.search);
+            this.registeredParameters = [];
         }
 
         public hasAnyParams(): boolean {
@@ -20,7 +22,20 @@ namespace Freakylay.Internal {
             if (defaultValue instanceof Color) {
                 compareFn = Helper.areColorsEqual;
             }
-            return new UrlParam(this, key, defaultValue, compareFn);
+            let param = new UrlParam(this, key, defaultValue, compareFn);
+            this.registeredParameters.push(param);
+            return param;
+        }
+
+        public areAllDefault(): boolean {
+            let outcome = true;
+            this.registeredParameters.forEach((p) => {
+                if (!p.isDefaultValue()) {
+                    outcome = false;
+                }
+            });
+
+            return outcome;
         }
     }
 }

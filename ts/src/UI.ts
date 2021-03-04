@@ -9,6 +9,7 @@
 /// <reference path="./UiElement/ModifierUiElement.ts" />
 /// <reference path="./UiElement/ColorInput.ts" />
 /// <reference path="./UiElement/SettingLine.ts" />
+/// <reference path="./UiElement/Tutorial.ts" />
 
 namespace Freakylay {
 
@@ -24,6 +25,7 @@ namespace Freakylay {
     import UrlManager = Freakylay.Internal.UrlManager;
     import UrlParam = Freakylay.Internal.UrlParam;
     import Pulsoid = Freakylay.Data.Pulsoid;
+    import Tutorial = Freakylay.UiElement.Tutorial;
 
     export class UI {
 
@@ -45,6 +47,7 @@ namespace Freakylay {
         private liveData: LiveData;
         private pulsoidHandler: Pulsoid;
         private urlParams: URLSearchParams;
+        private tutorial: Tutorial;
         private marquee: {
             songName: Marquee,
             songArtist: Marquee,
@@ -89,7 +92,8 @@ namespace Freakylay {
             songInfoOnTop: UrlParam<boolean>,
             hideDefaultDifficulty: UrlParam<boolean>,
             hideAllModifiers: UrlParam<boolean>,
-            pulsoidFeed: UrlParam<string>
+            pulsoidFeed: UrlParam<string>,
+            skipSplash: UrlParam<boolean>
         }
 
         private modifiers: {
@@ -168,19 +172,17 @@ namespace Freakylay {
                 hideDefaultDifficulty: this.urlManager.registerOptionParam('p', false),
                 hideAllModifiers: this.urlManager.registerOptionParam('q', false),
                 pulsoidFeed: this.urlManager.registerOptionParam('r', ''),
+                skipSplash: this.urlManager.registerOptionParam('s', false)
             }
 
             this.urlParams = new URLSearchParams(location.search);
 
             document.body.ondblclick = (e) => {
-                if (e.target !== this.songInfoHolder && this.uiShown) {
+                if (e.target !== this.songInfoHolder && this.uiShown || this.tutorial.isShown()) {
                     return;
                 }
 
-                this.urlOptions.previewMode.setValue(!this.urlOptions.previewMode.getValue());
-
-                this.openOptionPanel();
-                this.onStyleChange();
+                this.toggleOptionPanel();
             };
 
             this.loadAndBuildUiElements();
@@ -191,7 +193,14 @@ namespace Freakylay {
             this.accuracy.setProgress(0, 100);
             this.updateTimeCircleBar(0, 60)
 
+            this.tutorial = new Tutorial();
+
             window.setTimeout(() => {
+
+                if (this.urlManager.areAllDefault()) {
+                    this.tutorial.show();
+                }
+
                 this.buildOptionsPanel();
                 this.calculateOptionPosition();
                 this.openOptionPanel();
@@ -217,6 +226,13 @@ namespace Freakylay {
                     this.pulsoid.setText('Heart<br>' + bpm);
                 });
             }, 100);
+        }
+
+        public toggleOptionPanel(): void {
+            this.urlOptions.previewMode.setValue(!this.urlOptions.previewMode.getValue());
+
+            this.openOptionPanel();
+            this.onStyleChange();
         }
 
         public onStyleChange(): void {
@@ -420,7 +436,11 @@ namespace Freakylay {
         }
 
         private openOptionPanel(): void {
-            Helper.display(this.optionsElement, this.urlOptions.previewMode.getValue());
+            if (this.urlOptions.previewMode.getValue()) {
+                Helper.addClass(this.optionsElement, 'show');
+            } else {
+                Helper.removeClass(this.optionsElement, 'show');
+            }
         }
 
         private setPreviewData(): void {

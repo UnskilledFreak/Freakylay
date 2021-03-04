@@ -49,6 +49,21 @@ body {
     border-bottom-right-radius: 10px;
 }
 
+input[type=checkbox],
+input[type=button],
+#options input[type=checkbox] ~ label{
+    cursor: pointer;
+}
+
+input[type=button] {
+    border-radius: 5px;
+    border-color: #aaaaaa;
+}
+input[type=button]:hover,
+input[type=checkbox]:hover {
+    border-color: #111111;
+}
+
 /** bottom right **/
 #songInfo {
     position: absolute;
@@ -228,7 +243,14 @@ body {
     top: 50%;
     left: 50%;
     padding: 10px;
+    opacity: 0;
+    transition: all .1s;
 }
+
+#options.show {
+    opacity: 1;
+}
+
 #options #pulsoidHint {
     font-size: 10px;
 }
@@ -236,11 +258,6 @@ body {
 #options #bgColor div:first-child > span,
 #options #color div:first-child > span {
     float: right;
-}
-
-#options input[type=checkbox],
-#options input[type=checkbox] ~ label {
-    cursor: pointer;
 }
 
 #options .text {
@@ -260,12 +277,7 @@ body {
 
 #options .text input[type=button] {
     padding: 6px 16px 6px;
-    cursor: pointer;
-    transition: all .2s;
     position: relative;
-}
-#options .text input[type=button]:hover {
-    font-size: 20px;
 }
 
 #options textarea {
@@ -340,6 +352,47 @@ body {
 }
 #songInfo:not(.top) #previousBSRBottom {
     display: none;
+}
+
+/** tutorial / spash **/
+#tutorial {
+    width: 500px;
+    height: 320px;
+    position: absolute;
+    margin-left: -250px;
+    margin-top: -160px;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+    text-align: center;
+    transform: rotateZ(360deg);
+    transition: all .5s;
+    font-size: 16px;
+}
+
+#tutorial.show {
+    opacity: 1;
+    transform: rotateZ(0deg);
+}
+
+#tutorial p {
+    margin: 40px;
+}
+
+#tutorial p:nth-child(3) {
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+#tutorial div > input {
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+#tutorial div.copy {
+    font-size: 12px;
 }
 
 /** react to different resolutions **/
