@@ -14,7 +14,7 @@ namespace Freakylay.UiElement {
             headline.innerHTML = 'Welcome to Freakylay!';
 
             let description = Helper.create<HTMLParamElement>('p');
-            description.innerHTML = 'Hey there player! It looks like you started me the first time because you gave me no options. Don\'t worry, just let me ask you a simple question:';
+            description.innerHTML = 'Hey there player! It looks like you started me for the first time because you gave me no options.<br>Don\'t worry, just let me ask you a simple question:';
 
             let question = Helper.create<HTMLParamElement>('p');
             question.innerHTML = 'Configure me now?';
@@ -28,7 +28,7 @@ namespace Freakylay.UiElement {
 
             let configButton = Helper.create<HTMLInputElement>('input');
             configButton.type = 'button';
-            configButton.value = 'configure me now!';
+            configButton.value = 'yes configure now!';
             configButton.onclick = () => {
                 ui.toggleOptionPanel();
                 Helper.display(this.element, false);
