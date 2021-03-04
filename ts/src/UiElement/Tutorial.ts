@@ -46,8 +46,10 @@ namespace Freakylay.UiElement {
         }
 
         public show(): void {
-            Helper.addClass(this.element, 'show');
-            this.shown = true;
+            window.setTimeout(() => {
+                Helper.addClass(this.element, 'show');
+                this.shown = true;
+            }, 250);
         }
 
         public isShown(): boolean {
