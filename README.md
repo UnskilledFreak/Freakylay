@@ -63,6 +63,8 @@ The option panel will generate the URL by itself. Copy the URL and insert it int
 |o|display song info on top, able to combine with flip (i)|2.0.2|2.1.0|
 |p|show default difficulty only when no custom difficulty exist|2.0.2|2.1.0|
 |q|hide all modifiers, overrides full combo (m) and modifier flip (k)|2.0.2|2.1.0|
+|r|Adds your Pulsoid Feed to the display bars|2.0.2|2.1.0|
+|s|skips welcome splash screen|2.0.2|2.1.0|
 
 ## Versions
 Older versions of Freakylay are available via there tags inside the master branch. The tags are based on the compatible DataPuller Version.
