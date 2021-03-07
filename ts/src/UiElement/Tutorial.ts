@@ -35,10 +35,10 @@ namespace Freakylay.UiElement {
                 this.shown = false;
             };
 
-            let buttons = Helper.create<HTMLDivElement>('div');
+            let buttons = Helper.div();
             buttons.append(skipButton, configButton);
 
-            let copyright = Helper.create<HTMLDivElement>('div');
+            let copyright = Helper.div();
             copyright.innerHTML = 'Freakylay 2.1.0 &copy; 2020 - 2021 by UnskilledFreak';
             Helper.addClass(copyright, 'copy')
 

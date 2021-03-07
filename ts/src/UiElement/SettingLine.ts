@@ -11,7 +11,7 @@ namespace Freakylay.UiElement {
         private readonly setting: UrlParam<boolean>;
 
         constructor(name: string, setting: UrlParam<boolean> = null, directCallback: (bool) => void = null) {
-            let line = Helper.create<HTMLDivElement>('div');
+            let line = Helper.div();
             let label = Helper.create<HTMLLabelElement>('label');
 
             this.element = Helper.create<HTMLInputElement>('input');

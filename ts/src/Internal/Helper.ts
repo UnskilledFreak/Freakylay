@@ -8,6 +8,10 @@ namespace Freakylay.Internal {
             return document.querySelector('#' + selector) as unknown as T;
         }
 
+        static div(): HTMLDivElement {
+            return this.create<HTMLDivElement>('div');
+        }
+
         static create<T>(tag: string, namespace: string = ''): T {
             if (namespace === '') {
                 return document.createElement(tag) as unknown as T;

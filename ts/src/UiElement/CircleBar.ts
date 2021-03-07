@@ -19,7 +19,7 @@ namespace Freakylay.UiElement {
             let radius = half - padding;
 
             this.circumference = radius * Math.PI * 2;
-            this.text = Helper.create<HTMLDivElement>('div');
+            this.text = Helper.div();
             this.bar = CircleBar.getCircle(half, radius);
             this.bar.style.strokeDasharray = this.circumference + 'px , ' + this.circumference + 'px';
 

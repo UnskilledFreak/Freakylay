@@ -32,7 +32,7 @@ namespace Freakylay.UiElement {
 
         public createInputMenu(element: HTMLElement): void {
 
-            let name = Helper.create<HTMLDivElement>('div');
+            let name = Helper.div();
             name.innerHTML = this.name;
 
             this.rElement = this.input(this.color.r, 'r');
@@ -47,7 +47,7 @@ namespace Freakylay.UiElement {
 
             Helper.visibility(this.aInfoElement, false);
 
-            let colorHolder = Helper.create<HTMLDivElement>('div');
+            let colorHolder = Helper.div();
             Helper.addClass(colorHolder, 'colorInputs');
 
             this.rElement.oninput = () => {
