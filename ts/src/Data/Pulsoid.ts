@@ -12,13 +12,10 @@ namespace Freakylay.Data {
 
         constructor() {
             this.url = '';
-            this.lastCheck = new Date();
         }
 
         public setUrl(url: string): void {
             this.url = url.trim().replace(/ /g, '');
-
-            window.clearTimeout(this.timer);
 
             if (this.url == '' && this.timer > 0) {
                 this.sendEvent(0);
@@ -33,6 +30,8 @@ namespace Freakylay.Data {
         }
 
         public start(): void {
+            window.clearTimeout(this.timer);
+            this.lastCheck = new Date();
             this.pulsoidData();
         }
 
@@ -58,8 +57,8 @@ namespace Freakylay.Data {
                 }
 
                 let data = JSON.parse(request.responseText);
-                let measured = new Date(data.measured_at);
-                let bpm = parseInt(data.bpm);
+                let measured = new Date(Helper.isset(data, 'measured_at', (new Date()).toString()));
+                let bpm = parseInt(Helper.isset(data, 'bpm', '0'));
 
                 if (measured >= this.lastCheck) {
                     this.sendEvent(bpm);
