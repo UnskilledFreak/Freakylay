@@ -8,7 +8,6 @@ namespace Freakylay.Data {
 
         private url: string;
         private lastCheck: Date;
-        private timer;
 
         constructor() {
             this.url = '';
@@ -17,7 +16,7 @@ namespace Freakylay.Data {
         public setUrl(url: string): void {
             this.url = url.trim().replace(/ /g, '');
 
-            if (this.url == '' && this.timer > 0) {
+            if (this.url == '') {
                 this.sendEvent(0);
                 return;
             }
@@ -30,9 +29,10 @@ namespace Freakylay.Data {
         }
 
         public start(): void {
-            window.clearTimeout(this.timer);
             this.lastCheck = new Date();
-            this.pulsoidData();
+            window.setInterval(() => {
+                this.pulsoidData();
+            }, 1000);
         }
 
         public isInitialized(): boolean {
@@ -45,7 +45,6 @@ namespace Freakylay.Data {
 
         private pulsoidData(): void {
             if (!this.isInitialized()) {
-                this.fetchFeed(10000);
                 return;
             }
 
@@ -64,20 +63,12 @@ namespace Freakylay.Data {
                     this.sendEvent(bpm);
                     this.lastCheck = measured;
                 }
-
-                this.fetchFeed(1000);
             };
 
             // im so sorry to bypass CORS with this little hack but idk how to get CORS done via a local running script
             request.open('GET', 'http://u.unskilledfreak.zone/overlay/freakylay/pulsoid.php?pFeed=' + this.url, true);
             request.setRequestHeader('Accept', 'application/json');
             request.send(null);
-        }
-
-        private fetchFeed(timeout: number): void {
-            this.timer = window.setTimeout(() => {
-                this.pulsoidData();
-            }, timeout);
         }
     }
 
