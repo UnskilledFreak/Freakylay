@@ -221,7 +221,7 @@ namespace Freakylay {
                     }
                     Helper.addClass(this.dataHolder, 'pulsoid');
 
-                    let currentProgress = Helper.clamp(bpm - min, min, max - min);
+                    let currentProgress = Helper.clamp(bpm - min, 0, max - min);
                     this.pulsoid.setProgress(currentProgress, max - min);
                     this.pulsoid.setText('Heart<br>' + bpm);
                 });
