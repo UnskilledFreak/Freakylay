@@ -97,18 +97,25 @@ namespace Freakylay {
         }
 
         private modifiers: {
-            noArrows: ModifierUiElement,
-            batteryEnergy: ModifierUiElement,
-            noObstacles: ModifierUiElement,
-            fullCombo: ModifierUiElement,
-            disappearingArrows: ModifierUiElement,
-            percentSpeed: ModifierUiElement,
-            instantFail: ModifierUiElement,
-            ghostNotes: ModifierUiElement,
-            practiceMode: ModifierUiElement,
             noFail: ModifierUiElement,
+            oneLive: ModifierUiElement,
+            fourLives: ModifierUiElement,
             noBombs: ModifierUiElement,
-            speed: ModifierUiElement
+            noWalls: ModifierUiElement,
+            noArrows: ModifierUiElement,
+            ghostNotes: ModifierUiElement,
+            disappearingArrows: ModifierUiElement,
+            smallNotes: ModifierUiElement,
+            proMode: ModifierUiElement,
+            strictAngles: ModifierUiElement,
+            zenMode: ModifierUiElement,
+            slowerSong: ModifierUiElement,
+            fasterSong: ModifierUiElement,
+            superFastSong: ModifierUiElement,
+            fullCombo: ModifierUiElement,
+            // self added
+            percentSpeed: ModifierUiElement,
+            practiceMode: ModifierUiElement,
         };
         private songInfo: {
             bsr: HTMLDivElement;
@@ -244,16 +251,26 @@ namespace Freakylay {
                 element.style.backgroundColor = this.urlOptions.backgroundColor.getValue().toRgb();
             }, this);
 
-            this.modifiers.instantFail.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.batteryEnergy.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.disappearingArrows.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.ghostNotes.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.noFail.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.noObstacles.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.noBombs.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.noArrows.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.practiceMode.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
-            this.modifiers.fullCombo.switchDisplayName(!this.urlOptions.shortModifierNames.getValue());
+            let shortModifiers = !this.urlOptions.shortModifierNames.getValue();
+
+            this.modifiers.noFail.switchDisplayName(shortModifiers);
+            this.modifiers.oneLive.switchDisplayName(shortModifiers);
+            this.modifiers.fourLives.switchDisplayName(shortModifiers);
+            this.modifiers.noBombs.switchDisplayName(shortModifiers);
+            this.modifiers.noWalls.switchDisplayName(shortModifiers);
+            this.modifiers.noArrows.switchDisplayName(shortModifiers);
+            this.modifiers.ghostNotes.switchDisplayName(shortModifiers);
+            this.modifiers.disappearingArrows.switchDisplayName(shortModifiers);
+            this.modifiers.smallNotes.switchDisplayName(shortModifiers);
+            this.modifiers.proMode.switchDisplayName(shortModifiers);
+            this.modifiers.strictAngles.switchDisplayName(shortModifiers);
+            this.modifiers.zenMode.switchDisplayName(shortModifiers);
+            this.modifiers.slowerSong.switchDisplayName(shortModifiers);
+            this.modifiers.fasterSong.switchDisplayName(shortModifiers);
+            this.modifiers.superFastSong.switchDisplayName(shortModifiers);
+            this.modifiers.fullCombo.switchDisplayName(shortModifiers);
+            this.modifiers.percentSpeed.switchDisplayName(shortModifiers);
+            this.modifiers.practiceMode.switchDisplayName(shortModifiers);
 
             Helper.visibility(this.data.previousBSRTop, this.urlOptions.showPrevBsr.getValue());
             Helper.visibility(this.data.previousBSRBottom, this.urlOptions.showPrevBsr.getValue());
@@ -275,7 +292,7 @@ namespace Freakylay {
                 Helper.toggleClass(element, !v, this.css.borderRadiusBottomLeft);
                 Helper.toggleClass(element, v, this.css.borderRadiusTopRight);
                 Helper.toggleClass(element, v, this.css.borderRadiusBottomRight);
-            }
+            };
 
             flipBorderRadius(this.songInfo.bsr, this.urlOptions.flipStatic);
             flipBorderRadius(this.songInfo.mapper, this.urlOptions.flipStatic);
@@ -477,16 +494,21 @@ namespace Freakylay {
             this.mapData.PreviousRecord.setValue(987123);
             this.mapData.PreviousBSR.setValue('8e9c');
 
-            this.mapData.Modifiers.instantFail.setValue(true);
-            this.mapData.Modifiers.batteryEnergy.setValue(true);
-            this.mapData.Modifiers.disappearingArrows.setValue(true);
-            this.mapData.Modifiers.ghostNotes.setValue(true);
-            this.mapData.Modifiers.fasterSong.setValue(true);
             this.mapData.Modifiers.noFail.setValue(true);
-            this.mapData.Modifiers.noObstacles.setValue(true);
+            this.mapData.Modifiers.oneLife.setValue(true);
+            this.mapData.Modifiers.fourLives.setValue(true);
             this.mapData.Modifiers.noBombs.setValue(true);
-            this.mapData.Modifiers.slowerSong.setValue(true);
+            this.mapData.Modifiers.noWalls.setValue(true);
             this.mapData.Modifiers.noArrows.setValue(true);
+            this.mapData.Modifiers.ghostNotes.setValue(true);
+            this.mapData.Modifiers.disappearingArrows.setValue(true);
+            this.mapData.Modifiers.smallNotes.setValue(true);
+            this.mapData.Modifiers.proMode.setValue(true);
+            this.mapData.Modifiers.strictAngles.setValue(true);
+            this.mapData.Modifiers.zenMode.setValue(true);
+            this.mapData.Modifiers.slowerSong.setValue(true);
+            this.mapData.Modifiers.fasterSong.setValue(true);
+            this.mapData.Modifiers.superFastSong.setValue(true);
 
             this.mapData.PracticeModeModifiers.songSpeedMul.setValue(0.8);
 
@@ -509,18 +531,24 @@ namespace Freakylay {
         private loadAndBuildUiElements(): void {
             this.modifiersHolder = Helper.element<HTMLDivElement>('modifiers');
             this.modifiers = {
-                instantFail: new ModifierUiElement('IF', 'IF', 'Insta Fail'),
-                batteryEnergy: new ModifierUiElement('BE', 'BE', 'Battery Energy'),
-                disappearingArrows: new ModifierUiElement('DA', 'DA', 'Disappearing Arrows'),
-                ghostNotes: new ModifierUiElement('GN', 'GN', 'Ghost Notes'),
-                speed: new ModifierUiElement('speed', 'speed', 'Speed'),
-                noFail: new ModifierUiElement('NF', 'NF', 'No Fail'),
-                noObstacles: new ModifierUiElement('NO', 'NO', 'No Obstacles'),
-                noBombs: new ModifierUiElement('NB', 'NB', 'No Bombs'),
-                noArrows: new ModifierUiElement('NA', 'NA', 'No Arrows'),
-                practiceMode: new ModifierUiElement('PM', 'PM', 'Practice Mode'),
-                percentSpeed: new ModifierUiElement('percentSpeed', 'percentSpeed', 'Speed'),
-                fullCombo: new ModifierUiElement('FC', 'FC', 'Full Combo'),
+                noFail: new ModifierUiElement(this.modifiersHolder, 'NF', 'No Fail'),
+                oneLive: new ModifierUiElement(this.modifiersHolder, 'OL', 'One Live'),
+                fourLives: new ModifierUiElement(this.modifiersHolder, 'FL', 'Four Live'),
+                noBombs: new ModifierUiElement(this.modifiersHolder, 'NB', 'No Bombs'),
+                noWalls: new ModifierUiElement(this.modifiersHolder, 'NW', 'No Walls'),
+                noArrows: new ModifierUiElement(this.modifiersHolder, 'NA', 'No Arrow'),
+                ghostNotes: new ModifierUiElement(this.modifiersHolder, 'GN', 'Ghost Notes'),
+                disappearingArrows: new ModifierUiElement(this.modifiersHolder, 'DA', 'Disappearing Arrows'),
+                smallNotes: new ModifierUiElement(this.modifiersHolder, 'SN', 'Small Notes'),
+                proMode: new ModifierUiElement(this.modifiersHolder, 'PM', 'Pro Mode'),
+                strictAngles: new ModifierUiElement(this.modifiersHolder, 'SA', 'Strict Angles'),
+                zenMode: new ModifierUiElement(this.modifiersHolder, 'ZM', 'Zen Mode'),
+                slowerSong: new ModifierUiElement(this.modifiersHolder, 'SS', 'Slower Song'),
+                fasterSong: new ModifierUiElement(this.modifiersHolder, 'FS', 'Faster Song'),
+                superFastSong: new ModifierUiElement(this.modifiersHolder, 'SFS', 'Super Fast Song'),
+                fullCombo: new ModifierUiElement(this.modifiersHolder, 'FC', 'Full Combo'),
+                practiceMode: new ModifierUiElement(this.modifiersHolder, 'PRM', 'Practice Mode'),
+                percentSpeed: new ModifierUiElement(this.modifiersHolder, '0%', '0%')
             };
 
             this.timer = new CircleBar(Helper.element<HTMLElement>('timerHolder'));
@@ -658,19 +686,6 @@ namespace Freakylay {
 
             // practice
             if (this.mapData.PracticeMode.getValue()) {
-                if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() !== 1) {
-                    let str;
-                    if (this.mapData.PracticeModeModifiers.songSpeedMul.getValue() > 1) {
-                        str = this.urlOptions.shortModifierNames.getValue() ? 'FS' : 'Faster Song'
-                    } else {
-                        str = this.urlOptions.shortModifierNames.getValue() ? 'SS' : 'Slower Song'
-                    }
-                    this.modifiers.speed.updateRawText(str);
-                    Helper.display(this.modifiers.speed.getElement(), !hideAllModifiers, true);
-                } else {
-                    Helper.display(this.modifiers.speed.getElement(), false, true);
-                }
-
                 let readableSpeed = parseInt((this.mapData.PracticeModeModifiers.songSpeedMul.getValue() * 100 - 100).toFixed());
                 let identifier = readableSpeed > 0 ? '+' : '';
 
@@ -683,7 +698,6 @@ namespace Freakylay {
 
                 Helper.display(this.modifiers.percentSpeed.getElement(), hideAllModifiers ? false : this.mapData.PracticeModeModifiers.songSpeedMul.getValue() != 1, true);
             } else {
-                Helper.display(this.modifiers.speed.getElement(), false, true);
                 Helper.display(this.modifiers.percentSpeed.getElement(), false, true);
             }
         }

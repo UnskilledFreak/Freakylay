@@ -68,19 +68,30 @@ The option panel will generate the URL by itself. Copy the URL and insert it int
 
 ## Versions
 Older versions of Freakylay are available via there tags inside the master branch. The tags are based on the compatible DataPuller Version.
-Every Version can be accessed by its DataPuller version number as sub directory.
+Every Version can be accessed by version number as sub directory.
 
 The latest version of this overlay can always be found at the `latest` subdirectory:
 [http://u.unskilledfreak.zone/overlay/freakylay/latest/](http://u.unskilledfreak.zone/overlay/freakylay/latest/)
 
 |Freakylay Version|DataPuller Version|Url|
 |---|---|---|
-|2.1.0|2.0.2|currently in development|
+|2.2.0|2.0.3|currently in development|
+|2.1.0|2.0.2|(unstable & unfinished)[http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/)|
 |2.0.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)|
 |1.1.0|1.1.1|[http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/)|
 
 ## Changelog
-
+- 2.2.0
+  - added compatibility for DataPuller 2.0.3
+  - added new modifiers
+  - faster song / super fast song / slower song now only displays when modifier is set
+- 2.1.0 inDev
+  - added splash screen
+  - added Pulsoid feed
+  - various bug fixes
+  - styled options panel
+  - this version never get its final release because Beat Saber 1.13.4 was released while developing 2.1.0
+  - fixed faster/slower song disappearing when Practice Mode was set to low or high 
 - 2.0.0
   - updated to DataPuller 2.0.2
   - converted whole js part of this project to typescript
