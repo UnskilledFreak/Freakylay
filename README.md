@@ -75,8 +75,8 @@ The latest version of this overlay can always be found at the `latest` subdirect
 
 |Freakylay Version|DataPuller Version|Url|
 |---|---|---|
-|2.2.0|2.0.3|currently in development|
-|2.1.0|2.0.2|(unstable & unfinished)[http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/)|
+|2.2.0|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/)|
+|2.1.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/ - unstable & unfinished](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/)|
 |2.0.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)|
 |1.1.0|1.1.1|[http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/)|
 
@@ -85,6 +85,7 @@ The latest version of this overlay can always be found at the `latest` subdirect
   - added compatibility for DataPuller 2.0.3
   - added new modifiers
   - faster song / super fast song / slower song now only displays when modifier is set
+  - Practice Mode now wont show faster or slower song modifiers
 - 2.1.0 inDev
   - added splash screen
   - added Pulsoid feed

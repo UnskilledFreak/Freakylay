@@ -23,7 +23,7 @@ namespace Freakylay.Data {
         public superFastSong: DataKey<boolean>;
 
         constructor() {
-            this.noFail = new DataKey('noFail', false);
+            this.noFail = new DataKey('noFailOn0Energy', false);
             this.oneLife = new DataKey('oneLife', false);
             this.fourLives = new DataKey('fourLives', false);
             this.noBombs = new DataKey('noBombs', false);

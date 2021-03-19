@@ -98,7 +98,7 @@ namespace Freakylay {
 
         private modifiers: {
             noFail: ModifierUiElement,
-            oneLive: ModifierUiElement,
+            oneLife: ModifierUiElement,
             fourLives: ModifierUiElement,
             noBombs: ModifierUiElement,
             noWalls: ModifierUiElement,
@@ -254,7 +254,7 @@ namespace Freakylay {
             let shortModifiers = !this.urlOptions.shortModifierNames.getValue();
 
             this.modifiers.noFail.switchDisplayName(shortModifiers);
-            this.modifiers.oneLive.switchDisplayName(shortModifiers);
+            this.modifiers.oneLife.switchDisplayName(shortModifiers);
             this.modifiers.fourLives.switchDisplayName(shortModifiers);
             this.modifiers.noBombs.switchDisplayName(shortModifiers);
             this.modifiers.noWalls.switchDisplayName(shortModifiers);
@@ -536,7 +536,7 @@ namespace Freakylay {
             this.modifiersHolder = Helper.element<HTMLDivElement>('modifiers');
             this.modifiers = {
                 noFail: new ModifierUiElement(this.modifiersHolder, 'NF', 'No Fail'),
-                oneLive: new ModifierUiElement(this.modifiersHolder, 'OL', 'One Live'),
+                oneLife: new ModifierUiElement(this.modifiersHolder, 'OL', 'One Life'),
                 fourLives: new ModifierUiElement(this.modifiersHolder, 'FL', 'Four Live'),
                 noBombs: new ModifierUiElement(this.modifiersHolder, 'NB', 'No Bombs'),
                 noWalls: new ModifierUiElement(this.modifiersHolder, 'NW', 'No Walls'),
