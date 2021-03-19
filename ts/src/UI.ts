@@ -366,6 +366,10 @@ namespace Freakylay {
                 options.push(this.urlOptions.pulsoidFeed.getUrlValue());
             }
 
+            if (options.length == 0) {
+                options.push('s');
+            }
+
             let optionsString = options.length > 0 ? '?' + options.join('&') : '';
 
             this.urlText.innerHTML = window.location.protocol + '//' + window.location.host + window.location.pathname + optionsString;
