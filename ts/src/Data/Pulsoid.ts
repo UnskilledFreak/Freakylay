@@ -40,7 +40,8 @@ namespace Freakylay.Data {
         }
 
         private sendEvent(bpm: number): void {
-            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: bpm}))
+            // check again to prevent back enabling
+            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: this.isInitialized() ? bpm : 0}))
         }
 
         private pulsoidData(): void {
@@ -59,10 +60,10 @@ namespace Freakylay.Data {
                 let measured = new Date(Helper.isset(data, 'measured_at', (new Date()).toString()));
                 let bpm = parseInt(Helper.isset(data, 'bpm', '0'));
 
-                if (measured >= this.lastCheck) {
-                    this.sendEvent(bpm);
-                    this.lastCheck = measured;
-                }
+                //if (measured >= this.lastCheck) {
+                this.sendEvent(bpm);
+                this.lastCheck = measured;
+                //}
             };
 
             // im so sorry to bypass CORS with this little hack but idk how to get CORS done via a local running script
