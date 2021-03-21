@@ -40,7 +40,8 @@ namespace Freakylay.Data {
         }
 
         private sendEvent(bpm: number): void {
-            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: bpm}))
+            // check again to prevent back enabling
+            window.dispatchEvent(new CustomEvent(Pulsoid.EVENT, {detail: this.isInitialized() ? bpm : 0}))
         }
 
         private pulsoidData(): void {

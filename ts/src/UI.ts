@@ -67,6 +67,7 @@ namespace Freakylay {
         private modifiersHolder: HTMLDivElement;
         private songInfoHolder: HTMLDivElement;
         private beatMapCover: HTMLDivElement;
+        private pulsoidHolder: HTMLDivElement;
 
         public ipText: HTMLInputElement;
         public optionsLinesElement: HTMLDivElement;
@@ -231,7 +232,11 @@ namespace Freakylay {
                     let currentProgress = Helper.clamp(bpm - min, 0, max - min);
                     this.pulsoid.setProgress(currentProgress, max - min);
                     this.pulsoid.setText('Heart<br>' + bpm);
+
+                    Helper.display(this.pulsoidHolder, true);
                 });
+
+                Helper.display(this.pulsoidHolder, false);
             }, 100);
         }
 
@@ -364,6 +369,8 @@ namespace Freakylay {
 
             if (this.pulsoidHandler.isInitialized()) {
                 options.push(this.urlOptions.pulsoidFeed.getUrlValue());
+            } else {
+                Helper.display(this.pulsoidHolder, false);
             }
 
             if (options.length == 0) {
@@ -616,6 +623,8 @@ namespace Freakylay {
                 this.urlOptions.pulsoidFeed.setValue(this.pulsoidHandler.getUrl());
                 this.onStyleChange();
             }
+
+            this.pulsoidHolder = Helper.element<HTMLDivElement>('pulsoidHolder');
         }
 
         private calculateOptionPosition(): void {
