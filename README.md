@@ -75,7 +75,7 @@ The latest version of this overlay can always be found at the `latest` subdirect
 
 |Freakylay Version|DataPuller Version|Url|
 |---|---|---|
-|2.2.1|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/)|
+|2.2.1|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/)|
 |2.2.0|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/)|
 |2.1.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/ - unstable & unfinished](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/)|
 |2.0.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)|
