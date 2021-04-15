@@ -367,6 +367,8 @@ namespace Freakylay {
                 this.urlOptions.songInfoOnTop,
                 this.urlOptions.hideDefaultDifficulty,
                 this.urlOptions.hideAllModifiers,
+                this.urlOptions.hideCounterSection,
+                this.urlOptions.hideSongInfo
             ].forEach(x => {
                 if (!x.isDefaultValue()) {
                     options.push(x.getUrlValue());
