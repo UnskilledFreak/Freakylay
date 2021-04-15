@@ -31,8 +31,8 @@ namespace Freakylay.UiElement {
             configButton.value = 'yes configure now!';
             configButton.onclick = () => {
                 ui.toggleOptionPanel();
-                Helper.display(this.element, false);
                 this.shown = false;
+                this.destroy();
             };
 
             let buttons = Helper.div();
@@ -50,6 +50,11 @@ namespace Freakylay.UiElement {
                 Helper.addClass(this.element, 'show');
                 this.shown = true;
             }, 250);
+        }
+
+        public destroy(): void {
+            //Helper.display(this.element, false);
+            this.element.remove();
         }
 
         public isShown(): boolean {

@@ -59,10 +59,10 @@ namespace Freakylay {
         private accuracy: CircleBar;
         private pulsoid: CircleBar;
 
-        private urlText: HTMLAreaElement;
+        private urlText: HTMLTextAreaElement;
         private changeIp: HTMLInputElement;
 
-        private dataHolder: HTMLDivElement;
+        private counterSection: HTMLDivElement;
         private optionsElement: HTMLDivElement;
         private modifiersHolder: HTMLDivElement;
         private songInfoHolder: HTMLDivElement;
@@ -94,7 +94,9 @@ namespace Freakylay {
             hideDefaultDifficulty: UrlParam<boolean>,
             hideAllModifiers: UrlParam<boolean>,
             pulsoidFeed: UrlParam<string>,
-            skipSplash: UrlParam<boolean>
+            skipSplash: UrlParam<boolean>,
+            hideCounterSection: UrlParam<boolean>,
+            hideSongInfo: UrlParam<boolean>,
         }
 
         private modifiers: {
@@ -180,7 +182,9 @@ namespace Freakylay {
                 hideDefaultDifficulty: this.urlManager.registerOptionParam('p', false),
                 hideAllModifiers: this.urlManager.registerOptionParam('q', false),
                 pulsoidFeed: this.urlManager.registerOptionParam('r', ''),
-                skipSplash: this.urlManager.registerOptionParam('s', false)
+                skipSplash: this.urlManager.registerOptionParam('s', false),
+                hideCounterSection: this.urlManager.registerOptionParam('t', false),
+                hideSongInfo: this.urlManager.registerOptionParam('u', false)
             }
 
             this.urlParams = new URLSearchParams(location.search);
@@ -207,6 +211,8 @@ namespace Freakylay {
 
                 if (this.urlManager.areAllDefault()) {
                     this.tutorial.show();
+                } else {
+                    this.tutorial.destroy();
                 }
 
                 this.buildOptionsPanel();
@@ -224,10 +230,10 @@ namespace Freakylay {
                     let bpm = ev.detail;
 
                     if (bpm == 0) {
-                        Helper.removeClass(this.dataHolder, 'pulsoid');
+                        Helper.removeClass(this.counterSection, 'pulsoid');
                         return;
                     }
-                    Helper.addClass(this.dataHolder, 'pulsoid');
+                    Helper.addClass(this.counterSection, 'pulsoid');
 
                     let currentProgress = Helper.clamp(bpm - min, 0, max - min);
                     this.pulsoid.setProgress(currentProgress, max - min);
@@ -329,7 +335,7 @@ namespace Freakylay {
 
             Helper.toggleClass(this.songInfoHolder, this.urlOptions.flipStatic.getValue(), this.css.flip);
             Helper.toggleClass(this.modifiersHolder, this.urlOptions.flipModifiers.getValue(), this.css.flip);
-            Helper.toggleClass(this.dataHolder, this.urlOptions.flipLive.getValue(), this.css.flip);
+            Helper.toggleClass(this.counterSection, this.urlOptions.flipLive.getValue(), this.css.flip);
 
             Helper.toggleClass(this.songInfoHolder, this.urlOptions.songInfoOnTop.getValue(), 'top');
 
@@ -420,7 +426,20 @@ namespace Freakylay {
             new SettingLine('Full Combo modifier', this.urlOptions.showFullComboModifier);
             new SettingLine('Current time only', this.urlOptions.showTimeString);
             new SettingLine('Default difficulty only when no custom difficulty exist', this.urlOptions.hideDefaultDifficulty);
+
+            this.optionsLinesElement.append(Helper.create<HTMLHRElement>('hr'));
+
             new SettingLine('Hide all modifiers', this.urlOptions.hideAllModifiers);
+            new SettingLine('Hide complete counter section', this.urlOptions.hideCounterSection, (checked: boolean) => {
+                this.urlOptions.hideCounterSection.setValue(checked);
+                this.hideUi();
+                this.showUi();
+            });
+            new SettingLine('Hide complete song info', this.urlOptions.hideSongInfo, (checked: boolean) => {
+                this.urlOptions.hideSongInfo.setValue(checked);
+                this.hideUi();
+                this.showUi();
+            });
 
             this.optionsLinesElement.append(Helper.create<HTMLHRElement>('hr'));
 
@@ -431,7 +450,7 @@ namespace Freakylay {
 
             this.optionsLinesElement.append(Helper.create<HTMLHRElement>('hr'));
 
-            new SettingLine('Test with Background Image', null, (checked) => {
+            new SettingLine('Test with Background Image', null, (checked: boolean) => {
                 document.body.style.backgroundImage = checked ? 'url(img/beat-saber-5.jpg)' : 'none';
             });
 
@@ -444,7 +463,7 @@ namespace Freakylay {
                 this.liveData.update(liveData);
             }
 
-            this.updateDownSection();
+            this.updatecounterSection();
             this.updateFullCombo();
         }
 
@@ -585,7 +604,7 @@ namespace Freakylay {
                 cover: Helper.element<HTMLDivElement>('cover')
             };
 
-            this.dataHolder = Helper.element<HTMLDivElement>('downSection');
+            this.counterSection = Helper.element<HTMLDivElement>('counterSection');
             this.data = {
                 score: Helper.element<HTMLDivElement>('score'),
                 combo: Helper.element<HTMLDivElement>('combo'),
@@ -598,14 +617,15 @@ namespace Freakylay {
 
             this.optionsElement = Helper.element<HTMLDivElement>('options');
             this.optionsLinesElement = Helper.element<HTMLDivElement>('optionsLines');
-            this.urlText = Helper.element<HTMLAreaElement>('urlText');
+            this.urlText = Helper.element<HTMLTextAreaElement>('urlText');
 
             this.marquee.songName = new Marquee(Helper.element<HTMLDivElement>('marqueeSongName'));
             this.marquee.songArtist = new Marquee(Helper.element<HTMLDivElement>('marqueeSongArtist'));
             this.marquee.difficulty = new Marquee(Helper.element<HTMLDivElement>('marqueeDifficulty'));
 
             this.urlText.onclick = () => {
-                this.urlText.focus(); //.select();
+                this.urlText.focus();
+                this.urlText.select();
                 document.execCommand('copy');
             };
 
@@ -656,15 +676,19 @@ namespace Freakylay {
         }
 
         private showUi(): void {
-            Helper.removeClass(this.songInfoHolder, this.css.inactiveClass);
-            Helper.removeClass(this.dataHolder, this.css.inactiveClass);
+            if (!this.urlOptions.hideSongInfo.getValue()) {
+                Helper.removeClass(this.songInfoHolder, this.css.inactiveClass);
+            }
+            if (!this.urlOptions.hideCounterSection.getValue()) {
+                Helper.removeClass(this.counterSection, this.css.inactiveClass);
+            }
             Helper.removeClass(this.modifiersHolder, this.css.inactiveClass)
             this.uiShown = true;
         }
 
         private hideUi(): void {
             Helper.addClass(this.songInfoHolder, this.css.inactiveClass);
-            Helper.addClass(this.dataHolder, this.css.inactiveClass);
+            Helper.addClass(this.counterSection, this.css.inactiveClass);
             Helper.addClass(this.modifiersHolder, this.css.inactiveClass);
             this.uiShown = false;
         }
@@ -716,7 +740,6 @@ namespace Freakylay {
         }
 
         private updateSongInfo(): void {
-
             Helper.toggleClass(this.beatMapCover, this.mapData.BSRKey.getValue().length === 0 || this.mapData.BSRKey.getValue() === 'BSRKey', this.urlOptions.flipStatic.getValue() ? this.css.borderRadiusTopRight : this.css.borderRadiusTopLeft);
 
             this.data.previousBSRTop.innerHTML = this.mapData.PreviousBSR.getValue().length > 0 ? 'Prev-BSR: ' + this.mapData.PreviousBSR.getValue() : '';
@@ -735,7 +758,7 @@ namespace Freakylay {
             this.data.njs.innerHTML = '<span>NJS</span>' + this.mapData.NJS.getValue().toFixed(1);
         }
 
-        private updateDownSection(): void {
+        private updatecounterSection(): void {
             this.updateTimeCircleBar(this.urlOptions.previewMode.getValue() ? this.mapLength / 2 : this.liveData.TimeElapsed.getValue(), this.mapLength);
 
             // down section
@@ -753,7 +776,6 @@ namespace Freakylay {
             this.data.miss.innerHTML = '<span>MISS</span>' + this.liveData.Misses.getValue();
             this.data.score.innerHTML = arrow + new Intl.NumberFormat('en-US').format(this.liveData.Score.getValue()).replace(/,/g, ' ');
 
-            //this.health.setProgress(this.mapData.Modifiers.noFail.getValue() ? 100 : parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
             this.health.setProgress(parseInt(this.liveData.PlayerHealth.getValue().toFixed(0)), 100);
 
             // block hit scores?

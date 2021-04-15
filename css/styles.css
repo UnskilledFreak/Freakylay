@@ -173,7 +173,7 @@ input[type=checkbox]:hover {
 }
 
 /** down **/
-#downSection {
+#counterSection {
     position: absolute;
     height: 90px;
     width: 500px;
@@ -183,50 +183,50 @@ input[type=checkbox]:hover {
     transition: 1s all;
 }
 
-#downSection.pulsoid {
+#counterSection.pulsoid {
     width: 590px;
     margin-left: -295px;
 }
 
-#downSection.inactive {
+#counterSection.inactive {
     bottom: -100px;
 }
 
-#downSection > div {
+#counterSection > div {
     float: left;
 }
 
-#downSection .holders {
+#counterSection .holders {
     width: 230px;
 }
 
-#downSection .barHolder {
+#counterSection .barHolder {
     width: 90px;
 }
 
-#downSection .holders .line {
+#counterSection .holders .line {
     margin: 8px 0;
     font-size: 17px;
     line-height: 19px;
     text-align: center;
 }
 
-#downSection .holders .line#score {
+#counterSection .holders .line#score {
     font-size: 24px;
 }
 
-#downSection .holders .line > div {
+#counterSection .holders .line > div {
     display: inline-block;
     width: 80px;
     font-size: 14px;
 }
 
-#downSection .holders .line > div > span {
+#counterSection .holders .line > div > span {
     font-size: 10px;
     margin-right: 10px;
 }
 
-#downSection .progressInfo {
+#counterSection .progressInfo {
     position: absolute;
     font-size: 14px;
     text-align: center;
@@ -322,12 +322,12 @@ input[type=checkbox]:hover {
     left: -250px;
 }
 
-#downSection.flip {
+#counterSection.flip {
     bottom: inherit;
     top: 5px;
 }
 
-#downSection.flip.inactive {
+#counterSection.flip.inactive {
     top: -100px;
 }
 
