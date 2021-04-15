@@ -39,7 +39,7 @@ namespace Freakylay.UiElement {
             buttons.append(skipButton, configButton);
 
             let copyright = Helper.div();
-            copyright.innerHTML = 'Freakylay 2.2.1 &copy; 2020 - 2021 by UnskilledFreak';
+            copyright.innerHTML = 'Freakylay 2.2.2 &copy; 2020 - 2021 by UnskilledFreak';
             Helper.addClass(copyright, 'copy')
 
             this.element.append(headline, description, question, buttons, copyright);

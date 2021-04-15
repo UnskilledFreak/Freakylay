@@ -13,6 +13,6 @@
     "uglify-js": "^3.12.4"
   },
   "scripts": {
-    "uglify": "uglifyjs -c -m --mangle-props reserved=[Freakylay] -o ../DataPuller.min.js DataPuller.js"
+    "uglify": "uglifyjs -c -m --mangle-props reserved=[Freakylay] -o ../Freakylay.min.js Freakylay.js"
   }
 }
