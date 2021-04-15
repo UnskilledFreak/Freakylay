@@ -65,6 +65,8 @@ The option panel will generate the URL by itself. Copy the URL and insert it int
 |q|hide all modifiers, overrides full combo (m) and modifier flip (k)|2.0.2|2.1.0|
 |r|Adds your Pulsoid Feed to the display bars|2.0.2|2.1.0|
 |s|skips welcome splash screen|2.0.2|2.1.0|
+|t|hide complete counter section|2.0.3|2.2.2|
+|u|hide complete song info section|2.0.3|2.2.2|
 
 ## Versions
 Older versions of Freakylay are available via there tags inside the master branch. The tags are based on the compatible DataPuller Version.
@@ -75,7 +77,8 @@ The latest version of this overlay can always be found at the `latest` subdirect
 
 |Freakylay Version|DataPuller Version|Url|
 |---|---|---|
-|2.2.1|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/)|
+|2.2.2|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/)|
+|2.2.1|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/)|
 |2.2.0|2.0.3|[http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/)|
 |2.1.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/ - unstable & unfinished](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/)|
 |2.0.0|2.0.2|[http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)|
