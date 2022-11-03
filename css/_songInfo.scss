@@ -1,0 +1,162 @@
+#songInfo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  text-align: right;
+  vertical-align: text-bottom;
+  opacity: 1;
+  transition: 1s all;
+
+  &.inactive {
+    opacity: 0;
+  }
+
+  .textBottom {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+
+    #beatMapCover {
+      background-color: var(--background);
+      padding: 5px;
+      float: right;
+      border-radius: 0 $borderRadius $borderRadius 0;
+
+      #cover {
+        height: 150px;
+        width: 150px;
+        background-image: url("../img/BS_Logo.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border-radius: $borderRadius;
+      }
+    }
+
+    .previousBSRWrapper {
+      display: block;
+      position: absolute;
+      right: 0;
+      top: -30px;
+
+      .line {
+        background-color: var(--background);
+        @include lineDefinition;
+        font-size: 12px;
+        border-top-left-radius: $borderRadius;
+        border-top-right-radius: $borderRadius;
+      }
+    }
+
+    #infoText {
+      float: left;
+      display: flex;
+      flex-direction: column;
+
+      .line {
+        @include lineDefinition;
+        background-color: var(--background);
+        border-radius: $borderRadius 0 0 $borderRadius;
+      }
+
+      #mapName {
+        line-height: 40px;
+        font-size: 34px !important;
+      }
+    }
+  }
+
+  &:not(.top) {
+    #previousBSR[style*="display: block"] {
+      ~ #beatMapCover {
+        border-top-right-radius: 0;
+      }
+    }
+  }
+
+  &.flip {
+    text-align: left;
+
+    .textBottom {
+      right: inherit;
+      left: 5px;
+      width: 50%;
+
+      .previousBSRWrapper {
+        left: 0;
+        right: auto;
+
+        .line {
+          margin-left: inherit;
+        }
+      }
+
+      #previousBSR[style*="display: block"] {
+        ~ #beatMapCover {
+          border-top-left-radius: 0;
+        }
+      }
+
+      #beatMapCover {
+        float: left;
+        border-radius: $borderRadius 0 0 $borderRadius;
+      }
+
+      #infoText {
+        .line {
+          margin-left: inherit;
+          border-radius: 0 $borderRadius $borderRadius 0;
+        }
+      }
+    }
+  }
+
+  &.top {
+    .textBottom {
+      top: 5px;
+
+      #previousBSR[style*="display: block"] {
+        ~ #beatMapCover {
+          border-bottom-right-radius: 0;
+        }
+      }
+
+      #beatMapCover {
+        border-top-right-radius: $borderRadius;
+        border-bottom-right-radius: $borderRadius;
+      }
+
+      .previousBSRWrapper {
+        top: 160px;
+
+        .line {
+          border-radius: 0 0 $borderRadius $borderRadius;
+        }
+      }
+
+      #infoText {
+        display: flex;
+        flex-direction: column-reverse;
+      }
+    }
+  }
+
+  &.top {
+    &.flip {
+
+      #previousBSR[style*="display: block"] {
+        ~ #beatMapCover {
+          border-bottom-left-radius: 0;
+          border-top-left-radius: $borderRadius;
+        }
+      }
+
+      #beatMapCover {
+        border-radius: $borderRadius 0 0 $borderRadius;
+      }
+
+    }
+  }
+}

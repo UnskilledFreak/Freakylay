@@ -1,24 +1,19 @@
-/// <reference path="../Internal/Helper.ts" />
-
-namespace Freakylay.UiElement {
-    import Helper = Freakylay.Internal.Helper;
-
+namespace Freakylay.Ui {
     export class ModifierUiElement {
         private element: HTMLDivElement;
         private shortDescription: string;
         private longDescription: string;
 
         constructor(holder: HTMLElement, shortDescription: string, longDescription: string) {
-            this.element = Helper.div();
+            this.element = document.div();
             this.element.style.display = 'inline-block';
             holder.append(this.element);
 
-            Helper.addClass(this.element, 'modifiers');
-            Helper.addClass(this.element, 'backGroundColor');
-            Helper.addClass(this.element, 'borderRadiusBottomLeft');
-            Helper.addClass(this.element, 'borderRadiusTopLeft');
-            Helper.addClass(this.element, 'borderRadiusBottomRight');
-            Helper.addClass(this.element, 'borderRadiusTopRight');
+            this.element.addClass('modifiers');
+            this.element.addClass('bottomLeft');
+            this.element.addClass('topLeft');
+            this.element.addClass('bottomRight');
+            this.element.addClass('topRight');
 
             this.shortDescription = shortDescription;
             this.longDescription = longDescription;

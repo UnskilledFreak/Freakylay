@@ -1,10 +1,8 @@
 /// <reference path="../Internal/DataKey.ts" />
-/// <reference path="../Internal/Helper.ts" />
 
 namespace Freakylay.Data {
 
     import DataKey = Freakylay.Internal.DataKey;
-    import Helper = Freakylay.Internal.Helper;
 
     export class MapData {
 
@@ -104,8 +102,8 @@ namespace Freakylay.Data {
             this.PreviousRecord.update(data);
             this.PreviousBSR.update(data);
 
-            this.Modifiers.update(Helper.isset(data, 'Modifiers', {}));
-            this.PracticeModeModifiers.update(Helper.isset(data, 'PracticeModeModifiers', {}));
+            this.Modifiers.update(data.isset('Modifiers', {}));
+            this.PracticeModeModifiers.update(data.isset('PracticeModeModifiers', {}));
         }
 
         public getDifficultyString(): string {

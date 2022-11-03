@@ -1,0 +1,42 @@
+.tabManager {
+  > .tabs {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-bottom: 1px solid var(--text);
+    margin-bottom: 5px;
+
+    > .tab {
+      padding: 4px 6px;
+      cursor: pointer;
+
+      &:hover, &.active {
+        font-style: oblique;
+        background-color: var(--text);
+        color: var(--background);
+      }
+
+      &:not(:last-child) {
+        border-right: 1px solid var(--text);
+      }
+    }
+  }
+
+  > .tabContents {
+    > .tabContent {
+      display: none;
+      height: calc($optionsHeight - 170px);
+      max-height: calc($optionsHeight - 170px);
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      &.active {
+        display: block;
+      }
+
+      &:first-child {
+        text-align: center;
+      }
+    }
+  }
+}

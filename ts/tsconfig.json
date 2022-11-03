@@ -1,11 +1,15 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "sourceMap": true,
     "removeComments": true,
-    "outFile": "Freakylay.js",
-    "sourceRoot": "./",
+    "outFile": "../freakylay.js",
+    "sourceRoot": "./ts/src",
+    "lib": [
+      "dom",
+      "es2016"
+    ],
     "typeRoots": [
     ]
   },

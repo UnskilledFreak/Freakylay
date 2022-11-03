@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Freakylay</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
+    <meta property="og:site_name" content="Freakylay">
+    <meta property="og:title" content="Freakylay - stream overlay for multiple games">
+    <meta property="title" content="Freakylay - stream overlay for multiple games">
+    <meta property="og:description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
+    <meta property="description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
+    <meta property="og:image" content="http://u.unskilledfreak.zone/overlay/freakylay/beta/img/Freakylay.png">
+
+    <link rel="stylesheet" type="text/css" href="css/freakylay_bak.css">
+    <link rel="stylesheet" type="text/css" href="css/fonts.css">
+
+    <link rel="icon" href="img/favicon.png">
+
+    <script src="Freakylay.js"></script>
+</head>
+<body>
+<div id="songInfo">
+    <div class="textBottom">
+        <div class="previousBSRWrapper">
+            <div id="previousBSRTop" class="line backGroundColor borderRadiusTopLeft borderRadiusTopRight">PREVIOUS BSR</div>
+        </div>
+        <div id="beatMapCover" class="backGroundColor borderRadiusBottomRight borderRadiusBottomLeft borderRadiusTopRight borderRadiusTopLeft">
+            <div id="cover" class="borderRadiusTopLeft borderRadiusBottomLeft borderRadiusBottomRight borderRadiusTopRight borderRadiusTopLeft"></div>
+        </div>
+        <div id="infoText">
+            <div id="bsr" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">BSR</div>
+            <div id="mapper" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">MAPPER</div>
+            <div id="difficulty" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
+                <div class="marquee" id="marqueeDifficulty">DIFFICULTY</div>
+            </div>
+            <div id="artist" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
+                <div class="marquee" id="marqueeSongArtist">ARTIST</div>
+            </div>
+            <div id="mapName" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
+                <div class="marquee" id="marqueeSongName">SONGNAME</div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="previousBSRWrapper">
+            <div id="previousBSRBottom" class="line backGroundColor borderRadiusBottomLeft borderRadiusBottomRight">PREVIOUS BSR</div>
+        </div>
+    </div>
+</div>
+
+<div id="counterSection" class="borderRadiusTopLeft borderRadiusTopRight borderRadiusBottomRight borderRadiusBottomLeft backGroundColor">
+    <div class="holders rightText">
+        <div class="line">
+            <div id="combo">COMBO</div>
+            <div id="miss">MISS</div>
+        </div>
+        <div class="line" id="score">SCORE</div>
+        <div class="line">
+            <div id="njs">NJS</div>
+            <div id="bpm">BPM</div>
+        </div>
+    </div>
+    <div class="barHolder" id="timerHolder"></div>
+    <div class="barHolder" id="healthHolder"></div>
+    <div class="barHolder" id="accuracyHolder"></div>
+    <div class="barHolder" id="pulsoidHolder"></div>
+</div>
+
+<div id="modifiers"></div>
+
+<div id="options" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
+
+    <div class="text">
+        <label for="ip">Game IP:Port</label>
+        <input id="ip" type="text">
+        <input type="button" id="changeIp" value="apply">
+    </div>
+    <div class="text">
+        <label for="pulsoidFeedType">Pulsoid Feed</label>
+        <select id="pulsoidFeedType">
+            <option value="Disabled">Disabled</option>
+            <option value="Token">Token</option>
+            <option value="JSON">JSON (deprecated)</option>
+        </select>
+        <div id="pulsoidSetting">
+            <label for="pulsoidFeed" id="pulsoidFeedUrlText">Url:</label>
+            <input id="pulsoidFeed" type="text">
+            <input type="button" id="pulsoidFeedButton" value="apply">
+            <br>
+            <div id="pulsoidHintJson">See config for 'Feed reference' at <a target="_blank" href="https://pulsoid.net/ui/configuration">Pulsoid Configuration</a></div>
+            <div id="pulsoidHintToken">Get or refresh Token <a target="_blank" id="pulsoidAuthLink" href="">here</a></div>
+        </div>
+    </div>
+    <hr>
+    <div id="bgColor"></div>
+    <div id="color"></div>
+    <hr>
+    <div id="optionsLines"></div>
+    <hr>
+    <div>
+        <label for="urlText">URL to use (click to copy to clipboard):</label><br>
+        <textarea readonly="readonly" id="urlText"></textarea>
+    </div>
+</div>
+
+<div id="tutorial" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight"></div>
+
+<!-- ♥ made with love ♥-->
+<!-- by UnskilledFreak -->
+</body>
+</html>

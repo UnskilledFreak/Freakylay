@@ -1,0 +1,73 @@
+@mixin modifierBar {
+  position: absolute;
+  text-align: right;
+  font-size: 14px;
+  transition: 1s all;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  right: 5px;
+
+  &.inactive {
+    right: -250px;
+  }
+
+  > div {
+    background-color: var(--background);
+    padding: 5px;
+    width: fit-content;
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  &:not(.flip) {
+    > div {
+      border-radius: $borderRadius 0 0 $borderRadius;
+
+      &.first {
+        border-top-right-radius: $borderRadius;
+      }
+
+      &.last {
+        border-bottom-right-radius: $borderRadius;
+      }
+    }
+  }
+
+  &.flip {
+    right: inherit;
+    left: 5px;
+    align-items: flex-start;
+
+    &.inactive {
+      left: -250px;
+    }
+
+    > div {
+      border-radius: 0 $borderRadius $borderRadius 0;
+
+      &.first {
+        border-top-left-radius: $borderRadius;
+      }
+
+      &.last {
+        border-bottom-left-radius: $borderRadius;
+      }
+    }
+  }
+}
+
+#practice {
+  top: 200px;
+  @include modifierBar;
+}
+
+#modifiers {
+  bottom: 200px;
+  @include modifierBar;
+}

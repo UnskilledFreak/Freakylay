@@ -1,0 +1,102 @@
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--text);
+}
+
+body, input, button {
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+}
+
+body {
+  color: var(--text);
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  &.test {
+    background-image: url("../img/beat-saber-5.jpg");
+  }
+}
+
+a {
+  color: var(--text);
+  font-style: italic;
+
+  &:hover {
+    font-style: normal;
+  }
+}
+
+svg {
+  &.roundBar {
+    background: transparent;
+    transform: rotate(-90deg);
+
+    > circle {
+      fill: transparent;
+      stroke-linecap: round;
+
+      &.remaining {
+        stroke: var(--text);
+        opacity: .25;
+        stroke-width: 2px;
+      }
+
+      &.progress {
+        stroke: var(--text);
+        stroke-width: 8px;
+        transition: .2s all;
+      }
+    }
+  }
+}
+
+.debugger {
+  background-color: var(--background);
+  color: var(--text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+#alphaWarning {
+  position: absolute;
+  bottom: 1px;
+  left: 25%;
+  font-size: 10px;
+  width: 500px;
+  margin-left: -250px;
+  text-decoration: underline;
+  /* just for testing */
+  background: linear-gradient(to right, #ff55ff, #5555ff, #55ffff, #ffff55, #ff5555);
+  -webkit-background-clip: text;
+  text-align: center;
+  /*background-clip: text;*/
+  color: transparent;
+  animation: rainbow 10s ease-in-out infinite;
+  background-size: 400% 100%;
+}
+
+@keyframes rainbow {
+  0%, 10% {
+    background-position-x: 0;
+  }
+  50% {
+    background-position-x: 100%;
+  }
+}

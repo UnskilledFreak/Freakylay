@@ -1,0 +1,126 @@
+#counterSection {
+  background-color: var(--background);
+  position: absolute;
+  height: $counterSectionHeight;
+  width: $counterSectionWidth;
+  bottom: 5px;
+  left: 50%;
+  margin-left: calc(-#{$counterSectionWidth} / 2);
+  transition: 1s all;
+  border-radius: $borderRadius;
+
+  > .ears {
+    position: absolute;
+    width: $counterSectionWidth;
+
+    &#fullCombo {
+      text-align: center;
+    }
+
+    &#ranked {
+      padding-left: 20px;
+    }
+
+    &#stars {
+      padding-right: 20px;
+      text-align: right;
+    }
+
+    > div {
+      background-color: var(--background);
+      margin: 0 auto;
+      display: inline-block;
+      padding: 5px;
+    }
+  }
+
+  &.pulsoid {
+    width: calc($counterSectionWidth + $pulsoidWidth);
+    margin-left: calc(-#{$counterSectionWidth + $pulsoidWidth} / 2);
+  }
+
+  &.inactive {
+    bottom: -150px;
+  }
+
+  > div {
+    float: left;
+  }
+
+  .holders {
+    width: 230px;
+
+    .line {
+      margin: 8px 0;
+      font-size: 17px;
+      line-height: 19px;
+      text-align: center;
+
+      #score {
+        font-size: 24px;
+      }
+
+      > div {
+        display: inline-block;
+        width: 80px;
+        font-size: 14px;
+
+        > span {
+          font-size: 10px;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+
+  .barHolder {
+    width: 90px;
+
+    > #rank {
+      position: absolute;
+      /*line-height: 25px;*/
+      line-height: 90px;
+      text-align: center;
+      font-size: 58px;
+      width: 90px;
+      opacity: .3;
+      font-weight: 100;
+    }
+  }
+
+  .progressInfo {
+    position: absolute;
+    font-size: 14px;
+    text-align: center;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &:not(.flip) {
+    .ears {
+      margin-top: -29px;
+      > div {
+        border-radius: $borderRadius $borderRadius 0 0;
+      }
+    }
+  }
+
+  &.flip {
+    bottom: inherit;
+    top: 5px;
+
+    &.inactive {
+      top: -150px;
+    }
+
+    .ears {
+      margin-top: $counterSectionHeight;
+      > div {
+        border-radius: 0 0 $borderRadius $borderRadius;
+      }
+    }
+  }
+}

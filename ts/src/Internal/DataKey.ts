@@ -1,4 +1,8 @@
 namespace Freakylay.Internal {
+    /**
+     * the old way of using keys and values in a JSON feed
+     * @deprecated
+     */
     export class DataKey<T> {
 
         private readonly key: string;
@@ -15,12 +19,12 @@ namespace Freakylay.Internal {
             this.value = value;
         }
 
-        public isSet(): boolean {
+        public isNotDefault(): boolean {
             return this.value != this.defaultValue;
         }
 
         public update(data: {}): void {
-            this.setValue(Helper.isset(data, this.key, this.defaultValue));
+            this.setValue(data.isset(this.key, this.defaultValue));
         }
 
         public getValue(): T {
