@@ -292,6 +292,13 @@ namespace Freakylay.Ui {
                 this.pulsoidConnection.stop();
             });
 
+            this.config.pulsoid.maxStaticBpm.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.pulsoid.useDynamicBpm.register(() => {
+                this.helper.generateUrlText();
+            });
+
             this.pulsoidConnection.bpm.register((bpm: number) => {
                 let enabled = bpm > 0;
                 this.pulsoid.display(enabled);
@@ -320,18 +327,18 @@ namespace Freakylay.Ui {
             this.cssRootVariables = document.get<HTMLHtmlElement>(':root');
 
             // sections
-            this.counterSection = document.getId<HTMLDivElement>('counterSection');
-            this.songInfo = document.getId<HTMLDivElement>('songInfo');
-            this.modifiers = document.getId<HTMLDivElement>('modifiers');
+            this.counterSection = document.getDiv('counterSection');
+            this.songInfo = document.getDiv('songInfo');
+            this.modifiers = document.getDiv('modifiers');
 
             // counter section
-            this.combo = document.getId<HTMLDivElement>('combo');
-            this.miss = document.getId<HTMLDivElement>('miss');
-            this.score = document.getId<HTMLDivElement>('score');
-            this.blockSpeed = document.getId<HTMLDivElement>('njs');
-            this.bpm = document.getId<HTMLDivElement>('bpm');
-            this.ranked = document.getId<HTMLDivElement>('ranked');
-            this.stars = document.getId<HTMLDivElement>('stars');
+            this.combo = document.getDiv('combo');
+            this.miss = document.getDiv('miss');
+            this.score = document.getDiv('score');
+            this.blockSpeed = document.getDiv('njs');
+            this.bpm = document.getDiv('bpm');
+            this.ranked = document.getDiv('ranked');
+            this.stars = document.getDiv('stars');
 
             this.comboValue = this.combo.children.item(1) as HTMLSpanElement;
             this.missValue = this.miss.children.item(1) as HTMLSpanElement;
@@ -339,10 +346,10 @@ namespace Freakylay.Ui {
             this.bpmValue = this.bpm.children.item(1) as HTMLSpanElement;
             this.starsValue = this.stars.children.item(1) as HTMLSpanElement;
 
-            this.health = document.getId<HTMLDivElement>('healthHolder');
-            this.accuracy = document.getId<HTMLDivElement>('accuracyHolder');
-            this.time = document.getId<HTMLDivElement>('timerHolder');
-            this.pulsoid = document.getId<HTMLDivElement>('pulsoidHolder');
+            this.health = document.getDiv('healthHolder');
+            this.accuracy = document.getDiv('accuracyHolder');
+            this.time = document.getDiv('timerHolder');
+            this.pulsoid = document.getDiv('pulsoidHolder');
 
             this.timeCircleBar = new CircleBar(this.time);
             this.healthCircleBar = new CircleBar(this.health, (percent: string) => {
@@ -351,7 +358,7 @@ namespace Freakylay.Ui {
             this.accuracyCircleBar = new CircleBar(this.accuracy, (percent: string) => {
                 return '<small>Accuracy</small>' + percent + '%';
             });
-            this.accuracyRank = document.getId<HTMLDivElement>('rank');
+            this.accuracyRank = document.getDiv('rank');
             this.pulsoidCircleBar = new CircleBar(this.pulsoid);
 
             this.healthCircleBar.setProgress(50, 100);
@@ -361,42 +368,42 @@ namespace Freakylay.Ui {
             this.pulsoidCircleBar.setProgress(50, 100);
             this.pulsoid.display(false);
 
-            this.fullCombo = document.getId<HTMLDivElement>('fullCombo');
+            this.fullCombo = document.getDiv('fullCombo');
 
             // song info
-            this.previousMapKey = document.getId<HTMLDivElement>('previousBSR');
-            this.comboValue = document.getId<HTMLDivElement>('cover');
-            this.mapper = document.getId<HTMLDivElement>('mapper');
-            this.difficulty = document.getId<HTMLDivElement>('difficulty');
-            this.songArtist = document.getId<HTMLDivElement>('artist');
-            this.songName = document.getId<HTMLDivElement>('mapName');
-            this.coverImage = document.getId<HTMLDivElement>('cover');
+            this.previousMapKey = document.getDiv('previousBSR');
+            this.comboValue = document.getDiv('cover');
+            this.mapper = document.getDiv('mapper');
+            this.difficulty = document.getDiv('difficulty');
+            this.songArtist = document.getDiv('artist');
+            this.songName = document.getDiv('mapName');
+            this.coverImage = document.getDiv('cover');
 
             this.difficultyValue = this.difficulty.children.item(0) as HTMLSpanElement;
             this.customDifficultyValue = this.difficulty.children.item(1) as HTMLSpanElement;
 
             // modifiers
-            this.modifierNoFailOn0Energy = document.getId<HTMLDivElement>('noFailOn0Energy');
-            this.modifierOneLife = document.getId<HTMLDivElement>('oneLife');
-            this.modifierFourLives = document.getId<HTMLDivElement>('fourLives');
-            this.modifierNoBombs = document.getId<HTMLDivElement>('noBombs');
-            this.modifierNoWalls = document.getId<HTMLDivElement>('noWalls');
-            this.modifierNoArrows = document.getId<HTMLDivElement>('noArrows');
-            this.modifierGhostNotes = document.getId<HTMLDivElement>('ghostNotes');
-            this.modifierDisappearingArrows = document.getId<HTMLDivElement>('disappearingArrows');
-            this.modifierSmallNotes = document.getId<HTMLDivElement>('smallNotes');
-            this.modifierProMode = document.getId<HTMLDivElement>('proMode');
-            this.modifierStrictAngles = document.getId<HTMLDivElement>('strictAngles');
-            this.modifierZenMode = document.getId<HTMLDivElement>('zenMode');
-            this.modifierSlowerSong = document.getId<HTMLDivElement>('slowerSong');
-            this.modifierFasterSong = document.getId<HTMLDivElement>('fasterSong');
-            this.modifierSuperFastSong = document.getId<HTMLDivElement>('superFastSong');
+            this.modifierNoFailOn0Energy = document.getDiv('noFailOn0Energy');
+            this.modifierOneLife = document.getDiv('oneLife');
+            this.modifierFourLives = document.getDiv('fourLives');
+            this.modifierNoBombs = document.getDiv('noBombs');
+            this.modifierNoWalls = document.getDiv('noWalls');
+            this.modifierNoArrows = document.getDiv('noArrows');
+            this.modifierGhostNotes = document.getDiv('ghostNotes');
+            this.modifierDisappearingArrows = document.getDiv('disappearingArrows');
+            this.modifierSmallNotes = document.getDiv('smallNotes');
+            this.modifierProMode = document.getDiv('proMode');
+            this.modifierStrictAngles = document.getDiv('strictAngles');
+            this.modifierZenMode = document.getDiv('zenMode');
+            this.modifierSlowerSong = document.getDiv('slowerSong');
+            this.modifierFasterSong = document.getDiv('fasterSong');
+            this.modifierSuperFastSong = document.getDiv('superFastSong');
 
             // practice mode
-            this.practiceMode = document.getId<HTMLDivElement>('practice');
-            this.practiceModeInfo = document.getId<HTMLDivElement>('practiceMode');
-            this.practiceModeSongSpeed = document.getId<HTMLDivElement>('practiceModeSongSpeed');
-            this.practiceModeTimeOffset = document.getId<HTMLDivElement>('practiceModeTimeOffset');
+            this.practiceMode = document.getDiv('practice');
+            this.practiceModeInfo = document.getDiv('practiceMode');
+            this.practiceModeSongSpeed = document.getDiv('practiceModeSongSpeed');
+            this.practiceModeTimeOffset = document.getDiv('practiceModeTimeOffset');
         }
 
         /**

@@ -256,6 +256,8 @@ interface Document {
 
     getId<T>(selector: string): T;
 
+    getDiv(selector: string): HTMLDivElement;
+
     getAll<T>(selector: string): T;
 
     create<T>(tag: string, namespace?: string): T;
@@ -285,6 +287,14 @@ Document.prototype.get = function <T>(selector: string): T {
  */
 Document.prototype.getId = function <T>(selector: string): T {
     return <T>this.get('#' + selector);
+}
+
+/**
+ * alias for document.getId<HTMLDivElement>()
+ * @param selector
+ */
+Document.prototype.getDiv = function (selector: string): HTMLDivElement {
+    return this.getId(selector);
 }
 
 /**

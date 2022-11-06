@@ -158,8 +158,12 @@
       width: 150px;
     }
 
-    select, input:not([type=button]) {
+    select, input.long {
       width: 365px;
+    }
+
+    input[type=number] {
+      width: 100px;
     }
 
     #pulsoidThanks {

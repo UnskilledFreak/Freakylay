@@ -45,14 +45,14 @@ namespace Freakylay.Ui {
 
             let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');
 
-            document.getId<HTMLDivElement>('copyright').innerText = version;
+            document.getDiv('copyright').innerText = version;
             document.getId<HTMLSpanElement>('welcomeVersion').innerText = version;
-            document.getId<HTMLDivElement>('songInfo').ondblclick = () => {
+            document.getDiv('songInfo').ondblclick = () => {
                 this.toggleOptionPanel();
             }
 
             if (Overlay.IsAlpha) {
-                let alphaWarning = document.getId<HTMLDivElement>('alphaWarning');
+                let alphaWarning = document.getDiv('alphaWarning');
                 alphaWarning.innerText = version + ' - early testing version';
             }
 
@@ -68,9 +68,9 @@ namespace Freakylay.Ui {
             // pulsoid
             this.pulsoidFeedText = document.getId<HTMLLabelElement>('pulsoidFeedUrlText');
             this.pulsoidFeedInput = document.getId<HTMLInputElement>('pulsoidFeed');
-            this.pulsoidHintJson = document.getId<HTMLDivElement>('pulsoidHintJson');
-            this.pulsoidHintToken = document.getId<HTMLDivElement>('pulsoidHintToken');
-            this.pulsoidConnectionState = document.getId<HTMLDivElement>('pulsoidConnectionState');
+            this.pulsoidHintJson = document.getDiv('pulsoidHintJson');
+            this.pulsoidHintToken = document.getDiv('pulsoidHintToken');
+            this.pulsoidConnectionState = document.getDiv('pulsoidConnectionState');
 
             this.pulsoid.connectionState.register((state: ConnectionState) => {
                 this.pulsoidConnectionState.innerText = Freakylay.DataTransfer.Pulsoid.ConnectionState[state];
@@ -131,8 +131,8 @@ namespace Freakylay.Ui {
             });
 
             // create inputs in dom
-            this.backgroundColorInput.createInputMenu(document.getId<HTMLDivElement>('bgColor'));
-            this.textColorInput.createInputMenu(document.getId<HTMLDivElement>('color'));
+            this.backgroundColorInput.createInputMenu(document.getDiv('bgColor'));
+            this.textColorInput.createInputMenu(document.getDiv('color'));
 
             // append generate random color buttons
             this.getTabContentDom('colors').append(
@@ -286,6 +286,12 @@ namespace Freakylay.Ui {
             document.getId<HTMLButtonElement>('pulsoidAuthLink').onclick = () => {
                 window.open(url, '_blank');
             };
+
+            let settings = document.getDiv('pulsoidSettingList');
+            settings.append(
+                this.booleanSettingLine('use dynamic max bpm', this.config.pulsoid.useDynamicBpm),
+                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.pulsoid.maxStaticBpm, 30, 500, 1)
+            );
         }
 
         /**
@@ -359,7 +365,7 @@ namespace Freakylay.Ui {
         }
 
         /**
-         * helper to generate a UI line for specific setting
+         * helper to generate a UI line for boolean setting
          * @param name
          * @param property
          * @private
@@ -382,6 +388,36 @@ namespace Freakylay.Ui {
             };
 
             line.append(input, info);
+
+            return line;
+        }
+
+        /**
+         * helper to generate a UI line for number setting
+         * @param name
+         * @param property
+         * @param min
+         * @param max
+         * @param step
+         * @private
+         */
+        private numberSettingLine(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
+            let line = document.div().addClass<HTMLDivElement>('settingLine');
+            let info = document.span();
+            let input = document.create<HTMLInputElement>('input');
+
+            input.type = 'number';
+            input.min = min.toString();
+            input.max = max.toString();
+            input.step = step.toString();
+            input.value = property.Value.toString();
+            input.oninput = () => {
+                property.Value = parseInt(input.value);
+            };
+
+            info.innerText = name;
+
+            line.append(input, name);
 
             return line;
         }

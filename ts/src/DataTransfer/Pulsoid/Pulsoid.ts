@@ -12,14 +12,13 @@ namespace Freakylay.DataTransfer.Pulsoid {
      */
     export class Pulsoid {
 
-        public static MaxStaticBpm: number = 210;
-
         private logger: Logger;
         private lastCheck: number;
         private currentState: ConnectionState = ConnectionState.Ready;
         private timeout: number;
         private tokenSocket: WebSocket;
         private config: Config;
+        private internalMaxBpm: number;
 
         public maxBpm: EventProperty<number>;
         public bpm: EventProperty<number>;
@@ -29,8 +28,9 @@ namespace Freakylay.DataTransfer.Pulsoid {
             this.logger = new Logger('Pulsoid')
             this.config = config;
             this.bpm = new EventProperty<number>(0);
-            this.maxBpm = new EventProperty<number>(Pulsoid.MaxStaticBpm);
+            this.maxBpm = new EventProperty<number>(this.config.pulsoid.maxStaticBpm.Value);
             this.connectionState = new EventProperty<ConnectionState>(ConnectionState.NotConnected);
+            this.internalMaxBpm = 0;
         }
 
         /**
@@ -122,8 +122,12 @@ namespace Freakylay.DataTransfer.Pulsoid {
          * @private
          */
         private sendEvent(bpm: number): void {
+            // todo :: this needs testing
+            this.internalMaxBpm = Math.max(this.internalMaxBpm, bpm);
             this.bpm.Value = bpm;
-            this.maxBpm.Value = Math.max(this.maxBpm.Value, bpm);
+            this.maxBpm.Value = this.config.pulsoid.useDynamicBpm.Value
+                ? this.internalMaxBpm
+                : this.config.pulsoid.maxStaticBpm.Value;
         }
 
         /**
