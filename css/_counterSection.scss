@@ -12,6 +12,7 @@
   > .ears {
     position: absolute;
     width: $counterSectionWidth;
+    transition: 1s all;
 
     &#fullCombo {
       text-align: center;
@@ -37,6 +38,10 @@
   &.pulsoid {
     width: calc($counterSectionWidth + $pulsoidWidth);
     margin-left: calc(-#{$counterSectionWidth + $pulsoidWidth} / 2);
+
+    > .ears {
+      width: calc($counterSectionWidth + $pulsoidWidth);
+    }
   }
 
   &.inactive {

@@ -5,6 +5,7 @@ namespace Freakylay.Ui {
     import Color = Freakylay.Internal.Color;
     import EventProperty = Freakylay.Internal.EventProperty;
     import Logger = Freakylay.Internal.Logger;
+    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
 
     export class Events {
 
@@ -12,6 +13,7 @@ namespace Freakylay.Ui {
         private config: Config;
         private helper: ConfigHelper;
         private connection: BaseConnection;
+        private pulsoidConnection: Pulsoid;
 
         // html elements
         private cssRootVariables: HTMLHtmlElement;
@@ -23,6 +25,7 @@ namespace Freakylay.Ui {
         private counterSection: HTMLDivElement;
         private songInfo: HTMLDivElement;
         private modifiers: HTMLDivElement;
+        private practiceMode: HTMLDivElement;
 
         // counter section
         private combo: HTMLDivElement;
@@ -80,7 +83,6 @@ namespace Freakylay.Ui {
         private modifierSuperFastSong: HTMLDivElement;
 
         // practice mode
-        private practiceMode: HTMLDivElement;
         private practiceModeInfo: HTMLDivElement;
         private practiceModeSongSpeed: HTMLDivElement;
         private practiceModeTimeOffset: HTMLDivElement;
@@ -89,6 +91,9 @@ namespace Freakylay.Ui {
         private readonly gameModifiers: HTMLDivElement[];
         private readonly practiceModifiers: HTMLDivElement[];
         private readonly allModifiers: HTMLDivElement[][];
+
+        // elements array
+        private readonly toggleElements: HTMLDivElement[];
 
         private showElements: EventProperty<boolean>;
 
@@ -102,11 +107,13 @@ namespace Freakylay.Ui {
          * it also hooks into all events given by config and other stuff
          * @param config
          * @param helper
+         * @param pulsoid
          */
-        constructor(config: Config, helper: ConfigHelper) {
+        constructor(config: Config, helper: ConfigHelper, pulsoid: Pulsoid) {
             this.logger = new Logger('Events');
             this.config = config;
             this.helper = helper;
+            this.pulsoidConnection = pulsoid;
 
             this.showElements = new EventProperty<boolean>(false);
 
@@ -136,29 +143,37 @@ namespace Freakylay.Ui {
                 this.practiceModeTimeOffset
             ];
 
-            this.allModifiers = [this.gameModifiers, this.practiceModifiers];
+            this.allModifiers = [
+                this.gameModifiers,
+                this.practiceModifiers
+            ];
+
+            this.toggleElements = [
+                this.counterSection,
+                this.modifiers,
+                this.songInfo,
+                this.practiceMode
+            ];
 
             // internal
             this.showElements.register((show: boolean) => {
-                if (show) {
-                    this.counterSection.removeClass('inactive');
-                    this.modifiers.removeClass('inactive');
-                    this.songInfo.removeClass('inactive');
-                    return;
-                }
-
-                this.counterSection.addClass('inactive');
-                this.modifiers.addClass('inactive');
-                this.songInfo.addClass('inactive');
-            })
-
-            // option panel
-            this.helper.optionsOpen.register((show: boolean) => {
+                const className = 'inactive';
                 this.allModifiers.forEach((ar: HTMLDivElement[]) => {
                     ar.forEach((element: HTMLDivElement) => {
                         this.displayModifier(element, true);
                     });
                 })
+                this.toggleElements.forEach((element: HTMLDivElement) => {
+                    if (show) {
+                        element.removeClass(className);
+                    } else {
+                        element.addClass(className);
+                    }
+                });
+            })
+
+            // option panel
+            this.helper.optionsOpen.register((show: boolean) => {
                 this.showElements.Value = show;
             });
 
@@ -211,15 +226,11 @@ namespace Freakylay.Ui {
                 this.modifiers.toggleClassByValue(enabled, 'flip');
                 this.practiceMode.toggleClassByValue(enabled, 'flip');
             });
-            this.config.looks.compareWithPreviousScore.register((scoreCompareMode: number) => {
-                this.helper.generateUrlText();
-                // there is nothing more to do here, value will get read when speed info is given by connection
-            });
             this.config.looks.hideFullComboModifier.register((enabled: boolean) => {
                 this.helper.generateUrlText();
                 this.fullCombo.display(!enabled);
             });
-            this.config.looks.timeCircleLikeOtherCircles.register((enabled: boolean) => {
+            this.config.looks.timeCircleLikeOtherCircles.register(() => {
                 this.helper.generateUrlText();
                 let min = 50;
                 let max = 100;
@@ -232,10 +243,6 @@ namespace Freakylay.Ui {
             this.config.looks.songInfoOnTopSide.register((enabled: boolean) => {
                 this.helper.generateUrlText();
                 this.songInfo.toggleClassByValue(enabled, 'top');
-            });
-            this.config.looks.hideDefaultDifficultyOnCustomDifficulty.register((enabled: boolean) => {
-                this.helper.generateUrlText();
-                // there is nothing more to do here, value will get read when speed info is given by connection
             });
             this.config.looks.hideAllModifiers.register((enabled: boolean) => {
                 this.helper.generateUrlText();
@@ -250,10 +257,6 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
                 this.songInfo.display(!enabled);
             });
-            this.config.looks.speedDisplayRelative.register((enabled: boolean) => {
-                this.helper.generateUrlText();
-                // there is nothing more to do here, value will get read when speed info is given by connection
-            });
             this.config.looks.showRanked.register((enabled: boolean) => {
                 this.helper.generateUrlText();
                 this.ranked.display(enabled);
@@ -262,24 +265,47 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
                 this.stars.display(enabled);
             });
-            this.config.looks.useMapColorForBackgroundColor.register((value: number) => {
-                this.helper.generateUrlText();
-                // there is nothing more to do here, value will get read when speed info is given by connection
-            });
-            this.config.looks.useMapColorForTextColor.register((value: number) => {
-                this.helper.generateUrlText();
-                // there is nothing more to do here, value will get read when speed info is given by connection
-            });
             this.config.looks.showAccuracyRank.register((enabled) => {
                 this.accuracyRank.display(enabled);
             });
 
+            this.config.looks.compareWithPreviousScore.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.looks.hideDefaultDifficultyOnCustomDifficulty.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.looks.speedDisplayRelative.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.looks.useMapColorForBackgroundColor.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.looks.useMapColorForTextColor.register(() => {
+                this.helper.generateUrlText();
+            });
+
+            this.config.pulsoid.type.register(() => {
+                this.pulsoidConnection.stop();
+            });
+            this.config.pulsoid.tokenOrUrl.register(() => {
+                this.pulsoidConnection.stop();
+            });
+
+            this.pulsoidConnection.bpm.register((bpm: number) => {
+                let enabled = bpm > 0;
+                this.pulsoid.display(enabled);
+                this.counterSection.toggleClassByValue(enabled, 'pulsoid');
+                if (!enabled) {
+                    return;
+                }
+
+                this.pulsoidCircleBar.setProgress(bpm, this.pulsoidConnection.maxBpm.Value);
+                this.pulsoidCircleBar.setText('Heart<br>' + bpm);
+            });
+
             this.startAllMarquees();
-            /*
-            this.counterSection.addClass('inactive');
-            this.modifiers.addClass('inactive');
-            this.songInfo.addClass('inactive');
-            */
+
             if (this.config.shouldOpenOptionPanelAfterLoad) {
                 this.helper.toggleOptionPanel();
             }
@@ -565,7 +591,7 @@ namespace Freakylay.Ui {
             }
 
             if (c.supportsMultiplayer) {
-                this.connection.onMultiplayerChange.register((sMultiplayer: boolean) => {
+                this.connection.onMultiplayerChange.register((isMultiplayer: boolean) => {
 
                 });
             }
@@ -976,7 +1002,7 @@ namespace Freakylay.Ui {
         }
 
         private setCompleteDifficultyLabel(): void {
-            let text = '?';
+            let text;
             if (this.config.looks.hideDefaultDifficultyOnCustomDifficulty) {
                 text = this.valueCustomDifficulty.length > 0 ? this.valueCustomDifficulty : this.valueDifficulty;
             } else {

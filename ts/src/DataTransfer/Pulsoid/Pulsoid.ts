@@ -1,73 +1,56 @@
 ///<reference path="../../Internal/EventProperty.ts"/>
+///<reference path="../WebSocket/WebSocketConnection.ts"/>
 namespace Freakylay.DataTransfer.Pulsoid {
 
     import EventProperty = Freakylay.Internal.EventProperty;
+    import Config = Freakylay.Internal.Config.Config;
+    import Logger = Freakylay.Internal.Logger;
 
     /**
      * Pulsoid class to get heart rate info
-     * I'm so sorry to bypass CORS with this little hack found in the get*Date functions, but I don't know how to get CORS done via a local running script
+     * I'm so sorry to bypass old JSON integration CORS with this little hack found in the get*Date functions, but I don't know how to get CORS done via a local running script
      */
     export class Pulsoid {
 
         public static MaxStaticBpm: number = 210;
 
-        private url: string;
-        private lastCheck: Date;
-        private type: FeedType = FeedType.Disabled;
+        private logger: Logger;
+        private lastCheck: number;
         private currentState: ConnectionState = ConnectionState.Ready;
         private timeout: number;
+        private tokenSocket: WebSocket;
+        private config: Config;
 
         public maxBpm: EventProperty<number>;
         public bpm: EventProperty<number>;
+        public connectionState: EventProperty<ConnectionState>;
 
-        constructor() {
+        constructor(config: Config) {
+            this.logger = new Logger('Pulsoid')
+            this.config = config;
             this.bpm = new EventProperty<number>(0);
             this.maxBpm = new EventProperty<number>(Pulsoid.MaxStaticBpm);
-            this.url = '';
+            this.connectionState = new EventProperty<ConnectionState>(ConnectionState.NotConnected);
         }
 
         /**
          * returns true if type and url is set up, otherwise false
          */
         get isInitialized(): boolean {
-            return this.type != FeedType.Disabled && this.url.length > 0;
+            return this.config.pulsoid.type.Value != FeedType.Disabled && this.config.pulsoid.tokenOrUrl.Value.length > 0;
         }
 
         /**
          * returns true if url (or token) is valid based on feed type
          */
         get isValid(): boolean {
-            switch (this.type) {
-                case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
-                    return false;
+            switch (this.config.pulsoid.type.Value) {
                 case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
-                    return this.url.toLowerCase().startsWith('http');
+                    return this.config.pulsoid.tokenOrUrl.Value.toLowerCase().startsWith('http');
                 case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
-                    return true;
+                    return this.config.pulsoid.tokenOrUrl.Value.length == 36;
                 default:
                     return false;
-            }
-        }
-
-        /**
-         * sets the url and will start data gathering, will do nothing if type is not set up yet
-         * @param url new url or token to use
-         */
-        public setUrl(url: string): void {
-            if (this.type == FeedType.Disabled) {
-                return;
-            }
-
-            this.url = url.trim().replace(/ /g, '');
-
-            if (this.url == '') {
-                this.sendEvent(0);
-                return;
-            }
-
-            if (this.currentState == ConnectionState.Error) {
-                this.currentState = ConnectionState.Ready;
-                this.start();
             }
         }
 
@@ -75,19 +58,62 @@ namespace Freakylay.DataTransfer.Pulsoid {
          * starts data gathering
          */
         public start(): void {
-            if (!this.isValid) {
-                return;
-            }
+            this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.NotConnected;
 
-            this.lastCheck = new Date();
-            this.timeout = window.setInterval(() => {
-                if (this.currentState == ConnectionState.Ready) {
-                    this.pulsoidData();
-                } else if (this.currentState == ConnectionState.Error) {
-                    console.log('unable to fetch pulsoid data');
-                    window.clearTimeout(this.timeout);
+            // internal watch - this is ugly
+            window.setInterval(() => {
+                if (!this.isInitialized || !this.isValid) {
+                    return;
                 }
-            }, 1000);
+                switch (this.connectionState.Value) {
+                    case Freakylay.DataTransfer.Pulsoid.ConnectionState.Error:
+                    case Freakylay.DataTransfer.Pulsoid.ConnectionState.NotConnected:
+                        this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Ready;
+                        // try connecting
+                        switch (this.config.pulsoid.type.Value) {
+                            case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
+                                // this must only get executed when there is not already a connection
+                                if (!(this.tokenSocket instanceof window.WebSocket)) {
+                                    this.getTokenData();
+                                }
+                                return;
+                            case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
+                                // this needs to be in a loop itself
+                                if (this.lastCheck == 0) {
+                                    return;
+                                }
+                                this.lastCheck = 0;
+                                this.timeout = window.setInterval(() => {
+                                    this.getJsonData();
+                                    if (this.currentState == ConnectionState.Error) {
+                                        this.connectionState.Value = ConnectionState.NotConnected;
+                                        this.stop();
+                                    }
+                                }, 750);
+                                return;
+                            case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
+                                this.sendEvent(0);
+                                return;
+                        }
+                        return;
+                    case Freakylay.DataTransfer.Pulsoid.ConnectionState.Fetching:
+                    case Freakylay.DataTransfer.Pulsoid.ConnectionState.Ready:
+                        // nothing to do
+                        return;
+                }
+            }, 10000);
+        }
+
+        /**
+         * stops the connection if any
+         */
+        public stop(): void {
+            if (this.timeout) {
+                window.clearTimeout(this.timeout);
+            }
+            if (this.tokenSocket instanceof window.WebSocket) {
+                this.tokenSocket.close();
+            }
         }
 
         /**
@@ -101,41 +127,22 @@ namespace Freakylay.DataTransfer.Pulsoid {
         }
 
         /**
-         * general data gather, will use the correct method based on feed type
-         * @private
-         */
-        private pulsoidData(): void {
-            if (!this.isInitialized) {
-                return;
-            }
-
-            switch (this.type) {
-                case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
-                    this.sendEvent(0);
-                    return;
-                case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
-                    this.getJsonData();
-                    return;
-                case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
-                    this.getTokenData();
-                    return;
-            }
-        }
-
-        /**
          * gets Pulsoid data based on JSON feed type
          * @private
          */
         private getJsonData(): void {
             this.ajaxHelper(
-                'http://u.unskilledfreak.zone/overlay/freakylay/pulsoid.php?pType=JSON&pFeed=' + this.url,
+                'http://u.unskilledfreak.zone/overlay/freakylay/pulsoid.php?pType=JSON&pFeed=' + this.config.pulsoid.tokenOrUrl.Value,
                 (data: string) => {
-                    let measured = new Date(data.isset('measured_at', (new Date()).toString()));
-                    let bpm = parseInt(data.isset('bpm', '0'));
+                    this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Fetching;
+                    let measured = data.isset('measured_at', 0);
+                    let bpm = data.isset('bpm', 0);
 
                     if (measured >= this.lastCheck) {
                         this.sendEvent(bpm);
                         this.lastCheck = measured;
+                    } else if (measured <= this.lastCheck) {
+                        this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Error;
                     }
                 }
             );
@@ -146,18 +153,25 @@ namespace Freakylay.DataTransfer.Pulsoid {
          * @private
          */
         private getTokenData(): void {
-            this.ajaxHelper(
-                'http://u.unskilledfreak.zone/overlay/freakylay/3.0.0_test/pulsoid.php?pType=Token&pFeed=' + this.url,
-                (data: any) => {
-                    let measured = new Date(data.isset('measured_at', (new Date()).toString()));
-                    let heartRate = data.isset('data', {}).isset('heart_rate', 0);
-
-                    if (measured >= this.lastCheck) {
-                        this.sendEvent(heartRate);
-                        this.lastCheck = measured;
-                    }
-                }
-            );
+            // this should use WebSocketConnection but that does not allow handlers for error, close and open events
+            this.tokenSocket = new window.WebSocket('wss://dev.pulsoid.net/api/v1/data/real_time?access_token=' + this.config.pulsoid.tokenOrUrl.Value);
+            this.tokenSocket.onopen = () => {
+                this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Ready;
+            };
+            this.tokenSocket.onerror = () => {
+                this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Error;
+                this.stop();
+            };
+            this.tokenSocket.onclose = () => {
+                this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.NotConnected;
+                this.stop();
+            };
+            this.tokenSocket.onmessage = (e) => {
+                this.connectionState.Value = Freakylay.DataTransfer.Pulsoid.ConnectionState.Fetching;
+                let data = JSON.parse(e.data);
+                this.lastCheck = data.isset('measured_at', 0);
+                this.sendEvent(data.isset('data', {}).isset('heart_rate', 0));
+            }
         }
 
         /**
@@ -172,7 +186,7 @@ namespace Freakylay.DataTransfer.Pulsoid {
 
             let request = new XMLHttpRequest();
             request.open('GET', url, true);
-            if (this.type == FeedType.JSON) {
+            if (this.config.pulsoid.type.Value == FeedType.JSON) {
                 request.setRequestHeader('Accept', 'application/json');
             }
             request.onreadystatechange = () => {

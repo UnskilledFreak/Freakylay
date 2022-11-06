@@ -7,6 +7,7 @@
 ///<reference path="Ui/Events.ts"/>
 ///<reference path="Ui/Marquee.ts"/>
 ///<reference path="Internal/Logger.ts"/>
+///<reference path="DataTransfer/Pulsoid/Pulsoid.ts"/>
 namespace Freakylay {
     import Config = Freakylay.Internal.Config.Config;
     import BaseGame = Freakylay.Game.BaseGame;
@@ -16,6 +17,7 @@ namespace Freakylay {
     import Events = Freakylay.Ui.Events;
     import EventProperty = Freakylay.Internal.EventProperty;
     import Logger = Freakylay.Internal.Logger;
+    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
 
     /**
      * main overlay class
@@ -34,6 +36,7 @@ namespace Freakylay {
         private currentGame: EventProperty<BaseGame>;
         private currentConnection: EventProperty<BaseConnection>;
         private events: Events;
+        private pulsoid: Pulsoid;
 
         constructor() {
             this.logger = new Logger('Overlay');
@@ -45,11 +48,14 @@ namespace Freakylay {
             this.gameList = this.loadGameList();
             this.tabManager = new TabManager(this.isDev);
 
-            this.helper = new ConfigHelper(this.config);
-            this.events = new Events(this.config, this.helper);
+            this.pulsoid = new Pulsoid(this.config);
+            this.helper = new ConfigHelper(this.config, this.pulsoid);
+            this.events = new Events(this.config, this.helper, this.pulsoid);
 
             // force fire all events once so config values take effect after hooking into events
             this.fireAllConfigEvents();
+
+            this.pulsoid.start();
         }
 
         /**
@@ -127,8 +133,13 @@ namespace Freakylay {
             this.config.looks.hideAllModifiers.trigger();
             this.config.looks.showRanked.trigger();
             this.config.looks.showStars.trigger();
+            this.config.looks.useMapColorForBackgroundColor.trigger();
+            this.config.looks.useMapColorForTextColor.trigger();
+            this.config.looks.showAccuracyRank.trigger();
 
             this.config.pulsoid.type.trigger();
+            this.config.pulsoid.tokenOrUrl.trigger();
+            this.config.pulsoid.useDynamicBpm.trigger();
         }
 
         /**

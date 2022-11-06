@@ -6,6 +6,8 @@ namespace Freakylay.Ui {
     import EventProperty = Freakylay.Internal.EventProperty;
     import FeedType = Freakylay.DataTransfer.Pulsoid.FeedType;
     import Logger = Freakylay.Internal.Logger;
+    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
+    import ConnectionState = Freakylay.DataTransfer.Pulsoid.ConnectionState;
 
     /**
      * helper for config <-> option panel
@@ -17,6 +19,7 @@ namespace Freakylay.Ui {
 
         private readonly logger: Logger;
         private config: Config;
+        private pulsoid: Pulsoid;
         private options: HTMLDivElement;
         private urlText: HTMLTextAreaElement;
 
@@ -28,17 +31,19 @@ namespace Freakylay.Ui {
         private pulsoidFeedInput: HTMLInputElement;
         private pulsoidHintJson: HTMLDivElement;
         private pulsoidHintToken: HTMLDivElement;
+        private pulsoidConnectionState: HTMLSpanElement;
 
         private readonly backgroundImageTest: EventProperty<boolean>;
 
-        constructor(config: Config) {
+        constructor(config: Config, pulsoid: Pulsoid) {
             this.logger = new Logger('ConfigHelper');
             this.optionsOpen = new EventProperty<boolean>(false);
             this.config = config;
+            this.pulsoid = pulsoid;
             this.urlText = document.get<HTMLTextAreaElement>('#urlText');
             this.backgroundImageTest = new EventProperty<boolean>(false);
 
-            let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');;
+            let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');
 
             document.getId<HTMLDivElement>('copyright').innerText = version;
             document.getId<HTMLSpanElement>('welcomeVersion').innerText = version;
@@ -65,40 +70,13 @@ namespace Freakylay.Ui {
             this.pulsoidFeedInput = document.getId<HTMLInputElement>('pulsoidFeed');
             this.pulsoidHintJson = document.getId<HTMLDivElement>('pulsoidHintJson');
             this.pulsoidHintToken = document.getId<HTMLDivElement>('pulsoidHintToken');
+            this.pulsoidConnectionState = document.getId<HTMLDivElement>('pulsoidConnectionState');
 
-            this.config.pulsoid.type.register((type: FeedType) => {
-                switch (type) {
-                    case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
-                        this.pulsoidFeedText.innerText = 'URL or token';
-
-                        this.pulsoidFeedInput.disabled = true;
-
-                        this.pulsoidHintToken.display(false);
-                        this.pulsoidHintJson.display(false);
-                        break;
-                    case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
-                        this.pulsoidFeedText.innerText = 'JSON URL';
-
-                        this.pulsoidFeedInput.value = '';
-                        this.pulsoidFeedInput.disabled = false;
-                        this.pulsoidFeedInput.type = 'text';
-
-                        this.pulsoidHintToken.display(false);
-                        this.pulsoidHintJson.display(true);
-                        break;
-                    case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
-                        this.pulsoidFeedText.innerText = 'Token';
-
-                        this.pulsoidFeedInput.value = '';
-                        this.pulsoidFeedInput.disabled = false;
-                        this.pulsoidFeedInput.type = 'password';
-
-                        this.pulsoidHintToken.display(true);
-                        this.pulsoidHintJson.display(false);
-                        break;
-                }
-                this.pulsoidFeedText.innerText += ':';
+            this.pulsoid.connectionState.register((state: ConnectionState) => {
+                this.pulsoidConnectionState.innerText = Freakylay.DataTransfer.Pulsoid.ConnectionState[state];
             });
+
+            this.checkPulsoidFeedType(this.config.pulsoid.type.Value, true);
         }
 
         /**
@@ -205,9 +183,7 @@ namespace Freakylay.Ui {
                         this.createOptionForSelect(2, 'Use right color'),
                     ],
                     (newValue: string) => {
-                        //this.logger.log('bg: ' + newValue);
                         this.config.looks.useMapColorForBackgroundColor.Value = parseInt(newValue);
-                        //this.logger.log(this.config.looks.useMapColorForBackgroundColor.Value);
                         this.checkUserOverrideColorSetting(colorInfo, defaultColorInfoText);
                     }
                 ),
@@ -219,9 +195,7 @@ namespace Freakylay.Ui {
                         this.createOptionForSelect(2, 'Use right color'),
                     ],
                     (newValue: string) => {
-                        //this.logger.log('t:' + newValue);
                         this.config.looks.useMapColorForTextColor.Value = parseInt(newValue);
-                        //this.logger.log(this.config.looks.useMapColorForTextColor.Value);
                         this.checkUserOverrideColorSetting(colorInfo, defaultColorInfoText);
                     }
                 ),
@@ -241,7 +215,6 @@ namespace Freakylay.Ui {
                     ],
                     (value: string) => {
                         this.config.looks.compareWithPreviousScore.Value = parseInt(value);
-                        //this.logger.log('cwps: ' + this.config.looks.compareWithPreviousScore.Value);
                     }
                 ),
                 this.booleanSettingLine('show song speed as relative values (-20% instead of 80%)', this.config.looks.speedDisplayRelative),
@@ -260,7 +233,6 @@ namespace Freakylay.Ui {
         private checkUserOverrideColorSetting(element: HTMLDivElement, defaultText: string): void {
             element.innerText = defaultText;
             if (this.config.looks.useMapColorForBackgroundColor.Value == 0 || this.config.looks.useMapColorForTextColor.Value == 0) {
-                //this.logger.log('nope');
                 return;
             }
 
@@ -281,19 +253,27 @@ namespace Freakylay.Ui {
                     return;
                 }
 
-                selector.append(this.createOptionForSelect(value, value + (value == 'JSON' ? ' (deprecated)' : '')));
+                selector.append(this.createOptionForSelect(
+                    value,
+                    value + (value == 'JSON' ? ' (deprecated)' : ''),
+                    Freakylay.DataTransfer.Pulsoid.FeedType[value] == this.config.pulsoid.type.Value
+                ));
             });
 
             selector.onchange = () => {
                 // not sure why I have to use full qualifier name here, but it won't work otherwise
                 // this is because the use of enum's
-                this.config.pulsoid.type.Value = Freakylay.DataTransfer.Pulsoid.FeedType[selector.value];
+                this.checkPulsoidFeedType(Freakylay.DataTransfer.Pulsoid.FeedType[selector.value], false);
             };
 
             let feedInput = document.getId<HTMLInputElement>('pulsoidFeed');
+            feedInput.value = this.config.pulsoid.tokenOrUrl.Value;
 
             document.getId<HTMLInputElement>('pulsoidFeedButton').onclick = () => {
                 this.config.pulsoid.tokenOrUrl.Value = feedInput.value;
+                this.config.pulsoid.type.Value = Freakylay.DataTransfer.Pulsoid.FeedType[selector.value];
+
+                this.generateUrlText();
             }
 
             let url = new URL('https://pulsoid.net/oauth2/authorize');
@@ -311,15 +291,63 @@ namespace Freakylay.Ui {
         }
 
         /**
+         * checks feedtype and enables or disables specific functions for pulsoid settings
+         * @param type
+         * @param firstStart
+         * @private
+         */
+        private checkPulsoidFeedType(type: FeedType, firstStart: boolean): void {
+            switch (type) {
+                case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
+                    this.pulsoidFeedText.innerText = 'URL or token';
+
+                    this.pulsoidFeedInput.disabled = true;
+
+                    this.pulsoidHintToken.display(false);
+                    this.pulsoidHintJson.display(false);
+                    break;
+                case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
+                    this.pulsoidFeedText.innerText = 'JSON URL';
+
+                    if (!firstStart) {
+                        this.pulsoidFeedInput.value = '';
+                    }
+
+                    this.pulsoidFeedInput.disabled = false;
+                    this.pulsoidFeedInput.type = 'text';
+
+                    this.pulsoidHintToken.display(false);
+                    this.pulsoidHintJson.display(true);
+                    break;
+                case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
+                    this.pulsoidFeedText.innerText = 'Token';
+
+                    if (!firstStart) {
+                        this.pulsoidFeedInput.value = '';
+                    }
+
+                    this.pulsoidFeedInput.disabled = false;
+                    this.pulsoidFeedInput.type = 'password';
+
+                    this.pulsoidHintToken.display(true);
+                    this.pulsoidHintJson.display(false);
+                    break;
+            }
+            this.pulsoidFeedText.innerText += ':';
+        }
+
+        /**
          * helper function to create ease html option elemeents
          * @param value
          * @param text
+         * @param selected
          * @private
          */
-        private createOptionForSelect<T>(value: T, text?: string): HTMLOptionElement {
+        private createOptionForSelect<T>(value: T, text?: string, selected?: boolean): HTMLOptionElement {
             let option = document.create<HTMLOptionElement>('option');
             option.value = value.toString();
             option.innerText = text == null ? value.toString() : text;
+            option.selected = selected == null ? false : selected;
             return option;
         }
 

@@ -45,7 +45,6 @@ namespace Freakylay.Internal {
          * force the event
          */
         public trigger(): void {
-            //this.logger.log('triggered');
             window.dispatchEvent(new CustomEvent(this._eventName, {
                 detail: {
                     new: this.Value,
@@ -60,7 +59,6 @@ namespace Freakylay.Internal {
          */
         public register(callback: (value: T, oldValue?: T) => void): void {
             this._callbacks.push(callback);
-            //this.logger.log(this._callbacks.length + ' events');
 
             if (!this.isRegistered) {
                 this._internal.push((ev: CustomEvent) => {
