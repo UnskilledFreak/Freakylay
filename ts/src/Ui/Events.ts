@@ -315,6 +315,8 @@ namespace Freakylay.Ui {
 
             if (this.config.shouldOpenOptionPanelAfterLoad) {
                 this.helper.toggleOptionPanel();
+            } else {
+                this.showElements.Value = false;
             }
         }
 
