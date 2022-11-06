@@ -178,9 +178,9 @@ namespace Freakylay.Ui {
                 this.dropDownSetting(
                     'override background color with map color',
                     [
-                        this.createOptionForSelect(0, 'No override'),
-                        this.createOptionForSelect(1, 'Use left color'),
-                        this.createOptionForSelect(2, 'Use right color'),
+                        this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForBackgroundColor.Value == 0),
+                        this.createOptionForSelect(1, 'Use left color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
+                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForBackgroundColor.Value == 2),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForBackgroundColor.Value = parseInt(newValue);
@@ -190,9 +190,9 @@ namespace Freakylay.Ui {
                 this.dropDownSetting(
                     'override text color with map color',
                     [
-                        this.createOptionForSelect(0, 'No override'),
-                        this.createOptionForSelect(1, 'Use left color'),
-                        this.createOptionForSelect(2, 'Use right color'),
+                        this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
+                        this.createOptionForSelect(1, 'Use left color', this.config.looks.useMapColorForTextColor.Value == 1),
+                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForTextColor.Value == 2)
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForTextColor.Value = parseInt(newValue);
@@ -209,9 +209,9 @@ namespace Freakylay.Ui {
                 this.dropDownSetting(
                     'compare score with last score',
                     [
-                        this.createOptionForSelect(0, 'do not compare'),
-                        this.createOptionForSelect(1, 'legacy - Freakylay 2 Arrow'),
-                        this.createOptionForSelect(2, 'use offset')
+                        this.createOptionForSelect(0, 'do not compare', this.config.looks.compareWithPreviousScore.Value == 0),
+                        this.createOptionForSelect(1, 'legacy - Freakylay 2 Arrow', this.config.looks.compareWithPreviousScore.Value == 1),
+                        this.createOptionForSelect(2, 'use offset', this.config.looks.compareWithPreviousScore.Value == 2)
                     ],
                     (value: string) => {
                         this.config.looks.compareWithPreviousScore.Value = parseInt(value);
@@ -261,8 +261,6 @@ namespace Freakylay.Ui {
             });
 
             selector.onchange = () => {
-                // not sure why I have to use full qualifier name here, but it won't work otherwise
-                // this is because the use of enum's
                 this.checkPulsoidFeedType(Freakylay.DataTransfer.Pulsoid.FeedType[selector.value], false);
             };
 
