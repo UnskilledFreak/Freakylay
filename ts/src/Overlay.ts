@@ -18,6 +18,7 @@ namespace Freakylay {
     import EventProperty = Freakylay.Internal.EventProperty;
     import Logger = Freakylay.Internal.Logger;
     import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
+    import GameLinkStatus = Freakylay.Game.GameLinkStatus;
 
     /**
      * main overlay class
@@ -29,32 +30,35 @@ namespace Freakylay {
         private readonly logger: Logger;
         private readonly config: Config;
         private readonly helper: ConfigHelper;
-
-        private gameList: BaseGame[]
+        private readonly gameList: BaseGame[];
+        private readonly pulsoid: Pulsoid;
+        private readonly gameLinkState: EventProperty<GameLinkStatus>;
         private tabManager: TabManager;
         private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
-        private currentGame: EventProperty<BaseGame>;
-        private currentConnection: EventProperty<BaseConnection>;
         private events: Events;
-        private pulsoid: Pulsoid;
 
         constructor() {
             this.logger = new Logger('Overlay');
-            if (this.isDev) {
+            /*if (this.isDev) {
                 document.querySelector('body').append(this.logger.element);
-            }
+            }*/
 
+            this.gameLinkState = new EventProperty<GameLinkStatus>();
             this.config = new Config();
             this.gameList = this.loadGameList();
-            this.tabManager = new TabManager(this.isDev);
 
             this.pulsoid = new Pulsoid(this.config);
-            this.helper = new ConfigHelper(this.config, this.pulsoid);
+            this.helper = new ConfigHelper(this.config, this.pulsoid, this.gameList, this.gameLinkState);
             this.events = new Events(this.config, this.helper, this.pulsoid);
+
+            this.tabManager = new TabManager(this.isDev, this.events);
+
+            this.gameLinkState.Value = Freakylay.Game.GameLinkStatus.NotConnected;
 
             // force fire all events once so config values take effect after hooking into events
             this.fireAllConfigEvents();
 
+            // last but not least, start Pulsoid as standalone worker
             this.pulsoid.start();
         }
 
@@ -70,6 +74,7 @@ namespace Freakylay {
                     case 'BaseConnection':
                     case 'Compatibility':
                     case 'ConnectionElement':
+                    case 'GameLinkStatus':
                         return false;
                     default:
                         if (!this.isDev && gameName == 'Test') {
@@ -136,26 +141,14 @@ namespace Freakylay {
             this.config.looks.useMapColorForBackgroundColor.trigger();
             this.config.looks.useMapColorForTextColor.trigger();
             this.config.looks.showAccuracyRank.trigger();
+            this.config.looks.borderRadius.trigger();
 
             this.config.pulsoid.type.trigger();
             this.config.pulsoid.tokenOrUrl.trigger();
             this.config.pulsoid.useDynamicBpm.trigger();
-        }
 
-        /**
-         * returns current selected game by config value
-         * @private
-         */
-        private getCurrentGame(): BaseGame {
-            return this.gameList.firstOrError(x => x.getName() == this.config.game);
-        }
-
-        /**
-         * returns current selected connection for current game by config value
-         * @private
-         */
-        private getCurrentSelection(): BaseConnection {
-            return this.currentGame.Value.getConnections.firstOrError(x => x.getName() == this.config.connection);
+            this.config.game.trigger();
+            this.config.connection.trigger();
         }
     }
 }

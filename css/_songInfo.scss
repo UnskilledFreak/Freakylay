@@ -22,7 +22,7 @@
       background-color: var(--background);
       padding: 5px;
       float: right;
-      border-radius: 0 $borderRadius $borderRadius 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
 
       #cover {
         height: 150px;
@@ -31,7 +31,7 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
-        border-radius: $borderRadius;
+        border-radius: var(--radius);
       }
     }
 
@@ -45,8 +45,8 @@
         background-color: var(--background);
         @include lineDefinition;
         font-size: 12px;
-        border-top-left-radius: $borderRadius;
-        border-top-right-radius: $borderRadius;
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
       }
     }
 
@@ -58,7 +58,7 @@
       .line {
         @include lineDefinition;
         background-color: var(--background);
-        border-radius: $borderRadius 0 0 $borderRadius;
+        border-radius: var(--radius) 0 0 var(--radius);
       }
 
       #mapName {
@@ -101,13 +101,13 @@
 
       #beatMapCover {
         float: left;
-        border-radius: $borderRadius 0 0 $borderRadius;
+        border-radius: var(--radius) 0 0 var(--radius);
       }
 
       #infoText {
         .line {
           margin-left: inherit;
-          border-radius: 0 $borderRadius $borderRadius 0;
+          border-radius: 0 var(--radius) var(--radius) 0;
         }
       }
     }
@@ -124,15 +124,15 @@
       }
 
       #beatMapCover {
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        border-top-right-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
       }
 
       .previousBSRWrapper {
         top: 160px;
 
         .line {
-          border-radius: 0 0 $borderRadius $borderRadius;
+          border-radius: 0 0 var(--radius) var(--radius);
         }
       }
 
@@ -149,12 +149,12 @@
       #previousBSR[style*="display: block"] {
         ~ #beatMapCover {
           border-bottom-left-radius: 0;
-          border-top-left-radius: $borderRadius;
+          border-top-left-radius: var(--radius);
         }
       }
 
       #beatMapCover {
-        border-radius: $borderRadius 0 0 $borderRadius;
+        border-radius: var(--radius) 0 0 var(--radius);
       }
 
     }

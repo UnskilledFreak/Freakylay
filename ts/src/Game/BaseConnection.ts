@@ -2,25 +2,33 @@
 namespace Freakylay.Game {
     import EventProperty = Freakylay.Internal.EventProperty;
     import Color = Freakylay.Internal.Color;
+    import ConfigHelper = Freakylay.Ui.ConfigHelper;
 
     export abstract class BaseConnection {
-
+        public ip: string;
+        public port: number;
         protected compatibility: Compatibility = new Compatibility();
-        public isConnected: boolean = false;
+        protected isConnected: boolean = false;
 
-        // statics
         public abstract getName(): string;
 
-        public abstract getCompatibility(): Compatibility;
-
-        protected abstract setCompatibility(): void;
-
-        // controls
-        public abstract connect(urlOrIp: string, port: number): boolean;
+        public abstract connect(): boolean;
 
         public abstract disconnect(): boolean;
 
         public abstract reconnect(): boolean;
+
+        public abstract displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void;
+
+        public abstract loadConfig(data: any): void;
+
+        public abstract saveConfig(): any;
+
+        protected abstract setCompatibility(): void;
+
+        get connected(): boolean {
+            return this.isConnected;
+        }
 
         // overlay events
         public onComboChange: EventProperty<number> = new EventProperty<number>();
@@ -127,6 +135,10 @@ namespace Freakylay.Game {
             this.onModifierSuperFastSongChange.register(() => {
                 this.onModifierChange.Value = true;
             });
+        }
+
+        public getCompatibility(): Compatibility {
+            return this.compatibility;
         }
     }
 }

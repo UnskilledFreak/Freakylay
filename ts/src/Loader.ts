@@ -63,12 +63,9 @@ Number.prototype.random = function (max: number): number {
  * calculates a time based on a number, will return a human readable string
  */
 Number.prototype.toDateString = function (): string {
-    let seconds = this % 60;
+    let seconds = (this % 60).leadingZero(2);
     let minutes = Math.floor(this / 60);
-
-    let sSeconds = seconds < 10 ? '0' + seconds : seconds.toString();
-
-    return minutes < 0 ? sSeconds : minutes + ':' + sSeconds;
+    return minutes < 0 ? seconds : minutes + ':' + seconds;
 }
 
 /**
@@ -103,6 +100,12 @@ interface Element {
     inline<T>(inline: boolean): T;
 
     flex<T>(flex: boolean): T;
+
+    removeChildren<T>(): T;
+
+    setDataAttr(name: string, value: string): void;
+
+    getDataAttr(name: string): string;
 }
 
 /**
@@ -133,11 +136,9 @@ Element.prototype.removeClass = function <T>(name: string): T {
  */
 Element.prototype.toggleClassByValue = function <T>(value: boolean, name: string): T {
     if (value) {
-        this.addClass(name);
-    } else {
-        this.removeClass(name);
+        return this.addClass(name);
     }
-    return this;
+    return this.removeClass(name);
 }
 
 /**
@@ -147,11 +148,9 @@ Element.prototype.toggleClassByValue = function <T>(value: boolean, name: string
  */
 Element.prototype.toggleClass = function <T>(name: string): T {
     if (this.classList.contains(name)) {
-        this.removeClass(name);
-    } else {
-        this.addClass(name);
+        return this.removeClass(name);
     }
-    return this;
+    return this.addClass(name);
 }
 
 /**
@@ -190,6 +189,44 @@ Element.prototype.flex = function <T>(flex: boolean): T {
     return this;
 }
 
+/**
+ * removes all children from a node if any
+ */
+Element.prototype.removeChildren = function <T>(): T {
+    let x = this.lastElementChild;
+    while (x) {
+        this.removeChild(x);
+        x = this.lastElementChild;
+    }
+    return this;
+}
+
+/**
+ * sets a data-* attribute to given element
+ * @param name
+ * @param value
+ */
+Element.prototype.setDataAttr = function (name: string, value: string): void {
+    if (this.dataset) {
+        this.dataset[name.toDataAttr()] = value;
+        return
+    }
+
+    this.setAttribute(name, value);
+}
+
+/**
+ * gets the value of a data-* attribute of given element
+ * @param name
+ */
+Element.prototype.getDataAttr = function (name: string): string {
+    if (this.dataset) {
+        return this.dataset[name.toDataAttr()];
+    }
+
+    return this.getAttribute(name);
+}
+
 // noinspection JSUnusedGlobalSymbols
 interface String {
     repeat(length: number): string;
@@ -201,6 +238,10 @@ interface String {
     removeFirst(str: string): string;
 
     removeLast(str: string): string;
+
+    toCapital(): string;
+
+    toDataAttr(): string;
 }
 
 /**
@@ -250,6 +291,26 @@ String.prototype.removeLast = function (str: string): string {
     return this.endsWith(str) ? this.substring(0, this.length - str.length) : this;
 }
 
+/**
+ * converts beginning of a string to a uppercase char
+ */
+String.prototype.toCapital = function (): string {
+    let tmp = this.substring(0, 1);
+    return tmp.toUpperCase() + this.substring(1);
+}
+
+/**
+ * string to use for data-* attribute name, not its value
+ */
+String.prototype.toDataAttr = function (): string {
+    let tmp = this.split('-');
+    let dsName = tmp.shift().toLowerCase();
+    for (let s of tmp) {
+        dsName += s.toCapital();
+    }
+    return dsName;
+}
+
 // noinspection JSUnusedGlobalSymbols
 interface Document {
     get<T>(selector: string): T;
@@ -271,6 +332,10 @@ interface Document {
     button(name: string, onClick: (HTMLInputElement) => void): HTMLButtonElement;
 
     headline(content: string, size?: number): HTMLHeadingElement;
+
+    label(text: string, id?: string): HTMLLabelElement;
+
+    inputRange(value: number, min: number, max: number, step?: number): HTMLInputElement;
 }
 
 /**
@@ -362,6 +427,41 @@ Document.prototype.headline = function (content: string, size: number = 1): HTML
     return line;
 }
 
+/**
+ * creates a label element
+ * @param text
+ * @param id
+ * @private
+ */
+Document.prototype.label = function (text: string, id: string = null): HTMLLabelElement {
+    let label = document.create<HTMLLabelElement>('label');
+    if (id != null) {
+        label.htmlFor = id;
+    }
+    label.innerText = text;
+
+    return label;
+}
+
+/**
+ * creates an input element of type range for color usage
+ * @param value
+ * @param min
+ * @param max
+ * @param step
+ * @private
+ */
+Document.prototype.inputRange = function (value: number, min: number, max: number = 100, step: number = 1): HTMLInputElement {
+    let input = document.create<HTMLInputElement>('input');
+    input.type = 'range';
+    input.min = min.toString();
+    input.max = max.toString();
+    input.step = step.toString()
+    input.value = value.toString();
+    input.defaultValue = input.value;
+    return input;
+}
+
 // noinspection JSUnusedGlobalSymbols
 interface Array<T> {
     firstOrError(check?: (T) => boolean): T;
@@ -394,6 +494,7 @@ Array.prototype.last = function <T>(): T {
 
 /**
  * main entry point here
+ * only run when DOM is fully loaded
  */
 let overlay: Freakylay.Overlay;
 window.onload = () => {

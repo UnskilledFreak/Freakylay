@@ -7,7 +7,7 @@
   left: 50%;
   margin-left: calc(-#{$counterSectionWidth} / 2);
   transition: 1s all;
-  border-radius: $borderRadius;
+  border-radius: var(--radius);
 
   > .ears {
     position: absolute;
@@ -108,7 +108,7 @@
     .ears {
       margin-top: -29px;
       > div {
-        border-radius: $borderRadius $borderRadius 0 0;
+        border-radius: var(--radius) var(--radius) 0 0;
       }
     }
   }
@@ -124,7 +124,7 @@
     .ears {
       margin-top: $counterSectionHeight;
       > div {
-        border-radius: 0 0 $borderRadius $borderRadius;
+        border-radius: 0 0 var(--radius) var(--radius);
       }
     }
   }

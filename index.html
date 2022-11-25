@@ -120,19 +120,34 @@
             <div class="tab" data-tab-name="colors">Colors</div>
             <div class="tab" data-tab-name="settings">Settings</div>
             <div class="tab" data-tab-name="pulsoid">Pulsoid</div>
-            <div class="tab" data-tab-name="test">TEST</div>
         </div>
         <div class="tabContents">
             <div class="tabContent" data-tab-content="splash">
                 <h2>Welcome to <span id="welcomeVersion"></span>!</h2>
                 <p>Please use 'Game & Connection' tab first to choose the correct game and mod you are using.</p>
-                <p>If you have any suggestions, issues or need help, let me know at <a href="https://github.com/UnskilledFreak/Freakylay/issues">Github issues</a>.</p>
                 <p>Version 3 was completely overhauled under its hood with focus of supporting multiple games and mods while still containing a bunch of useful features for content creators.</p>
+                <p>If you have any suggestions, issues or need help, let me know at <a href="https://github.com/UnskilledFreak/Freakylay/issues">Github issues</a>. Please provide as many infos as you can like what game and connection was in use and what went wrong.</p>
+                <p>Thanks! UnskilledFreak</p>
             </div>
             <div class="tabContent" data-tab-content="connection">
-                <label for="ip">Game IP:Port</label>
-                <input id="ip" type="text">
-                <input type="button" id="changeIp" value="apply">
+                <div class="settingsLine">
+                    <span>Status:</span>
+                    <span id="gameLinkStatus"></span>
+                </div>
+                <div class="settingsLine">
+                    <label for="gameList">Select game:</label>
+                    <select id="gameList">
+                        <option value="None">choose</option>
+                    </select>
+                </div>
+                <div class="settingsLine">
+                    <label for="connectionList">Connection:</label>
+                    <select id="connectionList">
+                        <option value="None">choose</option>
+                    </select>
+                </div>
+                <div id="gameConnectionSetting"></div>
+                <button id="connectToGame">Connect!</button>
             </div>
             <div class="tabContent" data-tab-content="colors">
                 <h1>Color management</h1>
@@ -157,9 +172,6 @@
                 <div id="pulsoidHintToken">Get or refresh Token <button id="pulsoidAuthLink">here</button>.<br>Paste generated token into the input field above.</div>
                 <div id="pulsoidThanks">Special thanks to the Pulsoid team for making this possible!</div>
                 <div id="pulsoidSettingList"></div>
-            </div>
-            <div class="tabContent" data-tab-content="test">
-
             </div>
         </div>
     </div>

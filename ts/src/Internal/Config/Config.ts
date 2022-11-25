@@ -13,31 +13,25 @@ namespace Freakylay.Internal.Config {
         public looks: Looks;
         public pulsoid: Pulsoid;
 
-        private selectedGame: string;
-        private selectedConnection: string;
+        public game: EventProperty<string>;
+        public connection: EventProperty<string>;
+        public connectionSetting: any;
         private urlSearchParams: URLSearchParams;
         private randomBackground: Color = Color.random(.7);
         private randomText: Color = this.randomBackground.getHighLowComplementary(1);
         private shouldOpenOptionsAfterLoad: boolean = false;
-
-        get game(): string {
-            return this.selectedGame;
-        }
-
-        get connection(): string {
-            return this.selectedConnection;
-        }
 
         get shouldOpenOptionPanelAfterLoad(): boolean {
             return this.shouldOpenOptionsAfterLoad;
         }
 
         constructor() {
-            this.selectedGame = '';
-            this.selectedConnection = '';
+            this.game = new EventProperty<string>('');
+            this.connection = new EventProperty<string>('');
             this.colors = new Colors();
             this.looks = new Looks();
             this.pulsoid = new Pulsoid();
+            this.connectionSetting = {};
 
             // parse config from window search
             this.urlSearchParams = new URLSearchParams(location.search);
@@ -118,6 +112,7 @@ namespace Freakylay.Internal.Config {
             this.looks.useMapColorForBackgroundColor.Value = 0;
             this.looks.useMapColorForTextColor.Value = 0;
             this.looks.showAccuracyRank.Value = true;
+            this.looks.borderRadius.Value = 10;
         }
 
         /**
@@ -144,11 +139,12 @@ namespace Freakylay.Internal.Config {
          * @param data
          */
         load(data: any) {
-            this.selectedGame = data.a;
-            this.selectedConnection = data.b;
-            this.colors.load(data.c);
-            this.looks.load(data.d);
-            this.pulsoid.load(data.e);
+            this.game.Value = data.isset('a', '');
+            this.connection.Value = data.isset('b', '');
+            this.colors.load(data.isset('c', {}));
+            this.looks.load(data.isset('d', {}));
+            this.pulsoid.load(data.isset('e', {}));
+            this.connectionSetting = data.isset('f', {});
         }
 
         /**
@@ -156,8 +152,8 @@ namespace Freakylay.Internal.Config {
          */
         save(): any {
             return {
-                a: this.selectedGame,
-                b: this.selectedConnection,
+                a: this.game.Value,
+                b: this.connection.Value,
                 c: this.colors.save(),
                 d: this.looks.save(),
                 e: this.pulsoid.save()

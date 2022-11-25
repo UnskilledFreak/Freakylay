@@ -1,9 +1,11 @@
+/*
 ///<reference path="../../BaseConnection.ts"/>
 ///<reference path="../../../DataTransfer/WebSocket/WebSocketConnection.ts"/>
 namespace Freakylay.Game.BeatSaber.Connection {
     import WebSocketConnection = Freakylay.DataTransfer.WebSocket.WebSocketConnection;
+    import ConfigHelper = Freakylay.Ui.ConfigHelper;
 
-    export class DataPuller extends BaseConnection {
+    export class DataPuller_2_1_0 extends BaseConnection {
 
         private connection: WebSocketConnection = null;
         private lastIp: string;
@@ -24,7 +26,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
 
         public getName(): string {
-            return 'DataPuller 2.0.12'
+            return 'DataPuller 2.1.0';
         }
 
         public connect(urlOrIp: string, port: number): boolean {
@@ -52,8 +54,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             return false;
         }
 
-        public getCompatibility(): Compatibility {
-            return this.compatibility;
+        public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
+
         }
 
         protected setCompatibility(): void {
@@ -215,3 +217,4 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
     }
 }
+*/

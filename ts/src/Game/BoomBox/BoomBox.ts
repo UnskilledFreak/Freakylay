@@ -1,3 +1,4 @@
+/*
 namespace Freakylay.Game.BoomBox {
     export class BoomBox extends Freakylay.Game.BaseGame {
         public getName(): string {
@@ -5,3 +6,4 @@ namespace Freakylay.Game.BoomBox {
         }
     }
 }
+*/

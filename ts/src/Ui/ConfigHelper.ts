@@ -8,6 +8,9 @@ namespace Freakylay.Ui {
     import Logger = Freakylay.Internal.Logger;
     import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
     import ConnectionState = Freakylay.DataTransfer.Pulsoid.ConnectionState;
+    import BaseGame = Freakylay.Game.BaseGame;
+    import BaseConnection = Freakylay.Game.BaseConnection;
+    import GameLinkStatus = Freakylay.Game.GameLinkStatus;
 
     /**
      * helper for config <-> option panel
@@ -15,16 +18,23 @@ namespace Freakylay.Ui {
      */
     export class ConfigHelper {
 
-        public optionsOpen: EventProperty<boolean>;
+        public readonly optionsOpen: EventProperty<boolean>;
+        public readonly onGameChange: EventProperty<BaseGame>;
+        public readonly onGameConnectionChange: EventProperty<BaseConnection>;
 
         private readonly logger: Logger;
-        private config: Config;
-        private pulsoid: Pulsoid;
+        private readonly config: Config;
+        private readonly pulsoid: Pulsoid;
+        private readonly urlText: HTMLTextAreaElement;
         private options: HTMLDivElement;
-        private urlText: HTMLTextAreaElement;
+        private gameConnectionSetting: HTMLDivElement;
 
         private backgroundColorInput: ColorInput;
         private textColorInput: ColorInput;
+
+        private readonly backgroundImageTest: EventProperty<boolean>;
+
+        private gameList: BaseGame[];
 
         // pulsoid
         private pulsoidFeedText: HTMLLabelElement;
@@ -32,16 +42,19 @@ namespace Freakylay.Ui {
         private pulsoidHintJson: HTMLDivElement;
         private pulsoidHintToken: HTMLDivElement;
         private pulsoidConnectionState: HTMLSpanElement;
+        private gameListElement: HTMLSelectElement;
+        private connectionListElement: HTMLSelectElement;
 
-        private readonly backgroundImageTest: EventProperty<boolean>;
-
-        constructor(config: Config, pulsoid: Pulsoid) {
+        constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
             this.logger = new Logger('ConfigHelper');
             this.optionsOpen = new EventProperty<boolean>(false);
             this.config = config;
             this.pulsoid = pulsoid;
+            this.gameList = gameList;
             this.urlText = document.get<HTMLTextAreaElement>('#urlText');
             this.backgroundImageTest = new EventProperty<boolean>(false);
+            this.onGameChange = new EventProperty<BaseGame>();
+            this.onGameConnectionChange = new EventProperty<BaseConnection>();
 
             let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');
 
@@ -56,7 +69,10 @@ namespace Freakylay.Ui {
                 alphaWarning.innerText = version + ' - early testing version';
             }
 
-            //this.buildGameTab();
+            this.gameListElement = document.getId<HTMLSelectElement>('gameList');
+            this.connectionListElement = document.getId<HTMLSelectElement>('connectionList');
+
+            this.buildGameTab();
             this.buildColorTab();
             this.buildSettingsTab();
             this.buildPulsoidTab();
@@ -77,6 +93,43 @@ namespace Freakylay.Ui {
             });
 
             this.checkPulsoidFeedType(this.config.pulsoid.type.Value, true);
+
+            this.onGameChange.register((game: BaseGame) => {
+                this.connectionListElement.removeChildren();
+                this.connectionListElement.append(this.createOptionForSelect('None', 'choose', true));
+                game.getConnections.forEach((connection: BaseConnection) => {
+                    let name = connection.getName();
+                    this.connectionListElement.append(this.createOptionForSelect(name, name, name == this.config.connection.Value));
+                });
+                this.connectionListElement.inline(true);
+            });
+
+            this.onGameConnectionChange.register((con: BaseConnection) => {
+                con.displayConnectionSettings(this.gameConnectionSetting, this);
+            });
+
+            let gameLinkStatus = document.getDiv('gameLinkStatus');
+            gameLinkState.register((newStatus: GameLinkStatus) => {
+                gameLinkStatus.innerText = newStatus.toString();
+            });
+
+            let applyGameButton = document.getId<HTMLButtonElement>('connectToGame');
+            applyGameButton.onclick = () => {
+                this.logger.log('haha you dumb piece of shit!');
+            };
+
+            // search for selected game and connection
+            if (this.config.game.Value.length > 0) {
+                try {
+                    let game = this.gameList.firstOrError(x => x.getName() == this.config.game.Value);
+                    let connection = game.getConnections.firstOrError(x => x.getName() == this.config.connection.Value);
+
+                    this.onGameChange.Value = game;
+                    this.onGameConnectionChange.Value = connection;
+                } catch {
+                    // game not found
+                }
+            }
         }
 
         /**
@@ -175,6 +228,7 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('show if map ranked', this.config.looks.showRanked),
                 this.booleanSettingLine('show ranked star info', this.config.looks.showStars),
                 this.booleanSettingLine('show rank behind the accuracy circle', this.config.looks.showAccuracyRank),
+                this.rangeSetting('border radius', this.config.looks.borderRadius, 0, 20, 1),
                 this.dropDownSetting(
                     'override background color with map color',
                     [
@@ -456,6 +510,79 @@ namespace Freakylay.Ui {
         private toggleProperty(input: HTMLInputElement, property: EventProperty<boolean>): void {
             property.Value = !property.Value;
             input.checked = property.Value;
+        }
+
+        /**
+         * creates the UI for selecting game and connection/mods
+         * @private
+         */
+        private buildGameTab(): void {
+            this.connectionListElement.inline(false);
+
+            this.gameListElement.onchange = () => {
+                if (this.gameListElement.value == 'None') {
+                    return;
+                }
+                try {
+                    this.onGameChange.Value = this.gameList.firstOrError((game: BaseGame) => game.getName() == this.gameListElement.value);
+                } catch {
+                    this.logger.log('nani????');
+                }
+            };
+
+            this.connectionListElement.onchange = () => {
+                if (this.connectionListElement.value == 'None') {
+                    return;
+                }
+
+                try {
+                    this.onGameConnectionChange.Value = this.onGameChange.Value.getConnections.firstOrError((con: BaseConnection) => con.getName() == this.connectionListElement.value);
+                } catch {
+                    this.logger.log('nani con????');
+                }
+            };
+
+            this.gameList.forEach((game: BaseGame) => {
+                let name = game.getName();
+                this.gameListElement.append(this.createOptionForSelect(name, name, name == this.config.game.Value));
+            });
+
+            this.gameConnectionSetting = document.getDiv('gameConnectionSetting');
+        }
+
+        /**
+         * creates a input range element
+         * @param name
+         * @param property
+         * @param min
+         * @param max
+         * @param step
+         * @private
+         */
+        private rangeSetting(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
+            let line = document.div().addClass<HTMLDivElement>('settingsLine');
+            let info = document.span();
+
+            info.innerText = property.Value + ' - ' + name;
+
+            let input = document.inputRange(property.Value, min, max, step);
+            input.oninput = () => {
+                property.Value = parseInt(input.value);
+                info.innerText = property.Value + ' - ' + name;
+            };
+
+            line.append(input, info);
+
+            return line;
+        }
+
+        /**
+         * enables or disables given button when game and connection is set
+         * @param button
+         * @private
+         */
+        private enableDisableGameButton(button: HTMLButtonElement): void {
+            button.disabled = this.onGameChange.Value != null && this.onGameConnectionChange.Value != null;
         }
     }
 }

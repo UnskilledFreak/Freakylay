@@ -49,10 +49,10 @@ namespace Freakylay.Ui {
          */
         public createInputMenu(element: HTMLElement): void {
             // create inputs
-            this.rElement = this.input(this.color.Value.red, 'r');
-            this.gElement = this.input(this.color.Value.green, 'g');
-            this.bElement = this.input(this.color.Value.blue, 'b');
-            this.aElement = this.input(this.color.Value.alpha * 255, 'a');
+            this.rElement = document.inputRange(this.color.Value.red, 0, 255);
+            this.gElement = document.inputRange(this.color.Value.green, 0, 255);
+            this.bElement = document.inputRange(this.color.Value.blue, 0, 255);
+            this.aElement = document.inputRange(this.color.Value.alpha * 255, 0, 255);
 
             // create info elements
             this.rNumElement = document.span().addClass('number');
@@ -68,7 +68,6 @@ namespace Freakylay.Ui {
 
             // info element, will get displayed if alpha check returns true
             this.aInfoElement = document.span().addClass('alphaInfo');
-            // todo :: why do i have to cast it to HTMLSpanElement again?
             this.aInfoElement.visibility<HTMLSpanElement>(false).innerHTML = 'Not recommended but might work great ;)';
 
             // register events when color inputs get changed
@@ -91,7 +90,7 @@ namespace Freakylay.Ui {
             for (let x of lines) {
                 let line: HTMLDivElement = document.div().addClass('colorLine');
                 line.append(
-                    this.label(x[0] + ':', x[1].id),
+                    document.label(x[0] + ':'),
                     x[1],
                     x[2]
                 );
@@ -135,38 +134,6 @@ namespace Freakylay.Ui {
                 info.innerText = tmp.toFixed(0);
                 this.color.trigger();
             };
-        }
-
-        /**
-         * creates an input element of type range for color usage
-         * @param value
-         * @param id
-         * @private
-         */
-        private input(value: number, id: string): HTMLInputElement {
-            let input = document.create<HTMLInputElement>('input');
-            input.type = 'range';
-            input.min = '0';
-            input.max = '255';
-            input.value = value.toString();
-            input.defaultValue = input.value;
-            input.id = 'ci_' + this.instance + id;
-
-            return input;
-        }
-
-        /**
-         * creates an label element which is used to display the elements value
-         * @param text
-         * @param id
-         * @private
-         */
-        private label(text: string, id: string): HTMLLabelElement {
-            let label = document.create<HTMLLabelElement>('label');
-            label.htmlFor = id;
-            label.innerHTML = text;
-
-            return label;
         }
     }
 }

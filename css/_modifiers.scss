@@ -27,14 +27,14 @@
 
   &:not(.flip) {
     > div {
-      border-radius: $borderRadius 0 0 $borderRadius;
+      border-radius: var(--radius) 0 0 var(--radius);
 
       &.first {
-        border-top-right-radius: $borderRadius;
+        border-top-right-radius: var(--radius);
       }
 
       &.last {
-        border-bottom-right-radius: $borderRadius;
+        border-bottom-right-radius: var(--radius);
       }
     }
   }
@@ -49,14 +49,14 @@
     }
 
     > div {
-      border-radius: 0 $borderRadius $borderRadius 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
 
       &.first {
-        border-top-left-radius: $borderRadius;
+        border-top-left-radius: var(--radius);
       }
 
       &.last {
-        border-bottom-left-radius: $borderRadius;
+        border-bottom-left-radius: var(--radius);
       }
     }
   }

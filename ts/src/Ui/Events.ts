@@ -33,7 +33,7 @@ namespace Freakylay.Ui {
         private miss: HTMLDivElement;
         private missValue: HTMLSpanElement;
         private score: HTMLDivElement;
-        private previousScore: HTMLDivElement; // hmmm
+        //private previousScore: HTMLDivElement; // hmmm
         private blockSpeed: HTMLDivElement;
         private blockSpeedValue: HTMLSpanElement;
         private bpm: HTMLDivElement;
@@ -194,44 +194,43 @@ namespace Freakylay.Ui {
                 this.handleShortNames(enabled);
             });
             this.config.looks.showPreviousKey.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.previousMapKey.display(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showMissCounter.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.miss.inline(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showBpm.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.bpm.inline(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showBlockSpeed.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.blockSpeed.inline(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showCombo.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.combo.inline(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.songInfoOnRightSide.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.songInfo.toggleClassByValue(enabled, 'flip');
+                this.helper.generateUrlText();
             });
             this.config.looks.counterSectionOnTop.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.counterSection.toggleClassByValue(enabled, 'flip');
+                this.helper.generateUrlText();
             });
             this.config.looks.modifiersOnRightSide.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.modifiers.toggleClassByValue(enabled, 'flip');
                 this.practiceMode.toggleClassByValue(enabled, 'flip');
+                this.helper.generateUrlText();
             });
             this.config.looks.hideFullComboModifier.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.fullCombo.display(!enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.timeCircleLikeOtherCircles.register(() => {
-                this.helper.generateUrlText();
                 let min = 50;
                 let max = 100;
                 if (this.connection) {
@@ -239,34 +238,36 @@ namespace Freakylay.Ui {
                     max = this.connection.onTimeLengthChange.Value;
                 }
                 this.onTimeElapsedChangeSetText(min, max);
+                this.helper.generateUrlText();
             });
             this.config.looks.songInfoOnTopSide.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.songInfo.toggleClassByValue(enabled, 'top');
+                this.helper.generateUrlText();
             });
             this.config.looks.hideAllModifiers.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.modifiers.flex(!enabled);
                 this.practiceMode.flex(!enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.hideCounterSection.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.counterSection.display(!enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.hideSongInfo.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.songInfo.display(!enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showRanked.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.ranked.display(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showStars.register((enabled: boolean) => {
-                this.helper.generateUrlText();
                 this.stars.display(enabled);
+                this.helper.generateUrlText();
             });
             this.config.looks.showAccuracyRank.register((enabled) => {
                 this.accuracyRank.display(enabled);
+                this.helper.generateUrlText();
             });
 
             this.config.looks.compareWithPreviousScore.register(() => {
@@ -282,6 +283,10 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
             this.config.looks.useMapColorForTextColor.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.looks.borderRadius.register((newRadius: number) => {
+                this.setRootCss('radius', newRadius + 'px');
                 this.helper.generateUrlText();
             });
 
@@ -341,12 +346,13 @@ namespace Freakylay.Ui {
             this.bpm = document.getDiv('bpm');
             this.ranked = document.getDiv('ranked');
             this.stars = document.getDiv('stars');
+            this.mapKey = document.getDiv('bsr');
 
             this.comboValue = this.combo.children.item(1) as HTMLSpanElement;
             this.missValue = this.miss.children.item(1) as HTMLSpanElement;
             this.blockSpeedValue = this.blockSpeed.children.item(1) as HTMLSpanElement;
             this.bpmValue = this.bpm.children.item(1) as HTMLSpanElement;
-            this.starsValue = this.stars.children.item(1) as HTMLSpanElement;
+            this.starsValue = this.stars.children.item(0).children.item(1) as HTMLSpanElement;
 
             this.health = document.getDiv('healthHolder');
             this.accuracy = document.getDiv('accuracyHolder');
@@ -414,7 +420,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private setBackgroundColor(color: Color): void {
-            this.cssRootVariables.style.setProperty('--background', color.toCss());
+            this.setRootCss('background', color.toCss());
         }
 
         /**
@@ -423,7 +429,11 @@ namespace Freakylay.Ui {
          * @private
          */
         private setTextColor(color: Color): void {
-            this.cssRootVariables.style.setProperty('--text', color.toCss());
+            this.setRootCss('text', color.toCss());
+        }
+
+        private setRootCss(property: string, value: string) {
+            this.cssRootVariables.style.setProperty('--' + property, value);
         }
 
         /**
@@ -471,6 +481,14 @@ namespace Freakylay.Ui {
          * @private
          */
         private addModifierClasses(): void {
+            if (this.config.looks.hideAllModifiers.Value) {
+                this.practiceMode.flex(false);
+                this.modifiers.flex(false);
+                return;
+            } else {
+                this.practiceMode.flex(true);
+                this.modifiers.flex(true);
+            }
 
             this.allModifiers.forEach((ar: HTMLDivElement[]) => {
 
@@ -515,9 +533,9 @@ namespace Freakylay.Ui {
         /**
          * registers a new game connection and registers all events from its supported values
          * @param connection game connection
-         * @private
+         * @public
          */
-        private registerConnection(connection: BaseConnection): void {
+        public registerConnection(connection: BaseConnection): void {
             this.unregisterConnection();
 
             this.connection = connection;
@@ -525,86 +543,166 @@ namespace Freakylay.Ui {
             let c = this.connection.getCompatibility();
 
             // counter section
-            this.checkCompatibility(c.supportsCombo, this.combo, this.connection.onComboChange, this.onComboChange);
-            this.checkCompatibility(c.supportsMiss, this.miss, this.connection.onMissChange, this.onMissChange);
-            this.checkCompatibility(c.supportsScore, this.score, this.connection.onScoreChange, this.onScoreChange);
-            this.checkCompatibility(c.supportsPreviousScore, this.previousScore, this.connection.onPreviousScoreChange, this.onPreviousScoreChange);
-            this.checkCompatibility(c.supportsBlockSpeed, this.blockSpeed, this.connection.onBlockSpeedChange, this.onBlockSpeedChange);
-            this.checkCompatibility(c.supportsBpm, this.bpm, this.connection.onBpmChange, this.onBpmChange);
-            this.checkCompatibility(c.supportsHealth, this.health, this.connection.onHealthChange, this.onHealthChange);
-            this.checkCompatibility(c.supportsAccuracy, this.accuracy, this.connection.onAccuracyChange, this.onAccuracyChange);
-            this.checkCompatibility(c.supportsTime, this.time, this.connection.onTimeElapsedChange, this.onTimeElapsedChange);
+            this.checkCompatibility(c.supportsCombo, this.comboValue, this.connection.onComboChange, (a) => {
+                this.onComboChange(a);
+            });
+            this.checkCompatibility(c.supportsMiss, this.missValue, this.connection.onMissChange, (a) => {
+                this.onMissChange(a);
+            });
+            this.checkCompatibility(c.supportsScore, this.score, this.connection.onScoreChange, (a) => {
+                this.onScoreChange(a);
+            });
+            this.checkCompatibility(c.supportsBlockSpeed, this.blockSpeedValue, this.connection.onBlockSpeedChange, (a) => {
+                this.onBlockSpeedChange(a);
+            });
+            this.checkCompatibility(c.supportsBpm, this.bpmValue, this.connection.onBpmChange, (a) => {
+                this.onBpmChange(a);
+            });
+            this.checkCompatibility(c.supportsHealth, this.health, this.connection.onHealthChange, (a) => {
+                this.onHealthChange(a);
+            });
+            this.checkCompatibility(c.supportsAccuracy, this.accuracy, this.connection.onAccuracyChange, (a) => {
+                this.onAccuracyChange(a);
+            });
+            this.checkCompatibility(c.supportsTime, this.time, this.connection.onTimeElapsedChange, (a) => {
+                this.onTimeElapsedChange(a);
+            });
             // time length and timescale are not used here
-            this.checkCompatibility(c.supportsRank, this.accuracyRank, this.connection.onRankChange, this.onRankChange);
-            this.checkCompatibility(c.supportsCombo, this.combo, this.connection.onFullComboChange, this.onComboChange);
-            this.checkCompatibility(c.supportsFullCombo, this.fullCombo, this.connection.onFullComboChange, this.onFullComboChange);
+            this.checkCompatibility(c.supportsRank, this.accuracyRank, this.connection.onRankChange, (a) => {
+                this.onRankChange(a);
+            });
+            this.checkCompatibility(c.supportsFullCombo, this.fullCombo, this.connection.onFullComboChange, (a) => {
+                this.onFullComboChange(a);
+            });
             // modifier
-            this.checkCompatibility(c.supportsModifier, this.modifiers, this.connection.onModifierChange, this.onModifierChange);
-            this.checkCompatibility(c.supportsModifierNoFail, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, this.onModifierNoFailChange);
-            this.checkCompatibility(c.supportsModifierOneLife, this.modifierOneLife, this.connection.onModifierOneLifeChange, this.onModifierOneLifeChange);
-            this.checkCompatibility(c.supportsModifierFourLives, this.modifierFourLives, this.connection.onModifierFourLivesChange, this.onModifierFourLivesChange);
-            this.checkCompatibility(c.supportsModifierNoBombs, this.modifierNoBombs, this.connection.onModifierNoBombsChange, this.onModifierNoBombsChange);
-            this.checkCompatibility(c.supportsModifierNoWalls, this.modifierNoWalls, this.connection.onModifierNoWallsChange, this.onModifierNoWallsChange);
-            this.checkCompatibility(c.supportsModifierNoArrows, this.modifierNoArrows, this.connection.onModifierNoArrowsChange, this.onModifierNoArrowsChange);
-            this.checkCompatibility(c.supportsModifierGhostNotes, this.modifierGhostNotes, this.connection.onModifierGhostNotesChange, this.onModifierGhostNotesChange);
-            this.checkCompatibility(c.supportsModifierDisappearingArrows, this.modifierDisappearingArrows, this.connection.onModifierDisappearingArrowsChange, this.onModifierDisappearingArrowsChange);
-            this.checkCompatibility(c.supportsModifierSmallNotes, this.modifierSmallNotes, this.connection.onModifierSmallNotesChange, this.onModifierSmallNotesChange);
-            this.checkCompatibility(c.supportsModifierProMode, this.modifierProMode, this.connection.onModifierProModeChange, this.onModifierProModeChange);
-            this.checkCompatibility(c.supportsModifierStrictAngles, this.modifierStrictAngles, this.connection.onModifierStrictAnglesChange, this.onModifierStrictAnglesChange);
-            this.checkCompatibility(c.supportsModifierZenMode, this.modifierZenMode, this.connection.onModifierZenModeChange, this.onModifierZenModeChange);
-            this.checkCompatibility(c.supportsModifierSlowerSong, this.modifierSlowerSong, this.connection.onModifierSlowerSongChange, this.onModifierSlowerSongChange);
-            this.checkCompatibility(c.supportsModifierFasterSong, this.modifierFasterSong, this.connection.onModifierFasterSongChange, this.onModifierFasterSongChange);
-            this.checkCompatibility(c.supportsModifierSuperFastSong, this.modifierSuperFastSong, this.connection.onModifierSuperFastSongChange, this.onModifierSuperFastSongChange);
-            // todo :: practice mode
-            this.checkCompatibility(c.supportsPracticeMode, this.practiceModeInfo, this.connection.onPracticeModeChange, this.onPracticeModeChange);
-            this.checkCompatibility(c.supportsPracticeModeSpeed, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, this.onPracticeModeSpeedChange);
-            this.checkCompatibility(c.supportsPracticeModeTimeOffset, this.practiceModeTimeOffset, this.connection.onPracticeModeSpeedChange, this.onPracticeModeTimeOffset);
+            this.checkCompatibility(c.supportsModifier, this.modifiers, this.connection.onModifierChange, (a) => {
+                this.onModifierChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierNoFail, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, (a) => {
+                this.onModifierNoFailChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierOneLife, this.modifierOneLife, this.connection.onModifierOneLifeChange, (a) => {
+                this.onModifierOneLifeChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierFourLives, this.modifierFourLives, this.connection.onModifierFourLivesChange, (a) => {
+                this.onModifierFourLivesChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierNoBombs, this.modifierNoBombs, this.connection.onModifierNoBombsChange, (a) => {
+                this.onModifierNoBombsChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierNoWalls, this.modifierNoWalls, this.connection.onModifierNoWallsChange, (a) => {
+                this.onModifierNoWallsChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierNoArrows, this.modifierNoArrows, this.connection.onModifierNoArrowsChange, (a) => {
+                this.onModifierNoArrowsChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierGhostNotes, this.modifierGhostNotes, this.connection.onModifierGhostNotesChange, (a) => {
+                this.onModifierGhostNotesChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierDisappearingArrows, this.modifierDisappearingArrows, this.connection.onModifierDisappearingArrowsChange, (a) => {
+                this.onModifierDisappearingArrowsChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierSmallNotes, this.modifierSmallNotes, this.connection.onModifierSmallNotesChange, (a) => {
+                this.onModifierSmallNotesChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierProMode, this.modifierProMode, this.connection.onModifierProModeChange, (a) => {
+                this.onModifierProModeChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierStrictAngles, this.modifierStrictAngles, this.connection.onModifierStrictAnglesChange, (a) => {
+                this.onModifierStrictAnglesChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierZenMode, this.modifierZenMode, this.connection.onModifierZenModeChange, (a) => {
+                this.onModifierZenModeChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierSlowerSong, this.modifierSlowerSong, this.connection.onModifierSlowerSongChange, (a) => {
+                this.onModifierSlowerSongChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierFasterSong, this.modifierFasterSong, this.connection.onModifierFasterSongChange, (a) => {
+                this.onModifierFasterSongChange(a);
+            });
+            this.checkCompatibility(c.supportsModifierSuperFastSong, this.modifierSuperFastSong, this.connection.onModifierSuperFastSongChange, (a) => {
+                this.onModifierSuperFastSongChange(a);
+            });
+            // practice mode
+            this.checkCompatibility(c.supportsPracticeMode, this.practiceModeInfo, this.connection.onPracticeModeChange, (a) => {
+                this.onPracticeModeChange(a);
+            });
+            this.checkCompatibility(c.supportsPracticeModeSpeed, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
+                this.onPracticeModeSpeedChange(a);
+            });
+            this.checkCompatibility(c.supportsPracticeModeTimeOffset, this.practiceModeTimeOffset, this.connection.onPracticeModeSpeedChange, (a) => {
+                this.onPracticeModeTimeOffset(a);
+            });
             // song info
-            this.checkCompatibility(c.supportsKey, this.mapKey, this.connection.onKeyChange, this.onKeyChange);
-            this.checkCompatibility(c.supportsPreviousKey, this.previousMapKey, this.connection.onPreviousKeyChange, this.onPreviousKeyChange);
-            this.checkCompatibility(c.supportsSongInfoMapperName, this.mapper, this.connection.onSongInfoMapperNameChange, this.onSongInfoMapperNameChange);
-            this.checkCompatibility(c.supportsSongInfoDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, this.onSongInfoDifficultyChange);
-            this.checkCompatibility(c.supportsSongInfoCustomDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, this.onSongInfoCustomDifficultyChange);
-            this.checkCompatibility(c.supportsSongInfoSongArtist, this.songArtist, this.connection.onSongInfoSongAuthorChange, this.onSongInfoSongAuthorChange);
-            this.checkCompatibility(c.supportsSongInfoSongName, this.songName, this.connection.onSongInfoSongNameChange, this.onSongInfoSongNameChange);
-            this.checkCompatibility(c.supportsSongInfoCoverImage, this.coverImage, this.connection.onSongInfoCoverImageChange, this.onSongInfoCoverImageChange);
+            this.checkCompatibility(c.supportsKey, this.mapKey, this.connection.onKeyChange, (a) => {
+                this.onKeyChange(a);
+            });
+            this.checkCompatibility(c.supportsPreviousKey, this.previousMapKey, this.connection.onPreviousKeyChange, (a) => {
+                this.onPreviousKeyChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoMapperName, this.mapper, this.connection.onSongInfoMapperNameChange, (a) => {
+                this.onSongInfoMapperNameChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, (a) => {
+                this.onSongInfoDifficultyChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoCustomDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, (a) => {
+                this.onSongInfoCustomDifficultyChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoSongArtist, this.songArtist, this.connection.onSongInfoSongAuthorChange, (a) => {
+                this.onSongInfoSongAuthorChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoSongName, this.songName, this.connection.onSongInfoSongNameChange, (a) => {
+                this.onSongInfoSongNameChange(a);
+            });
+            this.checkCompatibility(c.supportsSongInfoCoverImage, this.coverImage, this.connection.onSongInfoCoverImageChange, (a) => {
+                this.onSongInfoCoverImageChange(a);
+            });
             // ranked bullshit
-            this.checkCompatibility(c.supportsStar, this.stars, this.connection.onStarChange, this.onStarChange);
-            this.checkCompatibility(c.supportsPerformancePoints, this.ranked, this.connection.onPerformancePointsChange, this.onPerformancePointsChange);
-            // these here are special because they arent used in the overlay as their own elements
-            // todo :: level changes
+            this.checkCompatibility(c.supportsStar, this.stars, this.connection.onStarChange, (a) => {
+                this.onStarChange(a);
+            });
+            this.checkCompatibility(c.supportsPerformancePoints, this.ranked, this.connection.onPerformancePointsChange, (a) => {
+                this.onPerformancePointsChange(a);
+            });
+            // simple check for those because they do not bind to DOM by value
             if (c.supportsLevelChange) {
                 this.connection.onLevelChange.register((change: boolean) => {
-                    this.showElements.Value = change;
+                    this.onLevelChange(change);
                 });
             }
             if (c.supportsLevelPause) {
                 this.connection.onLevelPausedChange.register((pause: boolean) => {
-
+                    this.onLevelPausedChange(pause);
                 });
             }
             if (c.supportsLevelFinish) {
                 this.connection.onLevelFinishedChange.register((finish: boolean) => {
-
+                    this.onLevelFinishedChange(finish);
                 });
             }
             if (c.supportsLevelFailed) {
                 this.connection.onLevelFailedChange.register((failed: boolean) => {
-
+                    this.onLevelFailedChange(failed);
                 });
             }
             if (c.supportsLevelQuit) {
                 this.connection.onLevelQuitChange.register((quit: boolean) => {
-
+                    this.onLevelQuitChange(quit);
                 });
             }
 
             if (c.supportsMultiplayer) {
                 this.connection.onMultiplayerChange.register((isMultiplayer: boolean) => {
-
+                    this.onMultiplayerChange(isMultiplayer);
                 });
             }
 
+            if (c.supportsPreviousScore) {
+                this.connection.onPreviousScoreChange.register((a) => {
+                    this.onPreviousScoreChange(a);
+                });
+            }
             if (c.supportsPlayerColorsUsage) {
                 this.connection.onPlayerColorAChange.register((newColor: Color) => {
                     this.handleColorChange(this.config.looks.useMapColorForBackgroundColor.Value, newColor);
@@ -623,6 +721,11 @@ namespace Freakylay.Ui {
          */
         private handleColorChange(setting: number, newColor: Color): void {
             switch (setting.clamp(0, 2)) {
+                case 0:
+                    // reset to config colors
+                    this.setBackgroundColor(this.config.colors.background.Value);
+                    this.setTextColor(this.config.colors.text.Value);
+                    break
                 case 1:
                     this.setBackgroundColor(newColor);
                     break;
@@ -641,59 +744,60 @@ namespace Freakylay.Ui {
                 return;
             }
 
-            //this.connection.onComboChange.unregister();
-            //this.connection.onMissChange.unregister();
-            //this.connection.onScoreChange.unregister();
-            //this.connection.onPreviousScoreChange.unregister();
-            //this.connection.onBlockSpeedChange.unregister();
-            //this.connection.onBpmChange.unregister();
-            //this.connection.onHealthChange.unregister();
-            //this.connection.onAccuracyChange.unregister();
-            //this.connection.onTimeElapsedChange.unregister();
-            //this.connection.onTimeLengthChange.unregister();
-            //this.connection.onTimeScaleChange.unregister();
-            //this.connection.onRankChange.unregister();
-            //this.connection.onFullComboChange.unregister();
-//
-            //this.connection.onModifierChange.unregister();
-            //this.connection.onModifierNoFailChange.unregister();
-            //this.connection.onModifierOneLifeChange.unregister();
-            //this.connection.onModifierFourLivesChange.unregister();
-            //this.connection.onModifierNoBombsChange.unregister();
-            //this.connection.onModifierNoWallsChange.unregister();
-            //this.connection.onModifierNoArrowsChange.unregister();
-            //this.connection.onModifierGhostNotesChange.unregister();
-            //this.connection.onModifierDisappearingArrowsChange.unregister();
-            //this.connection.onModifierSmallNotesChange.unregister();
-            //this.connection.onModifierProModeChange.unregister();
-            //this.connection.onModifierStrictAnglesChange.unregister();
-            //this.connection.onModifierZenModeChange.unregister();
-            //this.connection.onModifierSlowerSongChange.unregister();
-            //this.connection.onModifierFasterSongChange.unregister();
-            //this.connection.onModifierSuperFastSongChange.unregister();
-            //this.connection.onPracticeModeChange.unregister();
-            //this.connection.onPracticeModeSpeedChange.unregister();
-            //this.connection.onPracticeModeTimeOffset.unregister();
-//
-            //this.connection.onKeyChange.unregister();
-            //this.connection.onPreviousKeyChange.unregister();
-            //this.connection.onSongInfoMapperNameChange.unregister();
-            //this.connection.onSongInfoDifficultyChange.unregister();
-            //this.connection.onSongInfoSongAuthorChange.unregister();
-            //this.connection.onSongInfoSongNameChange.unregister();
-            //this.connection.onSongInfoCoverImageChange.unregister();
-            //this.connection.onStarChange.unregister();
-            //this.connection.onPerformancePointsChange.unregister();
-//
-            //this.connection.onLevelChange.unregister();
-            //this.connection.onLevelPausedChange.unregister();
-            //this.connection.onLevelFinishedChange.unregister();
-            //this.connection.onLevelFailedChange.unregister();
-            //this.connection.onLevelQuitChange.unregister();
-//
-            //this.connection.onMultiplayerChange.unregister();
-            //this.connection.onPlayerColorAChange.unregister();
-            //this.connection.onPlayerColorBChange.unregister();
+            this.connection.onComboChange.unregister();
+            this.connection.onMissChange.unregister();
+            this.connection.onScoreChange.unregister();
+            this.connection.onPreviousScoreChange.unregister();
+            this.connection.onBlockSpeedChange.unregister();
+            this.connection.onBpmChange.unregister();
+            this.connection.onHealthChange.unregister();
+            this.connection.onAccuracyChange.unregister();
+            this.connection.onTimeElapsedChange.unregister();
+            this.connection.onTimeLengthChange.unregister();
+            this.connection.onTimeScaleChange.unregister();
+            this.connection.onRankChange.unregister();
+            this.connection.onFullComboChange.unregister();
+
+            this.connection.onModifierChange.unregister();
+            this.connection.onModifierNoFailChange.unregister();
+            this.connection.onModifierOneLifeChange.unregister();
+            this.connection.onModifierFourLivesChange.unregister();
+            this.connection.onModifierNoBombsChange.unregister();
+            this.connection.onModifierNoWallsChange.unregister();
+            this.connection.onModifierNoArrowsChange.unregister();
+            this.connection.onModifierGhostNotesChange.unregister();
+            this.connection.onModifierDisappearingArrowsChange.unregister();
+            this.connection.onModifierSmallNotesChange.unregister();
+            this.connection.onModifierProModeChange.unregister();
+            this.connection.onModifierStrictAnglesChange.unregister();
+            this.connection.onModifierZenModeChange.unregister();
+            this.connection.onModifierSlowerSongChange.unregister();
+            this.connection.onModifierFasterSongChange.unregister();
+            this.connection.onModifierSuperFastSongChange.unregister();
+
+            this.connection.onPracticeModeChange.unregister();
+            this.connection.onPracticeModeSpeedChange.unregister();
+            this.connection.onPracticeModeTimeOffset.unregister();
+
+            this.connection.onKeyChange.unregister();
+            this.connection.onPreviousKeyChange.unregister();
+            this.connection.onSongInfoMapperNameChange.unregister();
+            this.connection.onSongInfoDifficultyChange.unregister();
+            this.connection.onSongInfoCustomDifficultyChange.unregister();
+            this.connection.onSongInfoSongAuthorChange.unregister();
+            this.connection.onSongInfoSongNameChange.unregister();
+            this.connection.onSongInfoCoverImageChange.unregister();
+            this.connection.onStarChange.unregister();
+
+            this.connection.onLevelChange.unregister();
+            this.connection.onLevelPausedChange.unregister();
+            this.connection.onLevelFinishedChange.unregister();
+            this.connection.onLevelFailedChange.unregister();
+            this.connection.onLevelQuitChange.unregister();
+
+            this.connection.onMultiplayerChange.unregister();
+            this.connection.onPlayerColorAChange.unregister();
+            this.connection.onPlayerColorBChange.unregister();
         }
 
         /**
@@ -704,8 +808,14 @@ namespace Freakylay.Ui {
          * @param callback callback for event
          * @private
          */
-        private checkCompatibility<T>(value: boolean, element: HTMLDivElement, event: EventProperty<T>, callback: (T) => void): void {
-            element.display(value);
+        private checkCompatibility<T>(value: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void): void {
+            /*
+            if (element.tagName == 'DIV') {
+                element.display(value);
+            } else {
+                element.inline(value);
+            }
+            */
             if (value) {
                 event.register(callback);
             }
@@ -740,7 +850,7 @@ namespace Freakylay.Ui {
                     this.score.innerText = score.toString();
                     break;
                 case 1:
-                    this.score.innerText = (this.valuePreviousScore < score ? '&u' : '&d') + 'arr; ' + score.toString();
+                    this.score.innerHTML = (this.valuePreviousScore < score ? '&u' : '&d') + 'arr; ' + score.toString();
                     break;
                 case 2:
                     this.score.innerText = (score - this.valuePreviousScore).toString();
@@ -810,12 +920,11 @@ namespace Freakylay.Ui {
         }
 
         private onFullComboChange(hasFullCombo: boolean): void {
-            // todo :: animation?
             this.fullCombo.display(hasFullCombo);
         }
 
         private onModifierChange(modifier: boolean): void {
-            // todo :: check if there is really something to do when any modifier changes
+            this.addModifierClasses();
         }
 
         /**
@@ -824,7 +933,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoFailChange(modifier: boolean): void {
-            this.modifierNoFailOn0Energy.display(modifier);
+            this.modifierNoFailOn0Energy.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -833,7 +943,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierOneLifeChange(modifier: boolean): void {
-            this.modifierOneLife.display(modifier);
+            this.modifierOneLife.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -842,7 +953,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierFourLivesChange(modifier: boolean): void {
-            this.modifierFourLives.display(modifier);
+            this.modifierFourLives.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -851,7 +963,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoBombsChange(modifier: boolean): void {
-            this.modifierNoBombs.display(modifier);
+            this.modifierNoBombs.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -860,7 +973,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoWallsChange(modifier: boolean): void {
-            this.modifierNoWalls.display(modifier);
+            this.modifierNoWalls.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -869,7 +983,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoArrowsChange(modifier: boolean): void {
-            this.modifierNoArrows.display(modifier);
+            this.modifierNoArrows.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -878,7 +993,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierGhostNotesChange(modifier: boolean): void {
-            this.modifierGhostNotes.display(modifier);
+            this.modifierGhostNotes.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -887,7 +1003,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierDisappearingArrowsChange(modifier: boolean): void {
-            this.modifierDisappearingArrows.display(modifier);
+            this.modifierDisappearingArrows.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -896,7 +1013,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierSmallNotesChange(modifier: boolean): void {
-            this.modifierSmallNotes.display(modifier);
+            this.modifierSmallNotes.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -905,7 +1023,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierProModeChange(modifier: boolean): void {
-            this.modifierProMode.display(modifier);
+            this.modifierProMode.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -914,7 +1033,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierStrictAnglesChange(modifier: boolean): void {
-            this.modifierStrictAngles.display(modifier);
+            this.modifierStrictAngles.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -923,7 +1043,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierZenModeChange(modifier: boolean): void {
-            this.modifierZenMode.display(modifier);
+            this.modifierZenMode.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -932,7 +1053,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierSlowerSongChange(modifier: boolean): void {
-            this.modifierSlowerSong.display(modifier);
+            this.modifierSlowerSong.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -941,16 +1063,18 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierFasterSongChange(modifier: boolean): void {
-            this.modifierFasterSong.display(modifier);
+            this.modifierFasterSong.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
-         * displays or hides super fast song modifier
+         * displays or hides super-fast song modifier
          * @param modifier
          * @private
          */
         private onModifierSuperFastSongChange(modifier: boolean): void {
-            this.modifierSuperFastSong.display(modifier);
+            this.modifierSuperFastSong.toggleClassByValue(modifier, 'active');
+            this.addModifierClasses();
         }
 
         /**
@@ -977,6 +1101,8 @@ namespace Freakylay.Ui {
                 data = speed.toString();
             }
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName(data);
+            //this.practiceModeSongSpeed.toggleClassByValue(speed > 0, 'active');
+            //this.addModifierClasses();
         }
 
         /**
@@ -1002,11 +1128,17 @@ namespace Freakylay.Ui {
 
         private onSongInfoDifficultyChange(difficulty: string): void {
             this.valueDifficulty = difficulty;
+            if (this.valueCustomDifficulty == undefined) {
+                this.valueCustomDifficulty = "";
+            }
             this.setCompleteDifficultyLabel();
         }
 
         private onSongInfoCustomDifficultyChange(difficulty: string): void {
             this.valueCustomDifficulty = difficulty;
+            if (this.valueDifficulty == undefined) {
+                this.valueDifficulty = "";
+            }
             this.setCompleteDifficultyLabel();
         }
 
@@ -1036,8 +1168,17 @@ namespace Freakylay.Ui {
             this.coverImage.style.backgroundImage = coverImage;
         }
 
-        private onStarChange(stars: string): void {
-            this.starsValue.innerText = stars;
+        private onStarChange(stars: number): void {
+            if (!this.config.looks.showRanked.Value) {
+                return;
+            }
+
+            if (stars > 0) {
+                this.stars.display(true);
+                this.starsValue.innerText = stars.toFixed(1);
+            } else {
+                this.stars.display(false);
+            }
         }
 
         private onPerformancePointsChange(x: number): void {
@@ -1045,6 +1186,7 @@ namespace Freakylay.Ui {
         }
 
         private onLevelChange(changed: boolean): void {
+            this.showElements.Value = changed;
         }
 
         private onLevelPausedChange(changed: boolean): void {

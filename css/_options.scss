@@ -11,7 +11,7 @@
   height: $optionsHeight;
   margin-left: calc(-#{$optionsWidth} / 2);
   margin-top: calc(-#{$optionsHeight} / 2);
-  border-radius: $borderRadius;
+  border-radius: var(--radius);
 
   &.show {
     visibility: visible;
@@ -47,7 +47,7 @@
     border: 1px solid var(--text);
     cursor: pointer;
     color: var(--text);
-    border-radius: $borderRadius;
+    border-radius: var(--radius);
 
     &:hover {
       background-color: var(--text);
@@ -102,12 +102,12 @@
   }
 
   input[type=range] {
-    width: 430px;
     height: 5px;
-    border-radius: $borderRadius;
+    border-radius: var(--radius);
     background: var(--text);
     outline: none;
     opacity: .7;
+    width: 100px;
     margin-right: 10px;
     transition: opacity .2s;
     -webkit-appearance: none;
@@ -131,6 +131,10 @@
   div[data-tab-content=colors] {
     #bgColor, #color {
       margin-bottom: 25px;
+    }
+
+    input[type=range] {
+      width: 430px;
     }
 
     .alphaInfo {
@@ -168,6 +172,7 @@
 
     #pulsoidThanks {
       margin-top: 15px;
+      margin-bottom: 15px;
     }
   }
 }
