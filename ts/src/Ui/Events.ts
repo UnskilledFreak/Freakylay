@@ -579,7 +579,7 @@ namespace Freakylay.Ui {
             });
             // modifier
             this.checkCompatibility(c.supportsModifier, this.modifiers, this.connection.onModifierChange, (a) => {
-                this.onModifierChange(a);
+                this.onModifierChange();
             });
             this.checkCompatibility(c.supportsModifierNoFail, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, (a) => {
                 this.onModifierNoFailChange(a);
