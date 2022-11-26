@@ -3,6 +3,7 @@
 namespace Freakylay.Game.BeatSaber.Connection {
     import WebSocketConnection = Freakylay.DataTransfer.WebSocket.WebSocketConnection;
     import ConfigHelper = Freakylay.Ui.ConfigHelper;
+    import EventProperty = Freakylay.Internal.EventProperty;
 
     export class DataPuller_2_0_12 extends BaseConnection {
 
@@ -11,6 +12,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private songSubName: string;
         private difficulty: string;
         private customDifficulty: string;
+        private linkStatus: EventProperty<GameLinkStatus>;
 
         constructor() {
             super();
@@ -27,16 +29,33 @@ namespace Freakylay.Game.BeatSaber.Connection {
             return 'DataPuller 2.0.12';
         }
 
-        public connect(): boolean {
-            this.connection = new WebSocketConnection(this.ip, this.port);
-            this.connection.addEndpoint('BSDataPuller/LiveData', this.handleLiveData);
-            this.connection.addEndpoint('BSDataPuller/MapData', this.handleMapData);
-            this.isConnected = true;
+        public supportsCustomIp(): boolean {
             return true;
+        }
+
+        public supportsCustomPort(): boolean {
+            return false;
+        }
+
+        public connect(gameLinkStatus: EventProperty<GameLinkStatus>): boolean {
+            this.linkStatus = gameLinkStatus;
+            this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connecting;
+            this.connection = new WebSocketConnection(this.ip, this.port);
+            this.connection.addEndpoint('BSDataPuller/LiveData', (a) => {
+                this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
+                this.handleLiveData(a);
+            }, true);
+            this.connection.addEndpoint('BSDataPuller/MapData', (a) => {
+                this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
+                this.handleMapData(a);
+            }, true);
+            this.isConnected = this.connection.isConnected();
+            return this.isConnected;
         }
 
         public disconnect(): boolean {
             this.isConnected = false;
+            this.linkStatus.Value = Freakylay.Game.GameLinkStatus.NotConnected;
             if (this.connection != null) {
                 this.connection.disconnect();
                 this.connection = null;
@@ -47,12 +66,12 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
         public reconnect(): boolean {
             this.disconnect();
-            this.connect();
+            this.connect(this.linkStatus);
             return false;
         }
 
         public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
-            settingsTab.append()
+            // no additional settings
         }
 
         public loadConfig(data: any): void {
@@ -88,7 +107,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.author = data.isset('SongAuthor', '');
             this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
             this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '');
-            this.onKeyChange.Value = data.isset('BSRKey', 'BSRKey');
+            this.onKeyChange.Value = data.isset('BSRKey', '');
             //this.onPreviousKeyChange.Value = this.onKeyChange.Value;
             this.onPreviousKeyChange.Value = data.isset('PreviousKey', 'previous key');
             this.onSongInfoCoverImageChange.Value = data.isset('coverImage', 'img/BS_Logo.jpg');

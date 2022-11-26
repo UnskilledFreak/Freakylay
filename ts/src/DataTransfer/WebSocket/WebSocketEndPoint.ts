@@ -16,6 +16,11 @@ namespace Freakylay.DataTransfer.WebSocket {
             close: () => void,
             error: () => void
         };
+        private isConnected: boolean;
+
+        get Connected(): boolean {
+            return this.isConnected;
+        }
 
         /**
          * stores all events and establishes a connection
@@ -34,7 +39,7 @@ namespace Freakylay.DataTransfer.WebSocket {
         ) {
             this.logger = new Logger('WS ' + url);
             this.url = url;
-
+            this.isConnected = false;
             this.callbacks = {
                 message: messageCallback,
                 open: openCallback,
@@ -50,12 +55,13 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @param url
          */
         public reconnect(url: string = null): void {
+            this.isConnected = false;
             if (url != null) {
                 this.url = url;
                 this.logger.changeName('WS ' + url);
             }
 
-            this.logger.log('reconnecting');
+            //this.logger.log('reconnecting');
             this.socket.close();
             this.connect();
         }
@@ -65,6 +71,7 @@ namespace Freakylay.DataTransfer.WebSocket {
          */
         public disconnect(): void {
             if (this.socket) {
+                this.isConnected = false;
                 this.socket.close();
             }
         }
@@ -77,15 +84,19 @@ namespace Freakylay.DataTransfer.WebSocket {
             this.socket = new window.WebSocket(this.url);
             this.socket.onopen = (message: Event) => {
                 this.onOpen(message);
+                this.isConnected = true;
             };
-            this.socket.onmessage = (message: Event) => {
-                this.logger.log(message)
+            this.socket.onmessage = (message: MessageEvent) => {
+                //this.logger.log(message)
+                this.isConnected = true;
                 this.onMessage(message);
             };
             this.socket.onclose = () => {
+                this.isConnected = false;
                 this.onClose();
             };
             this.socket.onerror = () => {
+                this.isConnected = false;
                 this.onError();
             };
         }
@@ -96,7 +107,7 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @private
          */
         private onOpen(message: Event): void {
-            this.logger.log('connection estabilished');
+            //this.logger.log('connection estabilished');
             this.callbacks.open(message);
         }
 
@@ -105,7 +116,7 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @private
          */
         private onClose(): void {
-            this.logger.log('lost connection!');
+            //this.logger.log('lost connection!');
             this.callbacks.close();
         }
 

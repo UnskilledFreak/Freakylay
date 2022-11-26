@@ -21,6 +21,7 @@ namespace Freakylay.Ui {
         public readonly optionsOpen: EventProperty<boolean>;
         public readonly onGameChange: EventProperty<BaseGame>;
         public readonly onGameConnectionChange: EventProperty<BaseConnection>;
+        public readonly onConnection: EventProperty<boolean>;
 
         private readonly logger: Logger;
         private readonly config: Config;
@@ -44,6 +45,7 @@ namespace Freakylay.Ui {
         private pulsoidConnectionState: HTMLSpanElement;
         private gameListElement: HTMLSelectElement;
         private connectionListElement: HTMLSelectElement;
+        private applyGameButton: HTMLButtonElement;
 
         constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
             this.logger = new Logger('ConfigHelper');
@@ -55,6 +57,7 @@ namespace Freakylay.Ui {
             this.backgroundImageTest = new EventProperty<boolean>(false);
             this.onGameChange = new EventProperty<BaseGame>();
             this.onGameConnectionChange = new EventProperty<BaseConnection>();
+            this.onConnection = new EventProperty<boolean>(false);
 
             let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');
 
@@ -95,6 +98,9 @@ namespace Freakylay.Ui {
             this.checkPulsoidFeedType(this.config.pulsoid.type.Value, true);
 
             this.onGameChange.register((game: BaseGame) => {
+                if (game == null) {
+                    return;
+                }
                 this.connectionListElement.removeChildren();
                 this.connectionListElement.append(this.createOptionForSelect('None', 'choose', true));
                 game.getConnections.forEach((connection: BaseConnection) => {
@@ -102,10 +108,43 @@ namespace Freakylay.Ui {
                     this.connectionListElement.append(this.createOptionForSelect(name, name, name == this.config.connection.Value));
                 });
                 this.connectionListElement.inline(true);
+                if (this.config.game.Value != game.getName()) {
+                    this.config.game.Value = game.getName();
+                    this.generateUrlText();
+                }
             });
 
             this.onGameConnectionChange.register((con: BaseConnection) => {
+                this.gameConnectionSetting.removeChildren();
+                if (con == null) {
+                    return;
+                }
+                if (this.config.connection.Value != con.getName()) {
+                    this.config.connection.Value = con.getName();
+                    this.generateUrlText();
+                }
+                con.loadConfig(this.config.connectionSetting);
+                if (con.supportsCustomIp()) {
+                    let input = document.create('input') as HTMLInputElement;
+                    input.type = 'text';
+                    input.value = con.ip;
+                    input.onchange = () => {
+                        con.ip = input.value;
+                        this.generateUrlText();
+                    };
+                    let line = document.div();
+                    line.addClass('settingsLine');
+                    line.append(
+                        document.label('IP: ', 'customIp'),
+                        input
+                    );
+                    this.gameConnectionSetting.append(line);
+                }
+                if (con.supportsCustomPort()) {
+                    // todo :: this
+                }
                 con.displayConnectionSettings(this.gameConnectionSetting, this);
+                this.onConnection.Value = true;
             });
 
             let gameLinkStatus = document.getDiv('gameLinkStatus');
@@ -113,19 +152,25 @@ namespace Freakylay.Ui {
                 gameLinkStatus.innerText = newStatus.toString();
             });
 
-            let applyGameButton = document.getId<HTMLButtonElement>('connectToGame');
-            applyGameButton.onclick = () => {
-                this.logger.log('haha you dumb piece of shit!');
+            this.applyGameButton = document.getId<HTMLButtonElement>('connectToGame');
+            this.applyGameButton.onclick = () => {
+                this.onConnection.Value = true;
             };
+        }
 
+        /**
+         * will look if config contains valid game and connection data and trys to connect automatically
+         */
+        public initLoader(): void {
             // search for selected game and connection
             if (this.config.game.Value.length > 0) {
                 try {
                     let game = this.gameList.firstOrError(x => x.getName() == this.config.game.Value);
-                    let connection = game.getConnections.firstOrError(x => x.getName() == this.config.connection.Value);
-
                     this.onGameChange.Value = game;
-                    this.onGameConnectionChange.Value = connection;
+
+                    if (this.config.connection.Value.length > 0) {
+                        this.onGameConnectionChange.Value = game.getConnections.firstOrError(x => x.getName() == this.config.connection.Value);
+                    }
                 } catch {
                     // game not found
                 }
@@ -142,6 +187,9 @@ namespace Freakylay.Ui {
                 url += 'options&'
             }
             */
+            if (this.onGameConnectionChange.Value != null) {
+                this.config.connectionSetting = this.onGameConnectionChange.Value.saveConfig();
+            }
             url += 'w=' + this.config.getConfigString();
             url = url.removeLast('?');
             url = url.removeLast('&');
@@ -524,7 +572,9 @@ namespace Freakylay.Ui {
                     return;
                 }
                 try {
+                    this.onGameConnectionChange.Value = null;
                     this.onGameChange.Value = this.gameList.firstOrError((game: BaseGame) => game.getName() == this.gameListElement.value);
+                    this.enableDisableGameButton();
                 } catch {
                     this.logger.log('nani????');
                 }
@@ -537,6 +587,7 @@ namespace Freakylay.Ui {
 
                 try {
                     this.onGameConnectionChange.Value = this.onGameChange.Value.getConnections.firstOrError((con: BaseConnection) => con.getName() == this.connectionListElement.value);
+                    this.enableDisableGameButton();
                 } catch {
                     this.logger.log('nani con????');
                 }
@@ -577,12 +628,11 @@ namespace Freakylay.Ui {
         }
 
         /**
-         * enables or disables given button when game and connection is set
-         * @param button
+         * enables or disables apply button when game and connection is set
          * @private
          */
-        private enableDisableGameButton(button: HTMLButtonElement): void {
-            button.disabled = this.onGameChange.Value != null && this.onGameConnectionChange.Value != null;
+        private enableDisableGameButton(): void {
+            this.applyGameButton.disabled = this.onGameChange.Value != null && this.onGameConnectionChange.Value != null;
         }
     }
 }

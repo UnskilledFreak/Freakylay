@@ -31,7 +31,9 @@ namespace Freakylay.DataTransfer.WebSocket {
             this.connections[name] = new WebSocketEndPoint(
                 this.getUrl() + name,
                 (data) => {
-                    callback(isJsonData ? JSON.parse(data.data) : data.data);
+                    let d = isJsonData ? JSON.parse(data.data) : data.data;
+                    //console.log(d);
+                    callback(d);
                 },
                 () => {},
                 () => {
@@ -75,10 +77,17 @@ namespace Freakylay.DataTransfer.WebSocket {
         /**
          * closes all connections to the WebSocket server
          */
-        public disconnect() {
+        public disconnect(): void {
             this.connections.forEach(conn => {
                 conn.disconnect();
             }, this);
+        }
+
+        /**
+         * returns true if at least one endpoint is connected
+         */
+        public isConnected(): boolean {
+            return this.connections.length > 0 && this.connections.some(x => x.Connected);
         }
     }
 }

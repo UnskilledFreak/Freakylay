@@ -12,7 +12,7 @@ namespace Freakylay.Game {
 
         public abstract getName(): string;
 
-        public abstract connect(): boolean;
+        public abstract connect(gameLinkStatus: EventProperty<GameLinkStatus>): boolean;
 
         public abstract disconnect(): boolean;
 
@@ -23,6 +23,10 @@ namespace Freakylay.Game {
         public abstract loadConfig(data: any): void;
 
         public abstract saveConfig(): any;
+
+        public abstract supportsCustomIp(): boolean;
+
+        public abstract supportsCustomPort(): boolean;
 
         protected abstract setCompatibility(): void;
 

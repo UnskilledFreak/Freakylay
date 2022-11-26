@@ -34,14 +34,15 @@ namespace Freakylay {
         private readonly pulsoid: Pulsoid;
         private readonly gameLinkState: EventProperty<GameLinkStatus>;
         private tabManager: TabManager;
-        private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
+        //private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
+        private isDev: boolean = false;
         private events: Events;
 
         constructor() {
             this.logger = new Logger('Overlay');
-            /*if (this.isDev) {
+            if (this.isDev) {
                 document.querySelector('body').append(this.logger.element);
-            }*/
+            }
 
             this.gameLinkState = new EventProperty<GameLinkStatus>();
             this.config = new Config();
@@ -58,8 +59,18 @@ namespace Freakylay {
             // force fire all events once so config values take effect after hooking into events
             this.fireAllConfigEvents();
 
-            // last but not least, start Pulsoid as standalone worker
+            // start Pulsoid as standalone worker
             this.pulsoid.start();
+
+            // last but not least, connect to game if any
+            this.helper.onConnection.register(_ => {
+                if (this.helper.onGameChange.Value == null || this.helper.onGameConnectionChange.Value == null) {
+                    return;
+                }
+                this.events.registerConnection(this.helper.onGameConnectionChange.Value);
+                this.helper.onGameConnectionChange.Value.connect(this.gameLinkState);
+            });
+            this.helper.initLoader();
         }
 
         /**

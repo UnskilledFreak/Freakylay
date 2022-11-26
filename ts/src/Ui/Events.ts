@@ -57,6 +57,7 @@ namespace Freakylay.Ui {
         // song info
         private mapKey: HTMLDivElement;
         private mapper: HTMLDivElement;
+        private cover: HTMLDivElement;
         private coverImage: HTMLDivElement;
         private difficulty: HTMLDivElement;
         private difficultyValue: HTMLSpanElement;
@@ -64,6 +65,7 @@ namespace Freakylay.Ui {
         private songName: HTMLDivElement;
         private songArtist: HTMLDivElement;
         private previousMapKey: HTMLDivElement;
+        private previousMapKeyValue: HTMLDivElement;
 
         // modifiers
         private modifierNoFailOn0Energy: HTMLDivElement;
@@ -380,15 +382,16 @@ namespace Freakylay.Ui {
 
             // song info
             this.previousMapKey = document.getDiv('previousBSR');
-            this.comboValue = document.getDiv('cover');
             this.mapper = document.getDiv('mapper');
             this.difficulty = document.getDiv('difficulty');
             this.songArtist = document.getDiv('artist');
             this.songName = document.getDiv('mapName');
+            this.cover = document.getDiv('beatMapCover');
             this.coverImage = document.getDiv('cover');
 
             this.difficultyValue = this.difficulty.children.item(0) as HTMLSpanElement;
             this.customDifficultyValue = this.difficulty.children.item(1) as HTMLSpanElement;
+            this.previousMapKeyValue = this.previousMapKey.children.item(0) as HTMLDivElement;
 
             // modifiers
             this.modifierNoFailOn0Energy = document.getDiv('noFailOn0Energy');
@@ -904,6 +907,9 @@ namespace Freakylay.Ui {
             if (this.config.looks.timeCircleLikeOtherCircles.Value) {
                 text = 'Time<br>' + value.toDateString();
             } else {
+                if (total == undefined) {
+                    total = 120;
+                }
                 text = value.toDateString() + '<br>' + total.toDateString();
             }
 
@@ -923,7 +929,7 @@ namespace Freakylay.Ui {
             this.fullCombo.display(hasFullCombo);
         }
 
-        private onModifierChange(modifier: boolean): void {
+        private onModifierChange(): void {
             this.addModifierClasses();
         }
 
@@ -1083,7 +1089,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeChange(modifier: boolean): void {
-            this.practiceMode.display(modifier);
+            this.practiceMode.flex(modifier);
         }
 
         /**
@@ -1115,11 +1121,18 @@ namespace Freakylay.Ui {
         }
 
         private onKeyChange(key: string): void {
+            if (key.length == 0) {
+                this.mapKey.visibility(false);
+                this.cover.addClass('noKey');
+                return;
+            }
+            this.cover.removeClass('noKey');
+            this.mapKey.visibility(true);
             this.mapKey.innerText = key;
         }
 
         private onPreviousKeyChange(previousKey: string): void {
-            this.previousMapKey.innerText = previousKey;
+            this.previousMapKeyValue.innerText = previousKey;
         }
 
         private onSongInfoMapperNameChange(mapperName: string): void {

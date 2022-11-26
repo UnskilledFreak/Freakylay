@@ -8,7 +8,6 @@ namespace Freakylay.DataTransfer.Pulsoid {
 
     /**
      * Pulsoid class to get heart rate info
-     * I'm so sorry to bypass old JSON integration CORS with this little hack found in the get*Date functions, but I don't know how to get CORS done via a local running script
      */
     export class Pulsoid {
 
@@ -132,6 +131,8 @@ namespace Freakylay.DataTransfer.Pulsoid {
 
         /**
          * gets Pulsoid data based on JSON feed type
+         * will get removed in near future
+         * I'm so sorry to bypass old JSON integration CORS with this little hack found in the get*Date functions, but I don't know how to get CORS done via a local running script
          * @private
          */
         private getJsonData(): void {

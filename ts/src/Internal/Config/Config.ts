@@ -156,7 +156,8 @@ namespace Freakylay.Internal.Config {
                 b: this.connection.Value,
                 c: this.colors.save(),
                 d: this.looks.save(),
-                e: this.pulsoid.save()
+                e: this.pulsoid.save(),
+                f: this.connectionSetting
             };
         }
     }
