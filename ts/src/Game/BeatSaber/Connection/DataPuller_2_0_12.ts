@@ -13,6 +13,9 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private difficulty: string;
         private customDifficulty: string;
         private linkStatus: EventProperty<GameLinkStatus>;
+        // workaround vars for bugs in DataPuller 2.0.12
+        private lastCombo: number; // combo will not get reset on bad cut
+        private missOffset: number; // miss will not get incremented on bad cut
 
         constructor() {
             super();
@@ -21,6 +24,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.songSubName = '';
             this.difficulty = '';
             this.customDifficulty = '';
+            this.lastCombo = 0;
+            this.missOffset = 0;
 
             this.port = 2946;
         }
@@ -97,11 +102,21 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
 
         public handleMapData(data): void {
-            this.onLevelChange.Value = (data.isset('InLevel', false));
+            let inLevel = data.isset('InLevel', false);
+            let levelFinished = data.isset('LevelFinished', false);
+            let levelFailed = data.isset('LevelFailed', false);
+            let levelQuit = data.isset('LevelQuit', false);
+
+            if (inLevel || levelFailed || levelQuit || levelFinished) {
+                this.missOffset = 0;
+            }
+
+            this.onLevelChange.Value = inLevel;
             this.onLevelPausedChange.Value = data.isset('LevelPaused', false);
-            this.onLevelFinishedChange.Value = data.isset('LevelFinished', false);
-            this.onLevelFailedChange.Value = data.isset('LevelFailed', false);
-            this.onLevelQuitChange.Value = data.isset('LevelQuit', false);
+            this.onLevelFinishedChange.Value = levelFinished;
+            this.onLevelFailedChange.Value = levelFailed;
+            this.onLevelQuitChange.Value = levelQuit;
+
             this.onSongInfoSongNameChange.Value = data.isset('SongName', '???');
             this.songSubName = data.isset('SongSubName', '');
             this.author = data.isset('SongAuthor', '');
@@ -138,6 +153,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onPracticeModeChange.Value = data.isset('PracticeMode', false);
             let practiceData = data.isset('PracticeModeModifiers', {});
             this.onPracticeModeSpeedChange.Value = practiceData.isset('songSpeedMul', 1);
+            this.onPracticeModeTimeOffset.Value = Math.floor(practiceData.isset('startSongTime', 0));
             this.onPerformancePointsChange.Value = data.isset('PP', 0);
             this.onStarChange.Value = data.isset('Star', 0);
             this.onMultiplayerChange.Value = data.isset('IsMultiplayer', 0);
@@ -153,8 +169,15 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
             this.onFullComboChange.Value = data.isset('FullCombo', false);
-            this.onComboChange.Value = data.isset('Combo', 0);
-            this.onMissChange.Value = data.isset('Misses', 0);
+            let combo = data.isset('Combo', 0);
+            if (this.lastCombo > combo) {
+                // fix missing full combo break on bad cut on DataPuller 2.0.12
+                this.onFullComboChange.Value = false;
+                this.missOffset++;
+            }
+            this.lastCombo = combo;
+            this.onComboChange.Value = combo;
+            this.onMissChange.Value = data.isset('Misses', 0) + this.missOffset;
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
             this.onHealthChange.Value = data.isset('Health', 0);

@@ -33,10 +33,10 @@ namespace Freakylay {
         private readonly gameList: BaseGame[];
         private readonly pulsoid: Pulsoid;
         private readonly gameLinkState: EventProperty<GameLinkStatus>;
+        private readonly events: Events;
         private tabManager: TabManager;
         //private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
         private isDev: boolean = false;
-        private events: Events;
 
         constructor() {
             this.logger = new Logger('Overlay');

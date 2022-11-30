@@ -35,7 +35,7 @@ interface Number {
 
     random(max: number): number;
 
-    toDateString(): string;
+    toDateString(removeMinutesIfZero: boolean): string;
 
     leadingZero(length: number): string;
 }
@@ -60,12 +60,16 @@ Number.prototype.random = function (max: number): number {
 }
 
 /**
- * calculates a time based on a number, will return a human readable string
+ * calculates a time based on a number, will return a readable string
  */
-Number.prototype.toDateString = function (): string {
-    let seconds = (this % 60).leadingZero(2);
+Number.prototype.toDateString = function (removeMinutesIfZero: boolean): string {
+    let seconds = (this % 60);
     let minutes = Math.floor(this / 60);
-    return minutes < 0 ? seconds : minutes + ':' + seconds;
+    if (removeMinutesIfZero && minutes == 0) {
+        return seconds.toString();
+    }
+    let s = seconds.leadingZero(2);
+    return minutes < 0 ? s : minutes + ':' + s;
 }
 
 /**

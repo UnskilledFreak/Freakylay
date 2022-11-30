@@ -458,7 +458,7 @@ namespace Freakylay.Ui {
             this.modifierStrictAngles.innerText = enabled ? 'SA' : 'Strict Angles';
             this.modifierZenMode.innerText = enabled ? 'ZM' : 'Zen Mode';
             this.modifierSlowerSong.innerText = enabled ? 'SS' : 'Slower Song';
-            this.modifierFasterSong.innerText = enabled ? 'FS' : 'Faster Spmg';
+            this.modifierFasterSong.innerText = enabled ? 'FS' : 'Faster Song';
             this.modifierSuperFastSong.innerText = enabled ? 'SFS' : 'Super Fast Song';
             this.practiceModeInfo.innerText = enabled ? 'PM' : 'Practice Mode';
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName('100');
@@ -579,7 +579,7 @@ namespace Freakylay.Ui {
             });
             // modifier
             this.checkCompatibility(c.supportsModifier, this.modifiers, this.connection.onModifierChange, (a) => {
-                this.onModifierChange();
+                this.onModifierChange(a);
             });
             this.checkCompatibility(c.supportsModifierNoFail, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, (a) => {
                 this.onModifierNoFailChange(a);
@@ -633,7 +633,7 @@ namespace Freakylay.Ui {
             this.checkCompatibility(c.supportsPracticeModeSpeed, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
                 this.onPracticeModeSpeedChange(a);
             });
-            this.checkCompatibility(c.supportsPracticeModeTimeOffset, this.practiceModeTimeOffset, this.connection.onPracticeModeSpeedChange, (a) => {
+            this.checkCompatibility(c.supportsPracticeModeTimeOffset, this.practiceModeTimeOffset, this.connection.onPracticeModeTimeOffset, (a) => {
                 this.onPracticeModeTimeOffset(a);
             });
             // song info
@@ -905,12 +905,12 @@ namespace Freakylay.Ui {
         private onTimeElapsedChangeSetText(value: number, total: number): void {
             let text: string;
             if (this.config.looks.timeCircleLikeOtherCircles.Value) {
-                text = 'Time<br>' + value.toDateString();
+                text = 'Time<br>' + value.toDateString(false);
             } else {
                 if (total == undefined) {
                     total = 120;
                 }
-                text = value.toDateString() + '<br>' + total.toDateString();
+                text = value.toDateString(false) + '<br>' + total.toDateString(false);
             }
 
             this.timeCircleBar.setText(text);
@@ -929,7 +929,7 @@ namespace Freakylay.Ui {
             this.fullCombo.display(hasFullCombo);
         }
 
-        private onModifierChange(): void {
+        private onModifierChange(toggled: boolean): void {
             this.addModifierClasses();
         }
 
@@ -1102,13 +1102,11 @@ namespace Freakylay.Ui {
             speed = Math.floor(speed * 100);
             if (this.config.looks.speedDisplayRelative.Value) {
                 speed -= 100;
-                data = (speed < 0 ? '-' : '+') + speed;
+                data = (speed < 0 ? '' : '+') + speed;
             } else {
                 data = speed.toString();
             }
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName(data);
-            //this.practiceModeSongSpeed.toggleClassByValue(speed > 0, 'active');
-            //this.addModifierClasses();
         }
 
         /**
@@ -1117,7 +1115,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeTimeOffset(modifier: number): void {
-            this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName(modifier.toDateString())
+            this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName(modifier.toDateString(true))
         }
 
         private onKeyChange(key: string): void {
@@ -1250,7 +1248,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongTimeOffsetWithModifierName(offset: string): string {
-            return (this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset) + 's';
+            //return (this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset) + 's';
+            return this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset;
         }
     }
 }
