@@ -39,14 +39,15 @@ more!~~
 - Pulsoid heart rate fully integrated to match style
 
 ## Supported games and mods
+
 Freakylay supports multiple games and mods:
 - Beat Saber
   - [DataPuller 2.0.12+](https://github.com/ReadieFur/BSDataPuller)
-  - [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
-  - [HttpSiraStatus 8.0.1+](https://github.com/denpadokei/HttpSiraStatus)
+  - TODO: [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
+  - TODO: [HttpSiraStatus 8.0.1+](https://github.com/denpadokei/HttpSiraStatus)
   - *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission which is just a no go. If you want to use Freakylay with BeatSaberPlus then you have to add support for it by yourself. PR might be possible.*
 - BoomBox
-  - Data grabbing is possible from vanilla game, no need for mods yay :3
+  - TODO: Data grabbing is possible from vanilla game, no need for mods yay :3
 
 ## Version differences
 
@@ -136,7 +137,7 @@ Which type of colors can be used?
 Basically every possible color which is used in the web. Internally, the overlay uses RGB(a) scheme, but it should work with HSL/HSV as well.
 
 Why is there **N/A** for DataPuller version since version 3 release?  
-Because version 3 is not strictly written to DataPuller anymore, it supports HTTPStatus as well.
+Because version 3 is not strictly written to DataPuller anymore, it supports other mods and games as well.
 
 ## Changelog
 - 3.0.0
