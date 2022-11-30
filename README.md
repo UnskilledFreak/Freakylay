@@ -15,8 +15,8 @@ more!~~
 # Index:
 
 - [Features](#Features)
-- [Supported Games and Mods](#Supported games and mods)
-- [Version differences](#Version differences)
+- [Supported Games and Mods](#Games)
+- [Version differences](#Differences)
 - [Url and access](#Url)
 - [Customizing](#Customizing)
 - [Configuration](#Configuration)
@@ -38,19 +38,22 @@ more!~~
 - test it with a preview image of Beat Saber without having the game to run
 - Pulsoid heart rate fully integrated to match style
 
-## Supported games and mods
+## Games
 
+**Supported Games and Mods**
 Freakylay supports multiple games and mods:
 - Beat Saber
-  - [DataPuller 2.0.12+](https://github.com/ReadieFur/BSDataPuller)
+  - [DataPuller 2.0.12](https://github.com/ReadieFur/BSDataPuller)
+  - TODO: [DataPuller 2.1.0](https://github.com/ReadieFur/BSDataPuller)
   - TODO: [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
   - TODO: [HttpSiraStatus 8.0.1+](https://github.com/denpadokei/HttpSiraStatus)
   - *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission which is just a no go. If you want to use Freakylay with BeatSaberPlus then you have to add support for it by yourself. PR might be possible.*
 - BoomBox
   - TODO: Data grabbing is possible from vanilla game, no need for mods yay :3
 
-## Version differences
+## Differences
 
+**Version differences**
 Alpha/Beta versions where just my little own overlay version specifically written for my own use.
 But others seemed to like it, so I decided to open it up a bit and released the first version to the public.
 
