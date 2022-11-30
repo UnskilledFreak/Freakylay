@@ -1157,7 +1157,7 @@ namespace Freakylay.Ui {
 
         private setCompleteDifficultyLabel(): void {
             let text;
-            if (this.config.looks.hideDefaultDifficultyOnCustomDifficulty) {
+            if (this.config.looks.hideDefaultDifficultyOnCustomDifficulty.Value) {
                 text = this.valueCustomDifficulty.length > 0 ? this.valueCustomDifficulty : this.valueDifficulty;
             } else {
                 if (this.valueCustomDifficulty === '' || this.valueCustomDifficulty === this.valueDifficulty) {
