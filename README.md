@@ -3,7 +3,7 @@
 A multi game overlay to display stats for streamers or other creators. It is focused mainly on rythm games but might fit to other genres as well.
 
 **Double click somewhere on the page to open the options panel.**  
-I added that here too because most will not read everything in this ReadMe.
+I added that here too because most people will not read everything in this ReadMe.
 
 The old Info:  
 I kept it because of nostalgia and to have all of its versions listed, so basically the following info is still true for Freakylay Versions less than 3:  
