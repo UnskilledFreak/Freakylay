@@ -649,7 +649,7 @@ namespace Freakylay.Ui {
             this.checkCompatibility(c.supportsSongInfoDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, (a) => {
                 this.onSongInfoDifficultyChange(a);
             });
-            this.checkCompatibility(c.supportsSongInfoCustomDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, (a) => {
+            this.checkCompatibility(c.supportsSongInfoCustomDifficulty, this.difficulty, this.connection.onSongInfoCustomDifficultyChange, (a) => {
                 this.onSongInfoCustomDifficultyChange(a);
             });
             this.checkCompatibility(c.supportsSongInfoSongArtist, this.songArtist, this.connection.onSongInfoSongAuthorChange, (a) => {
@@ -883,7 +883,7 @@ namespace Freakylay.Ui {
         }
 
         private onAccuracyChange(accuracy: number): void {
-            this.healthCircleBar.setProgress(accuracy);
+            this.accuracyCircleBar.setProgress(accuracy);
         }
 
         /**
@@ -1178,7 +1178,16 @@ namespace Freakylay.Ui {
         }
 
         private onSongInfoCoverImageChange(coverImage: string): void {
-            this.coverImage.style.backgroundImage = coverImage;
+            let i = new Image();
+            i.onload = () => {
+                if (i.complete) {
+                    this.coverImage.style.backgroundImage = 'url(' + i.src + ')';
+                }
+            };
+            i.onerror = () => {
+                this.coverImage.style.backgroundImage = 'url(img/BS_logo.jpg)';
+            };
+            i.src = coverImage;
         }
 
         private onStarChange(stars: number): void {

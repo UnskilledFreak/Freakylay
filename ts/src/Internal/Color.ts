@@ -150,19 +150,6 @@ namespace Freakylay.Internal {
         public toCss(): string {
             // only rgb for v3
             return 'rgba(' + [this.red, this.green, this.blue, this.alpha].join(', ') + ')';
-            /*
-            let inner = [this.red, this.green, this.blue];
-            if (this.alpha != 1) {
-                inner.push(this.alpha);
-                console.log(inner);
-                return 'rgba(' + inner.join(', ') + ')'
-            }
-
-            return '#' + inner.map(x => {
-                let s = x.toString(16);
-                return s.length == 1 ? '0' + s : s;
-            }).join('');
-             */
         }
 
         /**

@@ -7,6 +7,7 @@ namespace Freakylay.Game {
     export abstract class BaseConnection {
         public ip: string;
         public port: number;
+
         protected compatibility: Compatibility = new Compatibility();
         protected isConnected: boolean = false;
 

@@ -5,7 +5,7 @@ namespace Freakylay.DataTransfer.WebSocket {
      */
     export class WebSocketConnection {
 
-        private connections: WebSocketEndPoint[];
+        private readonly connections: WebSocketEndPoint[];
         private ip: string;
         private port: number;
 

@@ -115,7 +115,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onTimeScaleChange.Value = data.isset('TimeScale', 0);
             // no MapType
             this.onSongInfoDifficultyChange.Value = data.isset('Difficulty', 'ExpertPlus');
-            this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', 'Freaky!');
+            this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', '');
             this.onBpmChange.Value = data.isset('BPM', 0);
             this.onBlockSpeedChange.Value = data.isset('NJS', 0);
             let modifiers = data.isset('Modifiers', {});
@@ -178,6 +178,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 'Mapper': 'OreoZe',
                 'BSRKey': '565f',
                 'coverImage': 'https://eu.cdn.beatsaver.com/7f226aa6b106c9a0dbc0e183222c70d5fe7a5cfe.jpg',
+                //'coverImage': 'https://example.com/test.png',
                 'Length': 51,
                 'TimeScale': 0.0,
                 'MapType': 'Standard',
@@ -228,7 +229,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 'FullCombo': false,
                 'Combo': 4,
                 'Misses': 4,
-                'Accuracy': 0.0,
+                'Accuracy': 95.0,
                 'BlockHitScore': [
                     0,
                     0,
