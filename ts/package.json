@@ -13,6 +13,6 @@
     "uglify-js": "^3.12.4"
   },
   "scripts": {
-    "uglify": "uglifyjs -c -m --mangle-props reserved=[Freakylay] -o ../freakylay.min.js ../freakylay.js"
+    "uglify": "uglifyjs -c -m --mangle-props reserved=[Freakylay,BaseGame,BaseConnection,Compatibility,ConnectionElement,GameLinkStatus] -o ../freakylay.min.js ../freakylay.js"
   }
 }

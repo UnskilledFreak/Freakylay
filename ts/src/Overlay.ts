@@ -27,6 +27,9 @@ namespace Freakylay {
         public static Version: string = '3.0.0';
         public static IsAlpha: boolean = true;
 
+        //private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
+        private isDev: boolean = false;
+
         private readonly logger: Logger;
         private readonly config: Config;
         private readonly helper: ConfigHelper;
@@ -35,8 +38,6 @@ namespace Freakylay {
         private readonly gameLinkState: EventProperty<GameLinkStatus>;
         private readonly events: Events;
         private tabManager: TabManager;
-        //private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
-        private isDev: boolean = false;
 
         constructor() {
             this.logger = new Logger('Overlay');
