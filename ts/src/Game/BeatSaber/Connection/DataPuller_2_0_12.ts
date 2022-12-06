@@ -16,6 +16,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         // workaround vars for bugs in DataPuller 2.0.12
         private lastCombo: number; // combo will not get reset on bad cut
         private missOffset: number; // miss will not get incremented on bad cut
+        private lostFullCombo: boolean;
 
         constructor() {
             super();
@@ -26,6 +27,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.customDifficulty = '';
             this.lastCombo = 0;
             this.missOffset = 0;
+            this.lostFullCombo = false;
 
             this.port = 2946;
         }
@@ -109,6 +111,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
             if (inLevel || levelFailed || levelQuit || levelFinished) {
                 this.missOffset = 0;
+                this.lostFullCombo = false;
             }
 
             this.onLevelChange.Value = inLevel;
@@ -168,19 +171,22 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no MaxScore
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
-            this.onFullComboChange.Value = data.isset('FullCombo', false);
+            // fix missing full combo break on bad cut on DataPuller 2.0.12
             let combo = data.isset('Combo', 0);
             if (this.lastCombo > combo) {
-                // fix missing full combo break on bad cut on DataPuller 2.0.12
                 this.onFullComboChange.Value = false;
+                this.lostFullCombo = true;
                 this.missOffset++;
+            } else if (!this.lostFullCombo) {
+                this.onFullComboChange.Value = data.isset('FullCombo', false);
             }
             this.lastCombo = combo;
+            // end fix
             this.onComboChange.Value = combo;
             this.onMissChange.Value = data.isset('Misses', 0) + this.missOffset;
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
-            this.onHealthChange.Value = data.isset('Health', 0);
+            this.onHealthChange.Value = data.isset('PlayerHealth', 0);
             this.onTimeElapsedChange.Value = data.isset('TimeElapsed', 0);
             // no unixTimestamp
         }
