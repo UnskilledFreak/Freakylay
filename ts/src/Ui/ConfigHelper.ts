@@ -144,7 +144,6 @@ namespace Freakylay.Ui {
                     // todo :: this
                 }
                 con.displayConnectionSettings(this.gameConnectionSetting, this);
-                this.onConnection.Value = true;
             });
 
             let gameLinkStatus = document.getDiv('gameLinkStatus');

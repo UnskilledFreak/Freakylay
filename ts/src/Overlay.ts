@@ -72,6 +72,10 @@ namespace Freakylay {
                 this.helper.onGameConnectionChange.Value.connect(this.gameLinkState);
             });
             this.helper.initLoader();
+
+            if (this.helper.onGameChange.Value != null && this.helper.onGameConnectionChange.Value != null) {
+                this.helper.onConnection.Value = true;
+            }
         }
 
         /**
