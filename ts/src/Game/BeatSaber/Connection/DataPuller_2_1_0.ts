@@ -6,7 +6,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
 
         public getName(): string {
-            return 'DataPuller 2.1.0 (WIP)';
+            return 'DataPuller 2.1.0';
         }
 
         protected setCompatibility(): void {
