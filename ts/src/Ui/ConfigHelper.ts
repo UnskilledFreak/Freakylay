@@ -182,14 +182,18 @@ namespace Freakylay.Ui {
          */
         public generateUrlText(): void {
             let url = window.location.origin + window.location.pathname + '?';
+
+            // ignore options field because the overlay will open settings itself without any custom settings
             /*
             if (this.optionsOpen) {
                 url += 'options&'
             }
             */
+
             if (this.onGameConnectionChange.Value != null) {
                 this.config.connectionSetting = this.onGameConnectionChange.Value.saveConfig();
             }
+
             url += 'w=' + this.config.getConfigString();
             url = url.removeLast('?');
             url = url.removeLast('&');
@@ -273,8 +277,8 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('hide complete counter section', this.config.looks.hideCounterSection),
                 this.booleanSettingLine('hide complete song info section', this.config.looks.hideSongInfo),
                 this.booleanSettingLine('time circle matches other circles', this.config.looks.timeCircleLikeOtherCircles),
-                this.booleanSettingLine('show if map ranked', this.config.looks.showRanked),
-                this.booleanSettingLine('show ranked star info', this.config.looks.showStars),
+                this.booleanSettingLine('show if map is ranked', this.config.looks.showRanked),
+                this.booleanSettingLine('show ranked star/difficulty info', this.config.looks.showStars),
                 this.booleanSettingLine('show rank behind the accuracy circle', this.config.looks.showAccuracyRank),
                 this.rangeSetting('border radius', this.config.looks.borderRadius, 0, 20, 1),
                 this.dropDownSetting(

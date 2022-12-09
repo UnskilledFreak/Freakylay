@@ -124,14 +124,21 @@ namespace Freakylay.Internal.Config {
                 return;
             }
 
-            this.load(JSON.parse(atob(this.getConfig('w', '{}'))));
+            let jsonConfData = "{}";
+            let confData = this.getConfig('w', '');
+
+            if (confData.length > 0) {
+                jsonConfData = atob('ey' + confData)
+            }
+
+            this.load(JSON.parse(jsonConfData));
         }
 
         /**
          * generates an url safe config string
          */
         public getConfigString(): string {
-            return btoa(JSON.stringify(this.save()));
+            return btoa(JSON.stringify(this.save())).substring(2);
         }
 
         /**

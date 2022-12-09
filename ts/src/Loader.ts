@@ -266,7 +266,7 @@ String.prototype.repeat = function (length: number): string {
  * @param str needle
  */
 String.prototype.endsWith = function (str: string): boolean {
-    return this.substring(0, this.length - str.length) === str;
+    return this.substring(this.length - str.length) === str;
 }
 
 /**
