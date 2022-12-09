@@ -1096,7 +1096,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeChange(modifier: boolean): void {
-            this.practiceMode.flex(modifier);
+            this.practiceModeInfo.toggleClassByValue(modifier, 'active');
         }
 
         /**
@@ -1106,6 +1106,10 @@ namespace Freakylay.Ui {
          */
         private onPracticeModeSpeedChange(speed: number): void {
             let data;
+            this.practiceModeSongSpeed.toggleClassByValue(speed != 1, 'active');
+            if (speed == 1) {
+                return;
+            }
             speed = Math.floor(speed * 100);
             if (this.config.looks.speedDisplayRelative.Value) {
                 speed -= 100;
@@ -1114,6 +1118,7 @@ namespace Freakylay.Ui {
                 data = speed.toString();
             }
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName(data);
+            this.addModifierClasses();
         }
 
         /**
@@ -1122,7 +1127,9 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeTimeOffset(modifier: number): void {
+            this.practiceModeTimeOffset.toggleClassByValue(modifier > 0, 'active');
             this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName(modifier.toDateString(true))
+            this.addModifierClasses();
         }
 
         private onKeyChange(key: string): void {
