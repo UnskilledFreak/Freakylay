@@ -53,7 +53,7 @@ namespace Freakylay {
             this.helper = new ConfigHelper(this.config, this.pulsoid, this.gameList, this.gameLinkState);
             this.events = new Events(this.config, this.helper, this.pulsoid);
 
-            this.tabManager = new TabManager(this.isDev, this.events);
+            this.tabManager = new TabManager(this.isDev, this.events, this.config);
 
             this.gameLinkState.Value = Freakylay.Game.GameLinkStatus.NotConnected;
 

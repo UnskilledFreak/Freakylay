@@ -1,146 +1,118 @@
-/*
-///<reference path="../../BaseConnection.ts"/>
-///<reference path="../../../DataTransfer/WebSocket/WebSocketConnection.ts"/>
+///<reference path="../AbstractDataPuller.ts"/>
 namespace Freakylay.Game.BeatSaber.Connection {
-    import WebSocketConnection = Freakylay.DataTransfer.WebSocket.WebSocketConnection;
-    import ConfigHelper = Freakylay.Ui.ConfigHelper;
 
-    export class DataPuller_2_1_0 extends BaseConnection {
-
-        private connection: WebSocketConnection = null;
-        private lastIp: string;
-        private lastPort: number;
-
-        private author: string;
-        private songSubName: string;
-        private difficulty: string;
-        private customDifficulty: string;
-
+    export class DataPuller_2_1_0 extends AbstractDataPuller {
         constructor() {
             super();
-
-            this.author = '';
-            this.songSubName = '';
-            this.difficulty = '';
-            this.customDifficulty = '';
         }
 
         public getName(): string {
-            return 'DataPuller 2.1.0';
-        }
-
-        public connect(urlOrIp: string, port: number): boolean {
-            this.lastIp = urlOrIp;
-            this.lastPort = port;
-            this.connection = new WebSocketConnection(this.lastIp, this.lastPort);
-            this.connection.addEndpoint('BSDataPuller/LiveData', this.handleLiveData);
-            this.connection.addEndpoint('BSDataPuller/MapData', this.handleMapData);
-            this.isConnected = true;
-            return true;
-        }
-
-        public disconnect(): boolean {
-            this.isConnected = true;
-            if (this.connection != null) {
-                this.connection.disconnect();
-                this.connection = null;
-                return true;
-            }
-            return false;
-        }
-
-        public reconnect(): boolean {
-            this.connect(this.lastIp, this.lastPort);
-            return false;
-        }
-
-        public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
-
+            return 'DataPuller 2.1.0 (WIP)';
         }
 
         protected setCompatibility(): void {
             this.compatibility.supportsPlayerColorsUsage = false;
         }
 
-        private getCompleteAuthorLine(): string {
-            if (this.songSubName.length > 0) {
-                return this.author + ' - ' + this.songSubName;
+        public handleMapData(data: {}): void {
+            let inLevel = data.isset('InLevel', false);
+            let levelFinished = data.isset('LevelFinished', false);
+            let levelFailed = data.isset('LevelFailed', false);
+            let levelQuit = data.isset('LevelQuit', false);
+
+            if (inLevel || levelFailed || levelQuit || levelFinished) {
+                this.missOffset = 0;
+                this.lostFullCombo = false;
             }
 
-            return this.author;
-        }
-
-        public handleMapData(data): void {
-            this.onLevelChange.Value = (data.isset('InLevel', false));
+            this.onLevelChange.Value = inLevel;
             this.onLevelPausedChange.Value = data.isset('LevelPaused', false);
-            this.onLevelFinishedChange.Value = data.isset('LevelFinished', false);
-            this.onLevelFailedChange.Value = data.isset('LevelFailed', false);
-            this.onLevelQuitChange.Value = data.isset('LevelQuit', false);
+            this.onLevelFinishedChange.Value = levelFinished;
+            this.onLevelFailedChange.Value = levelFailed;
+            this.onLevelQuitChange.Value = levelQuit;
+            // no Hash
             this.onSongInfoSongNameChange.Value = data.isset('SongName', '???');
             this.songSubName = data.isset('SongSubName', '');
             this.author = data.isset('SongAuthor', '');
             this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
             this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '');
-            this.onKeyChange.Value = data.isset('BSRKey', 'BSRKey');
-            //this.onPreviousKeyChange.Value = this.onKeyChange.Value;
+            this.onKeyChange.Value = data.isset('BSRKey', '');
             this.onPreviousKeyChange.Value = data.isset('PreviousKey', 'previous key');
             this.onSongInfoCoverImageChange.Value = data.isset('coverImage', 'img/BS_Logo.jpg');
-            this.onTimeLengthChange.Value = data.isset('Length', 60);
-            this.onTimeScaleChange.Value = data.isset('TimeScale', 0);
+            this.onTimeLengthChange.Value = data.isset('Duration', 60);
+            //this.onTimeScaleChange.Value = data.isset('TimeScale', 0);
             // no MapType
             this.onSongInfoDifficultyChange.Value = data.isset('Difficulty', 'ExpertPlus');
-            this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', 'Freaky!');
+            this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', '');
             this.onBpmChange.Value = data.isset('BPM', 0);
             this.onBlockSpeedChange.Value = data.isset('NJS', 0);
             let modifiers = data.isset('Modifiers', {});
-            this.onModifierNoFailChange.Value = modifiers.isset('noFailOn0Energy', false);
-            this.onModifierOneLifeChange.Value = modifiers.isset('oneLife', false);
-            this.onModifierFourLivesChange.Value = modifiers.isset('fourLives', false);
-            this.onModifierNoBombsChange.Value = modifiers.isset('noBombs', false);
-            this.onModifierNoWallsChange.Value = modifiers.isset('noWalls', false);
-            this.onModifierNoArrowsChange.Value = modifiers.isset('noArrows', false);
-            this.onModifierGhostNotesChange.Value = modifiers.isset('ghostNotes', false);
-            this.onModifierDisappearingArrowsChange.Value = modifiers.isset('disappearingArrows', false);
-            this.onModifierSmallNotesChange.Value = modifiers.isset('smallNotes', false);
-            this.onModifierProModeChange.Value = modifiers.isset('proMode', false);
-            this.onModifierStrictAnglesChange.Value = modifiers.isset('strictAngles', false);
-            this.onModifierZenModeChange.Value = modifiers.isset('zenMode', false);
-            this.onModifierSlowerSongChange.Value = modifiers.isset('slowerSong', false);
-            this.onModifierFasterSongChange.Value = modifiers.isset('fasterSong', false);
-            this.onModifierSuperFastSongChange.Value = modifiers.isset('superFastSong', false);
+            this.onModifierNoFailChange.Value = modifiers.isset('NoFailOn0Energy', false);
+            this.onModifierOneLifeChange.Value = modifiers.isset('OneLife', false);
+            this.onModifierFourLivesChange.Value = modifiers.isset('FourLives', false);
+            this.onModifierNoBombsChange.Value = modifiers.isset('NoBombs', false);
+            this.onModifierNoWallsChange.Value = modifiers.isset('NoWalls', false);
+            this.onModifierNoArrowsChange.Value = modifiers.isset('NoArrows', false);
+            this.onModifierGhostNotesChange.Value = modifiers.isset('GhostNotes', false);
+            this.onModifierDisappearingArrowsChange.Value = modifiers.isset('DisappearingArrows', false);
+            this.onModifierSmallNotesChange.Value = modifiers.isset('SmallNotes', false);
+            this.onModifierProModeChange.Value = modifiers.isset('ProMode', false);
+            this.onModifierStrictAnglesChange.Value = modifiers.isset('StrictAngles', false);
+            this.onModifierZenModeChange.Value = modifiers.isset('ZenMode', false);
+            this.onModifierSlowerSongChange.Value = modifiers.isset('SlowerSong', false);
+            this.onModifierFasterSongChange.Value = modifiers.isset('FasterSong', false);
+            this.onModifierSuperFastSongChange.Value = modifiers.isset('SuperFastSong', false);
             // no ModifiersMultiplier
             this.onPracticeModeChange.Value = data.isset('PracticeMode', false);
             let practiceData = data.isset('PracticeModeModifiers', {});
             this.onPracticeModeSpeedChange.Value = practiceData.isset('songSpeedMul', 1);
+            // no StartInAdvanceAndClearNotes
+            this.onPracticeModeTimeOffset.Value = Math.floor(practiceData.isset('startSongTime', 0));
             this.onPerformancePointsChange.Value = data.isset('PP', 0);
             this.onStarChange.Value = data.isset('Star', 0);
-            this.onMultiplayerChange.Value = data.isset('IsMultiplayer', 0);
-            this.onPreviousScoreChange.Value = data.isset('PreviousRecord', '');
+            // no GameVersion
+            // no PluginVersion
+            this.onMultiplayerChange.Value = data.isset('IsMultiplayer', false);
+            this.onPreviousScoreChange.Value = data.isset('PreviousRecord', 0);
             this.onPreviousKeyChange.Value = data.isset('PreviousBSR', '');
             // no unixTimestamp
         }
 
-        public handleLiveData(data): void {
-            this.onScoreChange.Value = data.isset('Score', 0);
-            // no ScoreWithMultipliers
+        public handleLiveData(data: {}): void {
+            this.score = data.isset('Score', 0);
+            this.maxScore = data.isset('ScoreWithMultipliers', 0);
+            this.sendCorrectScore();
             // no MaxScore
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
-            this.onFullComboChange.Value = data.isset('FullCombo', false);
-            this.onComboChange.Value = data.isset('Combo', 0);
-            this.onMissChange.Value = data.isset('Misses', 0);
+            // fix missing full combo break on bad cut on DataPuller 2.0.12
+            let combo = data.isset('Combo', 0);
+            if (this.lastCombo > combo) {
+                this.onFullComboChange.Value = false;
+                this.lostFullCombo = true;
+                this.missOffset++;
+            } else if (!this.lostFullCombo) {
+                this.onFullComboChange.Value = data.isset('FullCombo', false);
+            }
+            this.lastCombo = combo;
+            // end fix
+            // no NotesSpawned
+            this.onComboChange.Value = combo;
+            this.onMissChange.Value = data.isset('Misses', 0) + this.missOffset;
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
-            this.onHealthChange.Value = data.isset('Health', 0);
+            this.onHealthChange.Value = data.isset('PlayerHealth', 0);
+            // no ColorType (yet)
             this.onTimeElapsedChange.Value = data.isset('TimeElapsed', 0);
             // no unixTimestamp
+            // no EventTrigger
         }
 
         public testMapData(): void {
             this.handleMapData({
                 'GameVersion': '1.24.1',
-                'PluginVersion': '2.0.12.0',
-                'InLevel': false,
+                'PluginVersion': '2.1.0',
+                'InLevel': true,
                 'LevelPaused': false,
                 'LevelFinished': false,
                 'LevelFailed': true,
@@ -166,7 +138,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                     'noBombs': false,
                     'noWalls': false,
                     'noArrows': false,
-                    'ghostNotes': false,
+                    'ghostNotes': true,
                     'disappearingArrows': false,
                     'smallNotes': false,
                     'proMode': false,
@@ -194,21 +166,21 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
         public testLiveData(): void {
             this.handleLiveData({
-                'Score': 0,
+                'Score': 1234,
                 'ScoreWithMultipliers': 0,
                 'MaxScore': 0,
                 'MaxScoreWithMultipliers': 0,
                 'Rank': 'E',
                 'FullCombo': false,
-                'Combo': 0,
+                'Combo': 4,
                 'Misses': 4,
-                'Accuracy': 0.0,
+                'Accuracy': 95.0,
                 'BlockHitScore': [
                     0,
                     0,
                     0
                 ],
-                'PlayerHealth': 0.0,
+                'PlayerHealth': 100.0,
                 'ColorType': 0,
                 'TimeElapsed': 6,
                 'unixTimestamp': 1662375499415,
@@ -217,4 +189,3 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
     }
 }
-*/

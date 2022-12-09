@@ -1,109 +1,19 @@
-///<reference path="../../BaseConnection.ts"/>
-///<reference path="../../../DataTransfer/WebSocket/WebSocketConnection.ts"/>
+///<reference path="../AbstractDataPuller.ts"/>
 namespace Freakylay.Game.BeatSaber.Connection {
-    import WebSocketConnection = Freakylay.DataTransfer.WebSocket.WebSocketConnection;
-    import ConfigHelper = Freakylay.Ui.ConfigHelper;
-    import EventProperty = Freakylay.Internal.EventProperty;
-
-    export class DataPuller_2_0_12 extends BaseConnection {
-
-        private connection: WebSocketConnection = null;
-        private author: string;
-        private songSubName: string;
-        private difficulty: string;
-        private customDifficulty: string;
-        private linkStatus: EventProperty<GameLinkStatus>;
-        // workaround vars for bugs in DataPuller 2.0.12
-        private lastCombo: number; // combo will not get reset on bad cut
-        private missOffset: number; // miss will not get incremented on bad cut
-        private lostFullCombo: boolean;
-
+    export class DataPuller_2_0_12 extends AbstractDataPuller {
         constructor() {
             super();
-
-            this.author = '';
-            this.songSubName = '';
-            this.difficulty = '';
-            this.customDifficulty = '';
-            this.lastCombo = 0;
-            this.missOffset = 0;
-            this.lostFullCombo = false;
-
-            this.port = 2946;
         }
 
         public getName(): string {
             return 'DataPuller 2.0.12';
         }
 
-        public supportsCustomIp(): boolean {
-            return true;
-        }
-
-        public supportsCustomPort(): boolean {
-            return false;
-        }
-
-        public connect(gameLinkStatus: EventProperty<GameLinkStatus>): boolean {
-            this.linkStatus = gameLinkStatus;
-            this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connecting;
-            this.connection = new WebSocketConnection(this.ip, this.port);
-            this.connection.addEndpoint('BSDataPuller/LiveData', (a) => {
-                this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
-                this.handleLiveData(a);
-            }, true);
-            this.connection.addEndpoint('BSDataPuller/MapData', (a) => {
-                this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
-                this.handleMapData(a);
-            }, true);
-            this.isConnected = this.connection.isConnected();
-            return this.isConnected;
-        }
-
-        public disconnect(): boolean {
-            this.isConnected = false;
-            this.linkStatus.Value = Freakylay.Game.GameLinkStatus.NotConnected;
-            if (this.connection != null) {
-                this.connection.disconnect();
-                this.connection = null;
-                return true;
-            }
-            return false;
-        }
-
-        public reconnect(): boolean {
-            this.disconnect();
-            this.connect(this.linkStatus);
-            return false;
-        }
-
-        public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
-            // no additional settings
-        }
-
-        public loadConfig(data: any): void {
-            this.ip = data.isset('a', '127.0.0.1');
-        }
-
-        public saveConfig(): any {
-            return {
-                a: this.ip
-            };
-        }
-
         protected setCompatibility(): void {
             this.compatibility.supportsPlayerColorsUsage = false;
         }
 
-        private getCompleteAuthorLine(): string {
-            if (this.songSubName.length > 0) {
-                return this.author + ' - ' + this.songSubName;
-            }
-
-            return this.author;
-        }
-
-        public handleMapData(data): void {
+        public handleMapData(data: {}): void {
             let inLevel = data.isset('InLevel', false);
             let levelFinished = data.isset('LevelFinished', false);
             let levelFailed = data.isset('LevelFailed', false);
@@ -159,15 +69,16 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onPracticeModeTimeOffset.Value = Math.floor(practiceData.isset('startSongTime', 0));
             this.onPerformancePointsChange.Value = data.isset('PP', 0);
             this.onStarChange.Value = data.isset('Star', 0);
-            this.onMultiplayerChange.Value = data.isset('IsMultiplayer', 0);
-            this.onPreviousScoreChange.Value = data.isset('PreviousRecord', '');
+            this.onMultiplayerChange.Value = data.isset('IsMultiplayer', false);
+            this.onPreviousScoreChange.Value = data.isset('PreviousRecord', 0);
             this.onPreviousKeyChange.Value = data.isset('PreviousBSR', '');
             // no unixTimestamp
         }
 
-        public handleLiveData(data): void {
-            this.onScoreChange.Value = data.isset('Score', 0);
-            // no ScoreWithMultipliers
+        public handleLiveData(data: {}): void {
+            this.score = data.isset('Score', 0);
+            this.maxScore = data.isset('ScoreWithMultipliers', 0);
+            this.sendCorrectScore();
             // no MaxScore
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
@@ -191,12 +102,12 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no unixTimestamp
         }
 
-        public testMapData(): void {
+        public testMapData(isPause: boolean): void {
             this.handleMapData({
                 'GameVersion': '1.24.1',
                 'PluginVersion': '2.0.12.0',
                 'InLevel': true,
-                'LevelPaused': false,
+                'LevelPaused': isPause,
                 'LevelFinished': false,
                 'LevelFailed': true,
                 'LevelQuit': false,
@@ -207,7 +118,6 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 'Mapper': 'OreoZe',
                 'BSRKey': '565f',
                 'coverImage': 'https://eu.cdn.beatsaver.com/7f226aa6b106c9a0dbc0e183222c70d5fe7a5cfe.jpg',
-                //'coverImage': 'https://example.com/test.png',
                 'Length': 51,
                 'TimeScale': 0.0,
                 'MapType': 'Standard',
@@ -250,14 +160,14 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
         public testLiveData(): void {
             this.handleLiveData({
-                'Score': 1234,
-                'ScoreWithMultipliers': 0,
+                'Score': 99999999,
+                'ScoreWithMultipliers': 8888888,
                 'MaxScore': 0,
                 'MaxScoreWithMultipliers': 0,
                 'Rank': 'E',
                 'FullCombo': false,
-                'Combo': 4,
-                'Misses': 4,
+                'Combo': 8888,
+                'Misses': 9999,
                 'Accuracy': 95.0,
                 'BlockHitScore': [
                     0,

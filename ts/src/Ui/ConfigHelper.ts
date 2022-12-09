@@ -115,6 +115,10 @@ namespace Freakylay.Ui {
             });
 
             this.onGameConnectionChange.register((con: BaseConnection) => {
+                if (this.onGameConnectionChange.OldValue != null) {
+                    this.onGameConnectionChange.OldValue.disconnect();
+                    this.onGameConnectionChange.OldValue.onUnregister();
+                }
                 this.gameConnectionSetting.removeChildren();
                 if (con == null) {
                     return;
@@ -143,7 +147,7 @@ namespace Freakylay.Ui {
                 if (con.supportsCustomPort()) {
                     // todo :: this
                 }
-                con.displayConnectionSettings(this.gameConnectionSetting, this);
+                con.displayConnectionSettings(this.gameConnectionSetting, this, this.config);
             });
 
             let gameLinkStatus = document.getDiv('gameLinkStatus');
@@ -475,7 +479,7 @@ namespace Freakylay.Ui {
          * @param property
          * @private
          */
-        private booleanSettingLine(name: string, property: EventProperty<boolean>): HTMLDivElement {
+        public booleanSettingLine(name: string, property: EventProperty<boolean>): HTMLDivElement {
             let line = document.div().addClass<HTMLDivElement>('settingsLine');
             let info = document.span();
             let input = document.create<HTMLInputElement>('input');

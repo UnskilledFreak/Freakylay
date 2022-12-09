@@ -3,11 +3,11 @@ namespace Freakylay.Internal.Config {
         /**
          * returns shortened data for storage purposes
          */
-        save(): any;
+        save(): {};
 
         /**
          * loads stored data
          */
-        load(data: any): void;
+        load(data: {}): void;
     }
 }

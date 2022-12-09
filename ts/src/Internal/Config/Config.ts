@@ -15,7 +15,7 @@ namespace Freakylay.Internal.Config {
 
         public game: EventProperty<string>;
         public connection: EventProperty<string>;
-        public connectionSetting: any;
+        public connectionSetting: {};
         private urlSearchParams: URLSearchParams;
         private randomBackground: Color = Color.random(.7);
         private randomText: Color = this.randomBackground.getHighLowComplementary(1);
@@ -145,7 +145,7 @@ namespace Freakylay.Internal.Config {
          * loads config data from an json object
          * @param data
          */
-        load(data: any) {
+        load(data: {}) {
             this.game.Value = data.isset('a', '');
             this.connection.Value = data.isset('b', '');
             this.colors.load(data.isset('c', {}));
@@ -157,7 +157,7 @@ namespace Freakylay.Internal.Config {
         /**
          * saves config data to an json object
          */
-        save(): any {
+        save(): {} {
             return {
                 a: this.game.Value,
                 b: this.connection.Value,

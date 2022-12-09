@@ -3,6 +3,7 @@ namespace Freakylay.Game {
     import EventProperty = Freakylay.Internal.EventProperty;
     import Color = Freakylay.Internal.Color;
     import ConfigHelper = Freakylay.Ui.ConfigHelper;
+    import Config = Freakylay.Internal.Config.Config;
 
     export abstract class BaseConnection {
         public ip: string;
@@ -19,7 +20,9 @@ namespace Freakylay.Game {
 
         public abstract reconnect(): boolean;
 
-        public abstract displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void;
+        public abstract displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper, config: Config): void;
+
+        public abstract onUnregister(): void;
 
         public abstract loadConfig(data: any): void;
 

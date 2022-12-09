@@ -15,7 +15,7 @@ namespace Freakylay.Internal.Config {
          * loads config data from an json object
          * @param data
          */
-        load(data: any): void {
+        load(data: {}): void {
             this.useDynamicBpm.Value = data.isset('a', this.useDynamicBpm.Value);
             this.maxStaticBpm.Value = data.isset('b', this.maxStaticBpm.Value);
             this.type.Value = data.isset('c', this.type.Value);
@@ -25,7 +25,7 @@ namespace Freakylay.Internal.Config {
         /**
          * saves config data from an json object
          */
-        save(): any {
+        save(): {} {
             return {
                 a: this.useDynamicBpm.Value,
                 b: this.maxStaticBpm.Value,

@@ -37,7 +37,7 @@ namespace Freakylay.Internal.Config {
          * loads config data from an json object
          * @param data
          */
-        load(data: any): void {
+        load(data: {}): void {
             this.shortModifierNames.Value = data.isset('a', this.shortModifierNames.Value);
             this.showPreviousKey.Value = data.isset('b', this.showPreviousKey.Value);
             this.showMissCounter.Value = data.isset('c', this.showMissCounter.Value);
@@ -67,7 +67,7 @@ namespace Freakylay.Internal.Config {
         /**
          * saves config data from an json object
          */
-        save(): any {
+        save(): {} {
             return {
                 a: this.shortModifierNames.Value,
                 b: this.showPreviousKey.Value,

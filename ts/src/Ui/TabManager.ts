@@ -1,6 +1,9 @@
 ///<reference path="../Game/BeatSaber/Connection/DataPuller_2_0_12.ts"/>
+///<reference path="../Game/BeatSaber/Connection/DataPuller_2_1_0.ts"/>
 namespace Freakylay.Ui {
     import DataPuller_2_0_12 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_0_12;
+    import DataPuller_2_1_0 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_1_0;
+    import Config = Freakylay.Internal.Config.Config;
 
     /**
      * tab manager for option panel
@@ -8,7 +11,7 @@ namespace Freakylay.Ui {
     export class TabManager {
         private tabs: Tab[];
 
-        constructor(developmentMode: boolean, events: Events) {
+        constructor(developmentMode: boolean, events: Events, config: Config) {
             this.tabs = [];
 
             document.getAll<HTMLDivElement[]>('div[data-tab-name]').forEach((element: HTMLDivElement) => {
@@ -22,24 +25,27 @@ namespace Freakylay.Ui {
             if (developmentMode) {
                 let content = this.addTab('TEST');
                 content.append(
-                    /*
-                    document.button('DS1_TEST_a', () => {
+                    document.button('DP2_0_12_PAUSE', () => {
                         let c = new DataPuller_2_0_12();
+                        c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
+                        c.testMapData(true);
                         c.testLiveData();
                     }),
-                    document.button('DS1_TEST_b', () => {
+                    document.button('DP2_0_12_NO_PAUSE', () => {
                         let c = new DataPuller_2_0_12();
+                        c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
-                        c.testMapData();
+                        c.testMapData(false);
+                        c.testLiveData();
                     }),
-                    */
-                    document.button('DS1_TEST_c', () => {
-                        let c = new DataPuller_2_0_12();
+                    document.button('DP2_1_0', () => {
+                        let c = new DataPuller_2_1_0();
+                        c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData();
                         c.testLiveData();
-                    })
+                    }),
                 );
             }
 

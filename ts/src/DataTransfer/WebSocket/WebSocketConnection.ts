@@ -27,7 +27,7 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @param callback
          * @param isJsonData
          */
-        public addEndpoint(name: string, callback: (string) => void, isJsonData: boolean = true): void {
+        public addEndpoint(name: string, callback: (data: string | {}) => void, isJsonData: boolean = true): void {
             this.connections[name] = new WebSocketEndPoint(
                 this.getUrl() + name,
                 (data) => {

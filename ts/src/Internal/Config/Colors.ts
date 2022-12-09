@@ -32,7 +32,7 @@ namespace Freakylay.Internal.Config {
          * loads config data from an json object
          * @param data
          */
-        load(data: any): void {
+        load(data: {}): void {
             this.text.Value = Color.fromUrl(data.isset('a', 'rgba(255, 133, 255, 0.7)'));
             this.background.Value = Color.fromUrl(data.isset('b', '#ffffff'));
             //this.textIsRandom.Value = data.c;
@@ -42,7 +42,7 @@ namespace Freakylay.Internal.Config {
         /**
          * saves config data from an json object
          */
-        save(): any {
+        save(): {} {
             return {
                 a: this.text.Value.toCss(),
                 b: this.background.Value.toCss(),

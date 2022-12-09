@@ -1216,7 +1216,6 @@ namespace Freakylay.Ui {
 
         private onLevelPausedChange(changed: boolean): void {
             this.levelIsPaused = changed;
-            console.log(this.levelIsPaused);
             if (this.levelIsPaused) {
                 this.levelIsPausedTimeInterval = window.setInterval(() => {
                     this.onTimeElapsedChangeSetText(this.connection.onTimeElapsedChange.Value, this.connection.onTimeLengthChange.Value);

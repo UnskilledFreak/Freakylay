@@ -1,29 +1,43 @@
 namespace Freakylay.Game.BeatSaber.Connection {
-    export class HttpStatus extends BaseConnection {
-        public connect(ip: string, port: number): boolean {
+    export class HttpStatus_1_20_0 extends BaseConnection {
+        connect(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>): boolean {
             return false;
         }
 
-        public disconnect(): boolean {
+        disconnect(): boolean {
             return false;
         }
 
-        protected getCompatibility(): Freakylay.Game.Compatibility {
-            return undefined;
+        displayConnectionSettings(settingsTab: HTMLDivElement, helper: Freakylay.Ui.ConfigHelper): void {
         }
 
-        protected getName(): string {
-            return 'HttpStatus 1.20.0';
+        getName(): string {
+            return 'HttpStatus 1.20.0 (WIP)';
         }
 
-        protected initializeEvents(): void {
+        loadConfig(data: {}): void {
         }
 
-        public reconnect(): boolean {
+        onUnregister(): void {
+        }
+
+        reconnect(): boolean {
             return false;
+        }
+
+        saveConfig(): {} {
+            return {};
         }
 
         protected setCompatibility(): void {
+        }
+
+        supportsCustomIp(): boolean {
+            return false;
+        }
+
+        supportsCustomPort(): boolean {
+            return false;
         }
     }
 }
