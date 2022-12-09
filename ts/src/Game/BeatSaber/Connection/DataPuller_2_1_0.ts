@@ -114,7 +114,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                     0,
                     0
                 ],
-                'PlayerHealth': 100.0,
+                'PlayerHealth': 75.0,
                 'ColorType': 0,
                 'TimeElapsed': 6,
                 'unixTimestamp': 1662375499415,

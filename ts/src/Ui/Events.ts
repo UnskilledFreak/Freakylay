@@ -751,6 +751,9 @@ namespace Freakylay.Ui {
                 return;
             }
 
+            this.connection.disconnect();
+            this.connection.onUnregister();
+
             this.connection.onComboChange.unregister();
             this.connection.onMissChange.unregister();
             this.connection.onScoreChange.unregister();
