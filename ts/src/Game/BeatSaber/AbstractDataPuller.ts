@@ -42,9 +42,13 @@ namespace Freakylay.Game.BeatSaber {
             this.port = 2946;
         }
 
-        public abstract handleMapData(data: {}): void;
+        protected abstract handleMapData(data: {}): void;
 
-        public abstract handleLiveData(data: {}): void;
+        //protected abstract handleLiveData(data: {}): void;
+
+        protected abstract handleModifiers(data: {}): void;
+
+        protected abstract handlePracticeModifiers(data: {}): void;
 
         public supportsCustomIp(): boolean {
             return true;
@@ -60,11 +64,11 @@ namespace Freakylay.Game.BeatSaber {
             this.connection = new WebSocketConnection(this.ip, this.port);
             this.connection.addEndpoint('BSDataPuller/LiveData', (a) => {
                 this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
-                this.handleLiveData(a);
+                this.handleLiveDataValid(a);
             }, true);
             this.connection.addEndpoint('BSDataPuller/MapData', (a) => {
                 this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
-                this.handleMapData(a);
+                this.handleMapDataValid(a);
             }, true);
             this.isConnected = this.connection.isConnected();
             return this.isConnected;
@@ -123,7 +127,79 @@ namespace Freakylay.Game.BeatSaber {
 
         protected sendCorrectScore(): void {
             this.onScoreChange.Value = this.onUseScoreWithMultipliers.Value ? this.maxScore : this.score;
-            console.log(this.score, this.maxScore, this.onUseScoreWithMultipliers.Value);
+        }
+
+        protected handleLiveDataValid(data: {}): void {
+            this.score = data.isset('Score', 0);
+            this.maxScore = data.isset('ScoreWithMultipliers', 0);
+            this.sendCorrectScore();
+            // no MaxScore
+            // no MaxScoreWithMultipliers
+            this.onRankChange.Value = data.isset('Rank', 'F');
+            // fix missing full combo break on bad cut on DataPuller 2.0.12
+            let combo = data.isset('Combo', 0);
+            if (this.lastCombo > combo) {
+                this.onFullComboChange.Value = false;
+                this.lostFullCombo = true;
+                this.missOffset++;
+            } else if (!this.lostFullCombo) {
+                this.onFullComboChange.Value = data.isset('FullCombo', false);
+            }
+            this.lastCombo = combo;
+            // end fix
+            this.onComboChange.Value = combo;
+            this.onMissChange.Value = data.isset('Misses', 0) + this.missOffset;
+            this.onAccuracyChange.Value = data.isset('Accuracy', 0);
+            // no BlockHitScore
+            this.onHealthChange.Value = data.isset('PlayerHealth', 0);
+            this.onTimeElapsedChange.Value = data.isset('TimeElapsed', 0);
+            // no unixTimestamp
+
+            //this.handleLiveData(data);
+        }
+
+        private handleMapDataValid(data: {}): void {
+            let inLevel = data.isset('InLevel', false);
+            let levelFinished = data.isset('LevelFinished', false);
+            let levelFailed = data.isset('LevelFailed', false);
+            let levelQuit = data.isset('LevelQuit', false);
+
+            if (inLevel || levelFailed || levelQuit || levelFinished) {
+                this.missOffset = 0;
+                this.lostFullCombo = false;
+            }
+
+            this.onLevelChange.Value = inLevel;
+            this.onLevelPausedChange.Value = data.isset('LevelPaused', false);
+            this.onLevelFinishedChange.Value = levelFinished;
+            this.onLevelFailedChange.Value = levelFailed;
+            this.onLevelQuitChange.Value = levelQuit;
+            // no Hash
+            this.onSongInfoSongNameChange.Value = data.isset('SongName', '???');
+            this.songSubName = data.isset('SongSubName', '');
+            this.author = data.isset('SongAuthor', '');
+            this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
+            this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '');
+            this.onKeyChange.Value = data.isset('BSRKey', '');
+            this.onPreviousKeyChange.Value = data.isset('PreviousKey', 'previous key');
+            // no MapType
+            this.onSongInfoDifficultyChange.Value = data.isset('Difficulty', 'ExpertPlus');
+            this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', '');
+            this.onBpmChange.Value = data.isset('BPM', 0);
+            this.onBlockSpeedChange.Value = data.isset('NJS', 0);
+            this.onPracticeModeChange.Value = data.isset('PracticeMode', false);
+            this.onPerformancePointsChange.Value = data.isset('PP', 0);
+            this.onStarChange.Value = data.isset('Star', 0);
+            // no GameVersion
+            // no PluginVersion
+            this.onMultiplayerChange.Value = data.isset('IsMultiplayer', false);
+            this.onPreviousScoreChange.Value = data.isset('PreviousRecord', 0);
+            this.onPreviousKeyChange.Value = data.isset('PreviousBSR', '');
+            // no unixTimestamp
+            // no ModifiersMultiplier
+            this.handleMapData(data);
+            this.handleModifiers(data.isset('Modifiers', {}))
+            this.handlePracticeModifiers(data.isset('PracticeModeModifiers', {}));
         }
     }
 }

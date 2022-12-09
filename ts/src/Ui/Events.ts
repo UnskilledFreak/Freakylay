@@ -761,7 +761,6 @@ namespace Freakylay.Ui {
             this.connection.onAccuracyChange.unregister();
             this.connection.onTimeElapsedChange.unregister();
             this.connection.onTimeLengthChange.unregister();
-            this.connection.onTimeScaleChange.unregister();
             this.connection.onRankChange.unregister();
             this.connection.onFullComboChange.unregister();
 

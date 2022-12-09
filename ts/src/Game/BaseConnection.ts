@@ -49,10 +49,8 @@ namespace Freakylay.Game {
         public onAccuracyChange: EventProperty<number> = new EventProperty<number>();
         public onTimeElapsedChange: EventProperty<number> = new EventProperty<number>();
         public onTimeLengthChange: EventProperty<number> = new EventProperty<number>();
-        public onTimeScaleChange: EventProperty<number> = new EventProperty<number>();
         public onRankChange: EventProperty<string> = new EventProperty<string>();
         public onFullComboChange: EventProperty<boolean> = new EventProperty<boolean>();
-
         public onModifierChange: EventProperty<boolean> = new EventProperty<boolean>();
         public onModifierNoFailChange: EventProperty<boolean> = new EventProperty<boolean>();
         public onModifierOneLifeChange: EventProperty<boolean> = new EventProperty<boolean>();
