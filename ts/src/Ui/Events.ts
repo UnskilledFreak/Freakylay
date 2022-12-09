@@ -103,6 +103,8 @@ namespace Freakylay.Ui {
         private valueDifficulty: string;
         private valueCustomDifficulty: string;
         private valuePreviousScore: number;
+        private levelIsPaused: boolean;
+        private levelIsPausedTimeInterval: number;
 
         /**
          * constructor of Event class
@@ -156,6 +158,8 @@ namespace Freakylay.Ui {
                 this.songInfo,
                 this.practiceMode
             ];
+
+            this.levelIsPaused = false;
 
             // internal
             this.showElements.register((show: boolean) => {
@@ -903,14 +907,15 @@ namespace Freakylay.Ui {
          * @private
          */
         private onTimeElapsedChangeSetText(value: number, total: number): void {
+            let currentTime = this.levelIsPaused && (new Date()).getSeconds() % 2 == 0 ? ' ' : value.toDateString(false);
             let text: string;
             if (this.config.looks.timeCircleLikeOtherCircles.Value) {
-                text = 'Time<br>' + value.toDateString(false);
+                text = 'Time<br>' + currentTime;
             } else {
                 if (total == undefined) {
                     total = 120;
                 }
-                text = value.toDateString(false) + '<br>' + total.toDateString(false);
+                text = currentTime + '<br>' + total.toDateString(false);
             }
 
             this.timeCircleBar.setText(text);
@@ -1210,6 +1215,17 @@ namespace Freakylay.Ui {
         }
 
         private onLevelPausedChange(changed: boolean): void {
+            this.levelIsPaused = changed;
+            console.log(this.levelIsPaused);
+            if (this.levelIsPaused) {
+                this.levelIsPausedTimeInterval = window.setInterval(() => {
+                    this.onTimeElapsedChangeSetText(this.connection.onTimeElapsedChange.Value, this.connection.onTimeLengthChange.Value);
+                }, 1000);
+            } else {
+                if (this.levelIsPausedTimeInterval > 0) {
+                    window.clearInterval(this.levelIsPausedTimeInterval);
+                }
+            }
         }
 
         private onLevelFinishedChange(changed: boolean): void {
