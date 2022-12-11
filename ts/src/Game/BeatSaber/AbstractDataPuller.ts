@@ -18,6 +18,7 @@ namespace Freakylay.Game.BeatSaber {
         protected maxScore: number;
         // workaround vars for bugs in DataPuller 2.0.12 (never fixed) and 2.1.0 (not fixed yet)
         protected lastCombo: number; // combo will not get reset on bad cut
+        protected lastMiss: number;
         protected missOffset: number; // miss will not get incremented on bad cut
         protected lostFullCombo: boolean;
 
@@ -31,6 +32,7 @@ namespace Freakylay.Game.BeatSaber {
             this.difficulty = '';
             this.customDifficulty = '';
             this.lastCombo = 0;
+            this.lastMiss = 0;
             this.missOffset = 0;
             this.lostFullCombo = false;
 
@@ -136,19 +138,24 @@ namespace Freakylay.Game.BeatSaber {
             // no MaxScore
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
-            // fix missing full combo break on bad cut on DataPuller 2.0.12
+            // fix missing full combo break and miss increment on bad cut on DataPuller 2.0.12 & 2.1.0
+            let misses = data.isset('Misses', 0);
             let combo = data.isset('Combo', 0);
             if (this.lastCombo > combo) {
                 this.onFullComboChange.Value = false;
                 this.lostFullCombo = true;
-                this.missOffset++;
+                // check here because it could also be a miss which is captured by DataPuller
+                if (misses == this.lastMiss) {
+                    this.missOffset++;
+                }
             } else if (!this.lostFullCombo) {
                 this.onFullComboChange.Value = data.isset('FullCombo', false);
             }
             this.lastCombo = combo;
+            this.lastMiss = misses;
             // end fix
             this.onComboChange.Value = combo;
-            this.onMissChange.Value = data.isset('Misses', 0) + this.missOffset;
+            this.onMissChange.Value = misses + this.missOffset;
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
             this.onHealthChange.Value = data.isset('PlayerHealth', 0);
@@ -167,6 +174,8 @@ namespace Freakylay.Game.BeatSaber {
             if (inLevel || levelFailed || levelQuit || levelFinished) {
                 this.missOffset = 0;
                 this.lostFullCombo = false;
+                this.lastMiss = 0;
+                this.lastCombo = 0;
             }
 
             this.onLevelChange.Value = inLevel;
