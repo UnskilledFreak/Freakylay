@@ -57,7 +57,7 @@ namespace Freakylay {
             this.gameLinkState.Value = Freakylay.Game.GameLinkStatus.NotConnected;
 
             // force fire all events once so config values take effect after hooking into events
-            this.fireAllConfigEvents();
+            this.fireAllConfigEvents(true);
 
             // start Pulsoid as standalone worker
             this.pulsoid.start();
@@ -69,6 +69,7 @@ namespace Freakylay {
                 }
                 this.events.registerConnection(this.helper.onGameConnectionChange.Value);
                 this.helper.onGameConnectionChange.Value.connect();
+                this.fireAllConfigEvents(false);
             });
             this.helper.initLoader();
 
@@ -125,7 +126,7 @@ namespace Freakylay {
          * fires all config events after load so overlay will apply settings from config
          * @private
          */
-        private fireAllConfigEvents(): void {
+        private fireAllConfigEvents(includeGameAndConnection: boolean): void {
             this.config.colors.text.trigger();
             this.config.colors.background.trigger();
             //this.config.colors.textIsRandom.fire();
@@ -157,8 +158,10 @@ namespace Freakylay {
             this.config.pulsoid.tokenOrUrl.trigger();
             this.config.pulsoid.useDynamicBpm.trigger();
 
-            this.config.game.trigger();
-            this.config.connection.trigger();
+            if (includeGameAndConnection) {
+                this.config.game.trigger();
+                this.config.connection.trigger();
+            }
         }
     }
 }

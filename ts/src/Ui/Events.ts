@@ -506,6 +506,9 @@ namespace Freakylay.Ui {
                 this.modifiers.flex(true);
             }
 
+            // todo :: this might fix the missing practice mode element on Http(Sira)Status
+            //this.onPracticeModeChange(this.practiceModeTimeOffset.innerText != '' && this.practiceModeSongSpeed.innerText != '')
+
             this.allModifiers.forEach((ar: HTMLDivElement[]) => {
 
                 let firstFound: boolean = false;
@@ -560,129 +563,133 @@ namespace Freakylay.Ui {
             let c = this.connection.getCompatibility();
 
             // counter section
-            this.checkCompatibility(c.supportsCombo, this.comboValue, this.connection.onComboChange, (a) => {
+            this.checkCompatibility(c.supportsCombo, false, this.comboValue, this.connection.onComboChange, (a) => {
                 this.onComboChange(a);
             });
-            this.checkCompatibility(c.supportsMiss, this.missValue, this.connection.onMissChange, (a) => {
+            this.checkCompatibility(c.supportsMiss, false, this.missValue, this.connection.onMissChange, (a) => {
                 this.onMissChange(a);
             });
-            this.checkCompatibility(c.supportsScore, this.score, this.connection.onScoreChange, (a) => {
+            this.checkCompatibility(c.supportsScore, false, this.score, this.connection.onScoreChange, (a) => {
                 this.onScoreChange(a);
             });
-            this.checkCompatibility(c.supportsBlockSpeed, this.blockSpeedValue, this.connection.onBlockSpeedChange, (a) => {
+            this.checkCompatibility(c.supportsBlockSpeed, false, this.blockSpeedValue, this.connection.onBlockSpeedChange, (a) => {
                 this.onBlockSpeedChange(a);
             });
-            this.checkCompatibility(c.supportsBpm, this.bpmValue, this.connection.onBpmChange, (a) => {
+            this.checkCompatibility(c.supportsBpm, false, this.bpmValue, this.connection.onBpmChange, (a) => {
                 this.onBpmChange(a);
             });
-            this.checkCompatibility(c.supportsHealth, this.health, this.connection.onHealthChange, (a) => {
+            this.checkCompatibility(c.supportsHealth, false, this.health, this.connection.onHealthChange, (a) => {
                 this.onHealthChange(a);
             });
-            this.checkCompatibility(c.supportsAccuracy, this.accuracy, this.connection.onAccuracyChange, (a) => {
+            this.checkCompatibility(c.supportsAccuracy, false, this.accuracy, this.connection.onAccuracyChange, (a) => {
                 this.onAccuracyChange(a);
             });
-            this.checkCompatibility(c.supportsTime, this.time, this.connection.onTimeElapsedChange, (a) => {
+            this.checkCompatibility(c.supportsTime, false, this.time, this.connection.onTimeElapsedChange, (a) => {
                 this.onTimeElapsedChange(a);
             });
             // time length and timescale are not used here
-            this.checkCompatibility(c.supportsRank, this.accuracyRank, this.connection.onRankChange, (a) => {
+            this.checkCompatibility(c.supportsRank, false, this.accuracyRank, this.connection.onRankChange, (a) => {
                 this.onRankChange(a);
             });
-            this.checkCompatibility(c.supportsFullCombo, this.fullCombo, this.connection.onFullComboChange, (a) => {
+            this.checkCompatibility(c.supportsFullCombo, false, this.fullCombo, this.connection.onFullComboChange, (a) => {
                 this.onFullComboChange(a);
             });
             // modifier
-            this.checkCompatibility(c.supportsModifier, this.modifiers, this.connection.onModifierChange, (a) => {
+            this.checkCompatibility(c.supportsModifier, true, this.modifiers, this.connection.onModifierChange, (a) => {
                 this.onModifierChange(a);
             });
-            this.checkCompatibility(c.supportsModifierNoFail, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, (a) => {
+            this.checkCompatibility(c.supportsModifierNoFail, true, this.modifierNoFailOn0Energy, this.connection.onModifierNoFailChange, (a) => {
                 this.onModifierNoFailChange(a);
             });
-            this.checkCompatibility(c.supportsModifierOneLife, this.modifierOneLife, this.connection.onModifierOneLifeChange, (a) => {
+            this.checkCompatibility(c.supportsModifierOneLife, true, this.modifierOneLife, this.connection.onModifierOneLifeChange, (a) => {
                 this.onModifierOneLifeChange(a);
             });
-            this.checkCompatibility(c.supportsModifierFourLives, this.modifierFourLives, this.connection.onModifierFourLivesChange, (a) => {
+            this.checkCompatibility(c.supportsModifierFourLives, true, this.modifierFourLives, this.connection.onModifierFourLivesChange, (a) => {
                 this.onModifierFourLivesChange(a);
             });
-            this.checkCompatibility(c.supportsModifierNoBombs, this.modifierNoBombs, this.connection.onModifierNoBombsChange, (a) => {
+            this.checkCompatibility(c.supportsModifierNoBombs, true, this.modifierNoBombs, this.connection.onModifierNoBombsChange, (a) => {
                 this.onModifierNoBombsChange(a);
             });
-            this.checkCompatibility(c.supportsModifierNoWalls, this.modifierNoWalls, this.connection.onModifierNoWallsChange, (a) => {
+            this.checkCompatibility(c.supportsModifierNoWalls, true, this.modifierNoWalls, this.connection.onModifierNoWallsChange, (a) => {
                 this.onModifierNoWallsChange(a);
             });
-            this.checkCompatibility(c.supportsModifierNoArrows, this.modifierNoArrows, this.connection.onModifierNoArrowsChange, (a) => {
+            this.checkCompatibility(c.supportsModifierNoArrows, true, this.modifierNoArrows, this.connection.onModifierNoArrowsChange, (a) => {
                 this.onModifierNoArrowsChange(a);
             });
-            this.checkCompatibility(c.supportsModifierGhostNotes, this.modifierGhostNotes, this.connection.onModifierGhostNotesChange, (a) => {
+            this.checkCompatibility(c.supportsModifierGhostNotes, true, this.modifierGhostNotes, this.connection.onModifierGhostNotesChange, (a) => {
                 this.onModifierGhostNotesChange(a);
             });
-            this.checkCompatibility(c.supportsModifierDisappearingArrows, this.modifierDisappearingArrows, this.connection.onModifierDisappearingArrowsChange, (a) => {
+            this.checkCompatibility(c.supportsModifierDisappearingArrows, true, this.modifierDisappearingArrows, this.connection.onModifierDisappearingArrowsChange, (a) => {
                 this.onModifierDisappearingArrowsChange(a);
             });
-            this.checkCompatibility(c.supportsModifierSmallNotes, this.modifierSmallNotes, this.connection.onModifierSmallNotesChange, (a) => {
+            this.checkCompatibility(c.supportsModifierSmallNotes, true, this.modifierSmallNotes, this.connection.onModifierSmallNotesChange, (a) => {
                 this.onModifierSmallNotesChange(a);
             });
-            this.checkCompatibility(c.supportsModifierProMode, this.modifierProMode, this.connection.onModifierProModeChange, (a) => {
+            this.checkCompatibility(c.supportsModifierProMode, true, this.modifierProMode, this.connection.onModifierProModeChange, (a) => {
                 this.onModifierProModeChange(a);
             });
-            this.checkCompatibility(c.supportsModifierStrictAngles, this.modifierStrictAngles, this.connection.onModifierStrictAnglesChange, (a) => {
+            this.checkCompatibility(c.supportsModifierStrictAngles, true, this.modifierStrictAngles, this.connection.onModifierStrictAnglesChange, (a) => {
                 this.onModifierStrictAnglesChange(a);
             });
-            this.checkCompatibility(c.supportsModifierZenMode, this.modifierZenMode, this.connection.onModifierZenModeChange, (a) => {
+            this.checkCompatibility(c.supportsModifierZenMode, true, this.modifierZenMode, this.connection.onModifierZenModeChange, (a) => {
                 this.onModifierZenModeChange(a);
             });
-            this.checkCompatibility(c.supportsModifierSlowerSong, this.modifierSlowerSong, this.connection.onModifierSlowerSongChange, (a) => {
+            this.checkCompatibility(c.supportsModifierSlowerSong, true, this.modifierSlowerSong, this.connection.onModifierSlowerSongChange, (a) => {
                 this.onModifierSlowerSongChange(a);
             });
-            this.checkCompatibility(c.supportsModifierFasterSong, this.modifierFasterSong, this.connection.onModifierFasterSongChange, (a) => {
+            this.checkCompatibility(c.supportsModifierFasterSong, true, this.modifierFasterSong, this.connection.onModifierFasterSongChange, (a) => {
                 this.onModifierFasterSongChange(a);
             });
-            this.checkCompatibility(c.supportsModifierSuperFastSong, this.modifierSuperFastSong, this.connection.onModifierSuperFastSongChange, (a) => {
+            this.checkCompatibility(c.supportsModifierSuperFastSong, true, this.modifierSuperFastSong, this.connection.onModifierSuperFastSongChange, (a) => {
                 this.onModifierSuperFastSongChange(a);
             });
             // practice mode
-            this.checkCompatibility(c.supportsPracticeMode, this.practiceModeInfo, this.connection.onPracticeModeChange, (a) => {
+            this.checkCompatibility(c.supportsPracticeMode, true, this.practiceModeInfo, this.connection.onPracticeModeChange, (a) => {
                 this.onPracticeModeChange(a);
             });
-            this.checkCompatibility(c.supportsPracticeModeSpeed, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
+            this.checkCompatibility(c.supportsPracticeModeSpeed, true, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
                 this.onPracticeModeSpeedChange(a);
             });
-            this.checkCompatibility(c.supportsPracticeModeTimeOffset, this.practiceModeTimeOffset, this.connection.onPracticeModeTimeOffset, (a) => {
+            this.checkCompatibility(c.supportsPracticeModeTimeOffset, true, this.practiceModeTimeOffset, this.connection.onPracticeModeTimeOffset, (a) => {
                 this.onPracticeModeTimeOffset(a);
             });
             // song info
-            this.checkCompatibility(c.supportsKey, this.mapKey, this.connection.onKeyChange, (a) => {
+            this.checkCompatibility(c.supportsKey, false, this.mapKey, this.connection.onKeyChange, (a) => {
                 this.onKeyChange(a);
             });
-            this.checkCompatibility(c.supportsPreviousKey, this.previousMapKey, this.connection.onPreviousKeyChange, (a) => {
+            this.checkCompatibility(c.supportsPreviousKey, false, this.previousMapKey, this.connection.onPreviousKeyChange, (a) => {
                 this.onPreviousKeyChange(a);
             });
-            this.checkCompatibility(c.supportsSongInfoMapperName, this.mapper, this.connection.onSongInfoMapperNameChange, (a) => {
+            this.checkCompatibility(c.supportsSongInfoMapperName, false, this.mapper, this.connection.onSongInfoMapperNameChange, (a) => {
                 this.onSongInfoMapperNameChange(a);
             });
-            this.checkCompatibility(c.supportsSongInfoDifficulty, this.difficulty, this.connection.onSongInfoDifficultyChange, (a) => {
-                this.onSongInfoDifficultyChange(a);
-            });
-            this.checkCompatibility(c.supportsSongInfoCustomDifficulty, this.difficulty, this.connection.onSongInfoCustomDifficultyChange, (a) => {
-                this.onSongInfoCustomDifficultyChange(a);
-            });
-            this.checkCompatibility(c.supportsSongInfoSongArtist, this.songArtist, this.connection.onSongInfoSongAuthorChange, (a) => {
+            this.checkCompatibility(c.supportsSongInfoSongArtist, false, this.songArtist, this.connection.onSongInfoSongAuthorChange, (a) => {
                 this.onSongInfoSongAuthorChange(a);
             });
-            this.checkCompatibility(c.supportsSongInfoSongName, this.songName, this.connection.onSongInfoSongNameChange, (a) => {
+            this.checkCompatibility(c.supportsSongInfoSongName, false, this.songName, this.connection.onSongInfoSongNameChange, (a) => {
                 this.onSongInfoSongNameChange(a);
             });
-            this.checkCompatibility(c.supportsSongInfoCoverImage, this.coverImage, this.connection.onSongInfoCoverImageChange, (a) => {
+            this.checkCompatibility(c.supportsSongInfoCoverImage, false, this.coverImage, this.connection.onSongInfoCoverImageChange, (a) => {
                 this.onSongInfoCoverImageChange(a);
             });
             // ranked bullshit
-            this.checkCompatibility(c.supportsStar, this.stars, this.connection.onStarChange, (a) => {
+            this.checkCompatibility(c.supportsStar, false, this.stars, this.connection.onStarChange, (a) => {
                 this.onStarChange(a);
             });
-            this.checkCompatibility(c.supportsPerformancePoints, this.ranked, this.connection.onPerformancePointsChange, (a) => {
+            this.checkCompatibility(c.supportsPerformancePoints, false, this.ranked, this.connection.onPerformancePointsChange, (a) => {
                 this.onPerformancePointsChange(a);
             });
             // simple check for those because they do not bind to DOM by value
+            if (c.supportsSongInfoDifficulty) {
+                this.connection.onSongInfoDifficultyChange.register((difficulty) => {
+                    this.onSongInfoDifficultyChange(difficulty);
+                });
+            }
+            if (c.supportsSongInfoCustomDifficulty) {
+                this.connection.onSongInfoCustomDifficultyChange.register((difficulty) => {
+                    this.onSongInfoCustomDifficultyChange(difficulty);
+                });
+            }
             if (c.supportsLevelChange) {
                 this.connection.onLevelChange.register((change: boolean) => {
                     this.onLevelChange(change);
@@ -822,19 +829,20 @@ namespace Freakylay.Ui {
         /**
          * helper function to check if compatibility bit is set and registers event to property with callback if true
          * @param value compatibility bit
+         * @param isModifier true if the element is a modifier
          * @param element element to enable/disable
          * @param event EventProperty<T> to register to
          * @param callback callback for event
          * @private
          */
-        private checkCompatibility<T>(value: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void): void {
-            /*
-            if (element.tagName == 'DIV') {
-                element.display(value);
-            } else {
-                element.inline(value);
+        private checkCompatibility<T>(value: boolean, isModifier: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void): void {
+            if (!isModifier) {
+                if (element.tagName.toLowerCase() == 'div') {
+                    element.display(value);
+                } else {
+                    element.inline(value);
+                }
             }
-            */
             if (value) {
                 event.register(callback);
             }
@@ -1150,6 +1158,7 @@ namespace Freakylay.Ui {
             if (speed == 1) {
                 return;
             }
+
             speed = Math.floor(speed * 100);
             if (this.config.looks.speedDisplayRelative.Value) {
                 speed -= 100;

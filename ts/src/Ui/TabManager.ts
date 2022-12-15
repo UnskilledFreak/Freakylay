@@ -1,11 +1,13 @@
 ///<reference path="../Game/BeatSaber/Connection/DataPuller_2_0_12.ts"/>
 ///<reference path="../Game/BeatSaber/Connection/DataPuller_2_1_0.ts"/>
+///<reference path="../Game/BeatSaber/Connection/HttpSiraStatus_9_0_1.ts"/>
 namespace Freakylay.Ui {
     import DataPuller_2_0_12 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_0_12;
     import DataPuller_2_1_0 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_1_0;
     import Config = Freakylay.Internal.Config.Config;
     import EventProperty = Freakylay.Internal.EventProperty;
     import GameLinkStatus = Freakylay.Game.GameLinkStatus;
+    import HttpSiraStatus_9_0_1 = Freakylay.Game.BeatSaber.Connection.HttpSiraStatus_9_0_1;
 
     /**
      * tab manager for option panel
@@ -41,6 +43,7 @@ namespace Freakylay.Ui {
                         c.testMapData(false);
                         c.testLiveData();
                     }),
+                    document.create('hr'),
                     document.button('DP2_1_0', () => {
                         let c = new DataPuller_2_1_0(gameLinkState);
                         c.loadConfig(config.connectionSetting);
@@ -48,6 +51,13 @@ namespace Freakylay.Ui {
                         c.testMapData();
                         c.testLiveData();
                     }),
+                    document.create('hr'),
+                    document.button('HSS_9_0_1', () => {
+                        let c = new HttpSiraStatus_9_0_1(gameLinkState);
+                        c.loadConfig(config.connectionSetting);
+                        events.registerConnection(c);
+                        c.test();
+                    })
                 );
             }
 

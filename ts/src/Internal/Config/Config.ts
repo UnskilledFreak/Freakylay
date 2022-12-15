@@ -56,6 +56,7 @@ namespace Freakylay.Internal.Config {
          * @private
          */
         private useOldConfigAsDefault(): void {
+            // todo :: show info when old values are used that the overlay is now on a newer version?
             this.colors.background.Value = this.getConfig('a', this.randomBackground);
             this.colors.text.Value = this.getConfig('b', this.randomText);
             this.looks.shortModifierNames.Value = this.getConfig('c', false);

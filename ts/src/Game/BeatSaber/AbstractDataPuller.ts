@@ -255,7 +255,7 @@ namespace Freakylay.Game.BeatSaber {
             this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
             this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '');
             this.onKeyChange.Value = data.isset('BSRKey', '');
-            this.onPreviousKeyChange.Value = data.isset('PreviousKey', 'previous key');
+            this.onPreviousKeyChange.Value = data.isset('PreviousKey', '');
             // no MapType
             this.onSongInfoDifficultyChange.Value = data.isset('Difficulty', 'ExpertPlus');
             this.onSongInfoCustomDifficultyChange.Value = data.isset('CustomDifficultyLabel', '');

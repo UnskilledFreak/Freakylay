@@ -145,7 +145,23 @@ namespace Freakylay.Ui {
                     this.gameConnectionSettingElement.append(line);
                 }
                 if (con.supportsCustomPort()) {
-                    // todo :: this
+                    let input = document.create<HTMLInputElement>('input');
+                    input.type = 'number';
+                    input.value = con.port.toString();
+                    input.min = '1';
+                    input.max = '65535';
+                    input.step = '1';
+                    input.onchange = () => {
+                        con.port = parseInt(input.value);
+                        this.generateUrlText();
+                    };
+                    let line = document.div();
+                    line.addClass('settingsLine');
+                    line.append(
+                        document.label('Port: ', 'customPort'),
+                        input
+                    );
+                    this.gameConnectionSettingElement.append(line);
                 }
 
                 con.displayConnectionSettings(this.gameConnectionSettingElement, this, this.config);
@@ -289,8 +305,11 @@ namespace Freakylay.Ui {
                     'override background color with map color',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForBackgroundColor.Value == 0),
-                        this.createOptionForSelect(1, 'Use left color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
-                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForBackgroundColor.Value == 2),
+                        this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
+                        this.createOptionForSelect(2, 'Use right environment color', this.config.looks.useMapColorForBackgroundColor.Value == 2),
+                        this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
+                        this.createOptionForSelect(4, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForBackgroundColor.Value = parseInt(newValue);
@@ -302,7 +321,10 @@ namespace Freakylay.Ui {
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
                         this.createOptionForSelect(1, 'Use left color', this.config.looks.useMapColorForTextColor.Value == 1),
-                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForTextColor.Value == 2)
+                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForTextColor.Value == 2),
+                        this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
+                        this.createOptionForSelect(4, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForTextColor.Value = parseInt(newValue);
