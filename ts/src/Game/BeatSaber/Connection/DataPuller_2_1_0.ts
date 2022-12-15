@@ -5,19 +5,36 @@ namespace Freakylay.Game.BeatSaber.Connection {
             super(gameLinkStatus);
         }
 
+        /**
+         * returns unique name of the connection
+         */
         public getName(): string {
             return 'DataPuller 2.1.0+';
         }
 
+        /**
+         * changes compatibility
+         * @protected
+         */
         protected setCompatibility(): void {
             this.compatibility.supportsPlayerColorsUsage = false;
         }
 
+        /**
+         * event handler for map data since DataPuller 2.1.0
+         * @param data
+         * @protected
+         */
         protected handleMapData(data: {}): void {
             this.onSongInfoCoverImageChange.Value = data.isset('CoverImage', 'img/BS_Logo.jpg');
             this.onTimeLengthChange.Value = data.isset('Duration', 60);
         }
 
+        /**
+         * event handler for modifiers sinde DataPuller 2.1.0
+         * @param data
+         * @protected
+         */
         protected handleModifiers(data: {}): void {
             this.onModifierNoFailChange.Value = data.isset('NoFailOn0Energy', false);
             this.onModifierOneLifeChange.Value = data.isset('OneLife', false);
@@ -36,12 +53,20 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onModifierSuperFastSongChange.Value = data.isset('SuperFastSong', false);
         }
 
+        /**
+         * event handler for practice mode modifiers since DataPuller 2.1.0
+         * @param data
+         * @protected
+         */
         protected handlePracticeModifiers(data: {}): void {
             this.onPracticeModeSpeedChange.Value = data.isset('SongSpeedMul', 1);
             // no StartInAdvanceAndClearNotes
             this.onPracticeModeTimeOffset.Value = Math.floor(data.isset('SongStartTime', 0));
         }
 
+        /**
+         * test map data
+         */
         public testMapData(): void {
             this.handleMapData({
                 'GameVersion': '1.24.1',
@@ -98,6 +123,9 @@ namespace Freakylay.Game.BeatSaber.Connection {
             });
         }
 
+        /**
+         * test live data
+         */
         public testLiveData(): void {
             this.handleLiveDataValid({
                 'Score': 1234,

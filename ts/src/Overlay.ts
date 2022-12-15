@@ -64,7 +64,6 @@ namespace Freakylay {
 
             // last but not least, connect to game if any
             this.helper.onConnection.register((value) => {
-                console.log(this.helper.onGameChange, this.helper.onGameConnectionChange, value);
                 if (this.helper.onGameChange.Value == null || this.helper.onGameConnectionChange.Value == null || !value) {
                     return;
                 }
@@ -102,7 +101,7 @@ namespace Freakylay {
                 }
                 return true;
             });
-            console.log(list);
+
             return list;
         }
 

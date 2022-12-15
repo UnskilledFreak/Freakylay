@@ -7,6 +7,9 @@ namespace Freakylay.Game.BeatSaber {
     import ConfigHelper = Freakylay.Ui.ConfigHelper;
     import Config = Freakylay.Internal.Config.Config;
 
+    /**
+     * abstract DataPuller class because there are breaking changes between version 2.0.12 and 2.1.0
+     */
     export abstract class AbstractDataPuller extends BaseConnection {
         protected connection: WebSocketConnection = null;
         protected author: string;
@@ -45,22 +48,44 @@ namespace Freakylay.Game.BeatSaber {
             this.port = 2946;
         }
 
+        /**
+         * event handler for map data
+         * @param data
+         * @protected
+         */
         protected abstract handleMapData(data: {}): void;
 
-        //protected abstract handleLiveData(data: {}): void;
-
+        /**
+         * event handler for modifiers
+         * @param data
+         * @protected
+         */
         protected abstract handleModifiers(data: {}): void;
 
+        /**
+         * event handler for practice mode modifiers
+         * @param data
+         * @protected
+         */
         protected abstract handlePracticeModifiers(data: {}): void;
 
+        /**
+         * DataPuller supports custom IP
+         */
         public supportsCustomIp(): boolean {
             return true;
         }
 
+        /**
+         * DataPuller does not support custom port
+         */
         public supportsCustomPort(): boolean {
             return false;
         }
 
+        /**
+         * tries to connect to DataPuller mod
+         */
         public connect(): boolean {
             this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connecting;
             this.connection = new WebSocketConnection(this.ip, this.port);
@@ -76,6 +101,9 @@ namespace Freakylay.Game.BeatSaber {
             return this.isConnected;
         }
 
+        /**
+         * disconnects from the mod
+         */
         public disconnect(): boolean {
             this.isConnected = false;
             this.linkStatus.Value = Freakylay.Game.GameLinkStatus.NotConnected;
@@ -87,11 +115,20 @@ namespace Freakylay.Game.BeatSaber {
             return false;
         }
 
+        /**
+         * tries to reconnect
+         */
         public reconnect(): boolean {
             this.disconnect();
             return this.connect();
         }
 
+        /**
+         * displays additional setting and registers the event to the connection only settings
+         * @param settingsTab
+         * @param helper
+         * @param config
+         */
         public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper, config: Config): void {
             settingsTab.append(
                 helper.booleanSettingLine('use ScoreWithMultipliers', this.onUseScoreWithMultipliers)
@@ -102,15 +139,25 @@ namespace Freakylay.Game.BeatSaber {
             });
         }
 
+        /**
+         * unregisters everything, what displayConnectionSettings registers
+         */
         public onUnregister(): void {
             this.onUseScoreWithMultipliers.unregister();
         }
 
+        /**
+         * loads DataPuller config
+         * @param data
+         */
         public loadConfig(data: any): void {
             this.ip = data.isset('a', '127.0.0.1');
             this.onUseScoreWithMultipliers.Value = data.isset('b', false);
         }
 
+        /**
+         * returns DataPuller config
+         */
         public saveConfig(): any {
             return {
                 a: this.ip,
@@ -118,6 +165,10 @@ namespace Freakylay.Game.BeatSaber {
             };
         }
 
+        /**
+         * will generate correct author line to use as text
+         * @protected
+         */
         protected getCompleteAuthorLine(): string {
             if (this.songSubName.length > 0) {
                 return this.author + ' - ' + this.songSubName;
@@ -126,10 +177,20 @@ namespace Freakylay.Game.BeatSaber {
             return this.author;
         }
 
+        /**
+         * returns score without or with modifiers
+         * @protected
+         */
         protected sendCorrectScore(): void {
             this.onScoreChange.Value = this.onUseScoreWithMultipliers.Value ? this.maxScore : this.score;
         }
 
+        /**
+         * event handler for live data
+         * includes a workaround fix for a bug in DataPuller 2.0.12 and 2.1.0
+         * @param data
+         * @protected
+         */
         protected handleLiveDataValid(data: {}): void {
             this.score = data.isset('Score', 0);
             this.maxScore = data.isset('ScoreWithMultipliers', 0);
@@ -137,6 +198,7 @@ namespace Freakylay.Game.BeatSaber {
             // no MaxScore
             // no MaxScoreWithMultipliers
             this.onRankChange.Value = data.isset('Rank', 'F');
+
             // fix missing full combo break and miss increment on bad cut on DataPuller 2.0.12 & 2.1.0
             let misses = data.isset('Misses', 0);
             let combo = data.isset('Combo', 0);
@@ -152,18 +214,22 @@ namespace Freakylay.Game.BeatSaber {
             }
             this.lastCombo = combo;
             this.lastMiss = misses;
-            // end fix
             this.onComboChange.Value = combo;
             this.onMissChange.Value = misses + this.missOffset;
+            // end fix
+
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
             this.onHealthChange.Value = data.isset('PlayerHealth', 0);
             this.onTimeElapsedChange.Value = data.isset('TimeElapsed', 0);
             // no unixTimestamp
-
-            //this.handleLiveData(data);
         }
 
+        /**
+         * event handler for map data
+         * @param data
+         * @private
+         */
         private handleMapDataValid(data: {}): void {
             let inLevel = data.isset('InLevel', false);
             let levelFinished = data.isset('LevelFinished', false);

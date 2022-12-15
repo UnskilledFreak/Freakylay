@@ -114,15 +114,18 @@ namespace Freakylay.Ui {
          * @param pulsoid
          */
         constructor(config: Config, helper: ConfigHelper, pulsoid: Pulsoid) {
+            // init
             this.logger = new Logger('Events');
             this.config = config;
             this.helper = helper;
             this.pulsoidConnection = pulsoid;
+            this.levelIsPaused = false;
 
             this.showElements = new EventProperty<boolean>(false);
 
             this.loadAllDomElements();
 
+            // arrays after DOM load
             this.gameModifiers = [
                 this.modifierNoFailOn0Energy,
                 this.modifierOneLife,
@@ -159,8 +162,6 @@ namespace Freakylay.Ui {
                 this.practiceMode
             ];
 
-            this.levelIsPaused = false;
-
             // internal
             this.showElements.register((show: boolean) => {
                 const className = 'inactive';
@@ -183,7 +184,7 @@ namespace Freakylay.Ui {
                 this.showElements.Value = show;
             });
 
-            // colors
+            // config colors
             this.config.colors.background.register((color: Color) => {
                 this.setBackgroundColor(color);
                 this.helper.generateUrlText();
@@ -194,7 +195,7 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
 
-            // looks
+            // config looks
             this.config.looks.shortModifierNames.register((enabled: boolean) => {
                 this.helper.generateUrlText();
                 this.handleShortNames(enabled);
@@ -275,7 +276,6 @@ namespace Freakylay.Ui {
                 this.accuracyRank.display(enabled);
                 this.helper.generateUrlText();
             });
-
             this.config.looks.compareWithPreviousScore.register(() => {
                 this.helper.generateUrlText();
             });
@@ -296,13 +296,13 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
 
+            // config Pulsoid
             this.config.pulsoid.type.register(() => {
                 this.pulsoidConnection.stop();
             });
             this.config.pulsoid.tokenOrUrl.register(() => {
                 this.pulsoidConnection.stop();
             });
-
             this.config.pulsoid.maxStaticBpm.register(() => {
                 this.helper.generateUrlText();
             });
@@ -310,6 +310,7 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
 
+            // Pulsoid event on data receive
             this.pulsoidConnection.bpm.register((bpm: number) => {
                 let enabled = bpm > 0;
                 this.pulsoid.display(enabled);
@@ -322,8 +323,10 @@ namespace Freakylay.Ui {
                 this.pulsoidCircleBar.setText('Heart<br>' + bpm);
             });
 
+            // start all marquees for auto-animation
             this.startAllMarquees();
 
+            // open option panel if it was generated so
             if (this.config.shouldOpenOptionPanelAfterLoad) {
                 this.helper.toggleOptionPanel();
             } else {
@@ -439,6 +442,12 @@ namespace Freakylay.Ui {
             this.setRootCss('text', color.toCss());
         }
 
+        /**
+         * sets given value to a CSS variable
+         * @param property
+         * @param value
+         * @private
+         */
         private setRootCss(property: string, value: string) {
             this.cssRootVariables.style.setProperty('--' + property, value);
         }
@@ -547,6 +556,7 @@ namespace Freakylay.Ui {
 
             this.connection = connection;
 
+            // yes I am lazy here and just call it c instead of compatibility, deal with it :P
             let c = this.connection.getCompatibility();
 
             // counter section
@@ -876,18 +886,38 @@ namespace Freakylay.Ui {
             this.valuePreviousScore = previousScore;
         }
 
+        /**
+         * changes the text of the block speed element
+         * @param blockSpeed
+         * @private
+         */
         private onBlockSpeedChange(blockSpeed: number): void {
             this.blockSpeedValue.innerText = blockSpeed.toFixed();
         }
 
+        /**
+         * changes the text of the BPM element
+         * @param bpm
+         * @private
+         */
         private onBpmChange(bpm: number): void {
             this.bpmValue.innerText = bpm.toFixed();
         }
 
+        /**
+         * changes the health circle progress and text based on given value
+         * @param health
+         * @private
+         */
         private onHealthChange(health: number): void {
             this.healthCircleBar.setProgress(health, 100, 0);
         }
 
+        /**
+         * changes the accuracy circle progress and text based on given value
+         * @param accuracy
+         * @private
+         */
         private onAccuracyChange(accuracy: number): void {
             this.accuracyCircleBar.setProgress(accuracy);
         }
@@ -932,10 +962,20 @@ namespace Freakylay.Ui {
             this.accuracyRank.innerText = rank;
         }
 
+        /**
+         * displays or hides full combo bar
+         * @param hasFullCombo
+         * @private
+         */
         private onFullComboChange(hasFullCombo: boolean): void {
             this.fullCombo.display(hasFullCombo);
         }
 
+        /**
+         * trigger what should happen when any modifier gets changed
+         * @param toggled
+         * @private
+         */
         private onModifierChange(toggled: boolean): void {
             this.addModifierClasses();
         }
@@ -1132,6 +1172,11 @@ namespace Freakylay.Ui {
             this.addModifierClasses();
         }
 
+        /**
+         * displays the map key if available, will add border radius to cover image when hidden to match overlay style
+         * @param key
+         * @private
+         */
         private onKeyChange(key: string): void {
             if (key.length == 0) {
                 this.mapKey.visibility(false);
@@ -1143,14 +1188,29 @@ namespace Freakylay.Ui {
             this.mapKey.innerText = key;
         }
 
+        /**
+         * changes the text for previous map key if any, does not affect if the element should be shown at all
+         * @param previousKey
+         * @private
+         */
         private onPreviousKeyChange(previousKey: string): void {
             this.previousMapKeyValue.innerText = previousKey;
         }
 
+        /**
+         * changes the text of the mapper
+         * @param mapperName
+         * @private
+         */
         private onSongInfoMapperNameChange(mapperName: string): void {
             this.mapper.innerText = mapperName;
         }
 
+        /**
+         * triggers the difficulty string builder when difficulty is changed
+         * @param difficulty
+         * @private
+         */
         private onSongInfoDifficultyChange(difficulty: string): void {
             this.valueDifficulty = difficulty;
             if (this.valueCustomDifficulty == undefined) {
@@ -1159,6 +1219,11 @@ namespace Freakylay.Ui {
             this.setCompleteDifficultyLabel();
         }
 
+        /**
+         * triggers the difficulty string builder when custom difficulty is changed
+         * @param difficulty
+         * @private
+         */
         private onSongInfoCustomDifficultyChange(difficulty: string): void {
             this.valueCustomDifficulty = difficulty;
             if (this.valueDifficulty == undefined) {
@@ -1167,6 +1232,11 @@ namespace Freakylay.Ui {
             this.setCompleteDifficultyLabel();
         }
 
+        /**
+         * difficulty string builder to show correct difficulty based on look config
+         * changes text of difficulty marquee
+         * @private
+         */
         private setCompleteDifficultyLabel(): void {
             let text;
             if (this.config.looks.hideDefaultDifficultyOnCustomDifficulty.Value) {
@@ -1181,14 +1251,29 @@ namespace Freakylay.Ui {
             this.marquee['difficulty'].setValue(text);
         }
 
+        /**
+         * changes the text of the artist marquee
+         * @param songAuthor
+         * @private
+         */
         private onSongInfoSongAuthorChange(songAuthor: string): void {
             this.marquee['songArtist'].setValue(songAuthor);
         }
 
+        /**
+         * changes the text of the song name marquee
+         * @param songName
+         * @private
+         */
         private onSongInfoSongNameChange(songName: string): void {
             this.marquee['songName'].setValue(songName);
         }
 
+        /**
+         * tries to preload cover image and displays it on success, will fall back to Beat Saber logo on failure
+         * @param coverImage
+         * @private
+         */
         private onSongInfoCoverImageChange(coverImage: string): void {
             let i = new Image();
             i.onload = () => {
@@ -1202,6 +1287,11 @@ namespace Freakylay.Ui {
             i.src = coverImage;
         }
 
+        /**
+         * changes text on star bar, will check if it should be shown and hides if star is less or equal to 0
+         * @param stars
+         * @private
+         */
         private onStarChange(stars: number): void {
             if (!this.config.looks.showRanked.Value) {
                 return;
@@ -1215,14 +1305,29 @@ namespace Freakylay.Ui {
             }
         }
 
+        /**
+         * displays ranked info if performance points are greater than 0
+         * @param x
+         * @private
+         */
         private onPerformancePointsChange(x: number): void {
             this.ranked.display(x > 0);
         }
 
+        /**
+         * trigger when level was changed, will show or hide the overlay
+         * @param changed
+         * @private
+         */
         private onLevelChange(changed: boolean): void {
             this.showElements.Value = changed;
         }
 
+        /**
+         * trigger when map was paused, if changes is true it will start the blink animation on the timer, if false then stop it
+         * @param changed
+         * @private
+         */
         private onLevelPausedChange(changed: boolean): void {
             this.levelIsPaused = changed;
             if (this.levelIsPaused) {
@@ -1236,14 +1341,29 @@ namespace Freakylay.Ui {
             }
         }
 
+        /**
+         * trigger when level is finished, basically just reset some values
+         * @param changed
+         * @private
+         */
         private onLevelFinishedChange(changed: boolean): void {
             this.valuePreviousScore = 0;
         }
 
+        /**
+         * trigger when level was failed, basically just reset some values
+         * @param changed
+         * @private
+         */
         private onLevelFailedChange(changed: boolean): void {
             this.valuePreviousScore = 0;
         }
 
+        /**
+         * trigger when level was quit, basically just reset some values
+         * @param changed
+         * @private
+         */
         private onLevelQuitChange(changed: boolean): void {
             this.valuePreviousScore = 0;
         }
