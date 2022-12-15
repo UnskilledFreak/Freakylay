@@ -7,10 +7,9 @@ I added that here too because most people will not read everything in this ReadM
 
 The old Info:  
 I kept it because of nostalgia and to have all of its versions listed, so basically the following info is still true for Freakylay Versions less than 3:  
-~~An alternative and customizable overlay for [DataPuller Mod](https://github.com/kOFReadie/DataPuller) which lets you choose your own style.~~  
-~~Its based on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) with some tweaks and a completely new way of displaying scores, combo, player health, accuracy and much
-more!~~  
-~~I am planning to implement HTTPStatus as well so the overlay would work with both mods :)~~
+An alternative and customizable overlay for [DataPuller Mod](https://github.com/kOFReadie/DataPuller) which lets you choose your own style.  
+It's based on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) with some tweaks and a completely new way of displaying scores, combo, player health, accuracy and much more!  
+I am planning to implement HTTPStatus as well so the overlay would work with both mods :)
 
 # Index:
 
@@ -40,21 +39,23 @@ more!~~
 
 ## Games
 
-**Supported Games and Mods**
+**Supported Games and Mods**  
 Freakylay supports multiple games and mods:
 - Beat Saber
-  - [DataPuller 2.0.12](https://github.com/ReadieFur/BSDataPuller)
-  - TODO: [DataPuller 2.1.0](https://github.com/ReadieFur/BSDataPuller)
-  - TODO: [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
-  - TODO: [HttpSiraStatus 8.0.1+](https://github.com/denpadokei/HttpSiraStatus)
-  - *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission which is just a no go. If you want to use Freakylay with BeatSaberPlus then you have to add support for it by yourself. PR might be possible.*
+  - [DataPuller 2.0.12](https://github.com/ReadieFur/BSDataPuller/releases/tag/2.0.12)
+  - [DataPuller 2.1.0](https://github.com/ReadieFur/BSDataPuller)
+  - ~~[HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)~~ <-- sadly to old for Freakylay V3 since it only supports Beat Saber up to 1.19.0
+  - IN-DEV: [HttpSiraStatus 9.0.2+](https://github.com/denpadokei/HttpSiraStatus)
+  - BeatSaberPlus: *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission and claiming to be done by himself which is just a no-go. I may be wrong but this is as far as I know. If I am wrong just tell me. If you want to use Freakylay with BeatSaberPlus implement the connection yourself. PR might be possible.*
 - BoomBox
   - TODO: Data grabbing is possible from vanilla game, no need for mods yay :3
+- Synth Riders
+  - TODO: This is planed but im not sure yet.
 
 ## Differences
 
-**Version differences**
-Alpha/Beta versions where just my little own overlay version specifically written for my own use.
+**Version differences**  
+Version 1: Alpha/Beta versions where just my little own overlay version specifically written for my own use.
 But others seemed to like it, so I decided to open it up a bit and released the first version to the public.
 
 Version 2 was a more complex and feature heavy release cycle but thanks to me being lazy the code was practicable unreadable and not good for further development.
@@ -63,7 +64,7 @@ With that said, Version 3 was born. A complete rewrite which also added support 
 
 ## Url
 
-It is hosted via HTTP so you can use the LAN-IP feature too if you have separate machines for stream and game:
+It is hosted via HTTP, so you can use the LAN-IP feature too if you have separate machines for stream and game (and the connection supports it):
 
 [http://u.unskilledfreak.zone/overlay/freakylay/latest/](http://u.unskilledfreak.zone/overlay/freakylay/latest/)
 
@@ -78,7 +79,8 @@ You can close the options panel simply by double-click somewhere else.
 
 ## Configuration
 
-The option panel will generate the URL by itself. Copy the URL and insert it into something useful like OBS or other recording or streaming software.
+The option panel will generate the URL by itself. Copy the URL and insert it into something useful like OBS or other recording or streaming software.  
+Since Version 3.0.0, the config in the URL is somewhat encrypted and cannot be changed easily. However, the URL parameters of version 2 are still working in version 3. 
 
 ## Parameters
 
@@ -86,7 +88,7 @@ With Freakylay Version 3 the way the configuration is stored and handled changed
 However, it will display only the new style in the options panel.
 
 Version 3:  
--TODO-
+All parameters of Version 2 (see table bellow). Additional to version 2 table there is the new parameter `w` witch stored an encrypted config string. 
 
 Version 2 URL parameters:
 
@@ -120,27 +122,35 @@ Version 2 URL parameters:
 Older versions of Freakylay are available via there tags inside the master branch. The tags are ~~based on the compatible DataPuller~~ basically the Overlay's Version at that time.
 Every Version can be accessed by its version number as a subdirectory.
 
-The latest version of this overlay can always be found at the `latest` subdirectory:
+The latest stable version of this overlay can always be found at the `latest` subdirectory:  
 [http://u.unskilledfreak.zone/overlay/freakylay/latest/](http://u.unskilledfreak.zone/overlay/freakylay/latest/)
 
-| Freakylay Version | DataPuller Version | Url                                                                                                                                    |
-|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| 3.0.0             | 2.0.12+            | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/)                         |
-| 2.2.3             | 2.0.9              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/)                         |
-| 2.2.2             | 2.0.3              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/)                         |
-| 2.2.1             | 2.0.3              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/)                         |
-| 2.2.0             | 2.0.3              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/)                         |
-| 2.1.0             | 2.0.2              | [http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/ - unstable & unfinished](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/) |
-| 2.0.0             | 2.0.2              | [http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/)                         |
-| 1.1.0             | 1.1.1              | [http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/)                         |
+It is possible to access unreleased or unstable versions by using its number in the URL. There is no guarantee that all Versions are available. Only those listed bellow will be always available.
+
+| Freakylay Version        | State                 | Url                                                                                                            |
+|--------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------|
+| 3.0.0                    | alpha testing         | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
+| 2.2.3 (DataPuller 2.0.9) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/) |
+| 2.2.2 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/) |
+| 2.2.1 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/) |
+| 2.2.0 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.0/) |
+| 2.1.0 (DataPuller 2.0.3) | unreleased / unstable | [http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/) |
+| 2.0.0 (DataPuller 2.0.2) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/) |
+| 1.1.0 (DataPuller 1.2.1) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/) |
 
 ## FAQ
 
-Which type of colors can be used?  
-Basically every possible color which is used in the web. Internally, the overlay uses RGB(a) scheme, but it should work with HSL/HSV as well.
+**Q:** Which type of colors can be used?  
+**A:** Basically every possible color which is used in the web and there are more than 16 million of them.
 
-Why is there **N/A** for DataPuller version since version 3 release?  
-Because version 3 is not strictly written to DataPuller anymore, it supports other mods and games as well.
+**Q:** Why is there no DataPuller version since version 3 release?  
+**A:** Because version 3 is not strictly written to DataPuller anymore. It supports other mods and games as well. However, it supports DataPuller from version 2.0.12.
+
+**Q:** I can only see the overlay for a split second in my application, and then it goes away!  
+**A:** This is a normal behaviour. The overlay will hide itself when you are in the menus. It will show everything you set it up to when you start playing a song.
+
+**Q:** The overlay won't show anything even when I play a song!  
+**A:** Make sure the overlay is set up correctly. Double-check the selected game and connection, especially correct version, and copy the URL to your application. Also check if your mods ar up and running.
 
 ## Changelog
 - 3.0.0
