@@ -8,6 +8,7 @@ namespace Freakylay.DataTransfer.WebSocket {
         private readonly connections: WebSocketEndPoint[];
         private ip: string;
         private port: number;
+        private shouldReconnect: boolean;
 
         /**
          * generic info to connect to a WebSocket server with
@@ -18,6 +19,7 @@ namespace Freakylay.DataTransfer.WebSocket {
             this.connections = [];
             this.ip = urlOrIp;
             this.port = port;
+            this.shouldReconnect = true;
         }
 
         /**
@@ -28,15 +30,18 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @param isJsonData
          */
         public addEndpoint(name: string, callback: (data: string | {}) => void, isJsonData: boolean = true): void {
+            this.shouldReconnect = true;
             this.connections[name] = new WebSocketEndPoint(
                 this.getUrl() + name,
                 (data) => {
                     let d = isJsonData ? JSON.parse(data.data) : data.data;
-                    //console.log(d);
                     callback(d);
                 },
                 () => {},
                 () => {
+                    if (!this.shouldReconnect) {
+                        return;
+                    }
                     window.setTimeout(() => {
                         this.addEndpoint(name, callback);
                     }, 5000);
@@ -78,16 +83,17 @@ namespace Freakylay.DataTransfer.WebSocket {
          * closes all connections to the WebSocket server
          */
         public disconnect(): void {
+            this.shouldReconnect = false;
             this.connections.forEach(conn => {
                 conn.disconnect();
             }, this);
         }
 
         /**
-         * returns true if at least one endpoint is connected
+         * returns true if all endpoints are connected
          */
         public isConnected(): boolean {
-            return this.connections.length > 0 && this.connections.some(x => x.Connected);
+            return this.connections.length > 0 && !this.connections.some(x => !x.Connected);
         }
     }
 }
