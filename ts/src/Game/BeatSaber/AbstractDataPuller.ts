@@ -26,7 +26,9 @@ namespace Freakylay.Game.BeatSaber {
 
         protected constructor() {
             super();
-
+            // todo :: check plugin version return on connect to auto-select correct connection?
+            // todo :: this would also mean that both versions would share the same file... hm...
+            // todo :: let me think about this...
             this.author = '';
             this.songSubName = '';
             this.difficulty = '';
