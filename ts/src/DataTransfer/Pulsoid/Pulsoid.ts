@@ -121,7 +121,6 @@ namespace Freakylay.DataTransfer.Pulsoid {
          * @private
          */
         private sendEvent(bpm: number): void {
-            // todo :: this needs testing
             this.internalMaxBpm = Math.max(this.internalMaxBpm, bpm);
             this.bpm.Value = bpm;
             this.maxBpm.Value = this.config.pulsoid.useDynamicBpm.Value
