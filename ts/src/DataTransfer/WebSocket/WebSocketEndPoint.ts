@@ -81,6 +81,7 @@ namespace Freakylay.DataTransfer.WebSocket {
          * @private
          */
         private connect(): void {
+            this.disconnect();
             this.socket = new window.WebSocket(this.url);
             this.socket.onopen = (message: Event) => {
                 this.onOpen(message);

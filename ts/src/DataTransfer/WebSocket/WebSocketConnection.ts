@@ -34,16 +34,15 @@ namespace Freakylay.DataTransfer.WebSocket {
             this.connections[name] = new WebSocketEndPoint(
                 this.getUrl() + name,
                 (data) => {
-                    let d = isJsonData ? JSON.parse(data.data) : data.data;
-                    callback(d);
+                    callback(isJsonData ? JSON.parse(data.data) : data.data);
                 },
                 () => {},
                 () => {
-                    if (!this.shouldReconnect) {
-                        return;
-                    }
                     window.setTimeout(() => {
-                        this.addEndpoint(name, callback);
+                        if (!this.shouldReconnect) {
+                            return;
+                        }
+                        this.connections[name].connect();
                     }, 5000);
                 }
             );
