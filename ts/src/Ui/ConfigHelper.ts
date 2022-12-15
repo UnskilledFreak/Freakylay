@@ -164,7 +164,7 @@ namespace Freakylay.Ui {
                     this.gameConnectionSettingElement.append(line);
                 }
 
-                con.displayConnectionSettings(this.gameConnectionSettingElement, this, this.config);
+                con.displayConnectionSettings(this.gameConnectionSettingElement, this);
             });
 
             let gameLinkStatus = document.getDiv('gameLinkStatus');
@@ -308,8 +308,9 @@ namespace Freakylay.Ui {
                         this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
                         this.createOptionForSelect(2, 'Use right environment color', this.config.looks.useMapColorForBackgroundColor.Value == 2),
                         this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
-                        this.createOptionForSelect(4, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 4),
-                        this.createOptionForSelect(5, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(4, 'Use wall color (only Sira!)', this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(6, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 6),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForBackgroundColor.Value = parseInt(newValue);
@@ -320,11 +321,12 @@ namespace Freakylay.Ui {
                     'override text color with map color',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
-                        this.createOptionForSelect(1, 'Use left color', this.config.looks.useMapColorForTextColor.Value == 1),
-                        this.createOptionForSelect(2, 'Use right color', this.config.looks.useMapColorForTextColor.Value == 2),
+                        this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForTextColor.Value == 1),
+                        this.createOptionForSelect(2, 'Use right environment color', this.config.looks.useMapColorForTextColor.Value == 2),
                         this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
-                        this.createOptionForSelect(4, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 4),
-                        this.createOptionForSelect(5, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(4, 'Use wall color (only Sira!)', this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(6, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 6),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForTextColor.Value = parseInt(newValue);

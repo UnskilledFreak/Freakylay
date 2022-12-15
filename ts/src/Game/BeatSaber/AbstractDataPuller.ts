@@ -26,8 +26,8 @@ namespace Freakylay.Game.BeatSaber {
 
         private readonly onUseScoreWithMultipliers: EventProperty<boolean>;
 
-        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
-            super(gameLinkStatus);
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
+            super(gameLinkStatus, config);
             // todo :: check plugin version return on connect to auto-select correct connection?
             // todo :: this would also mean that both versions would share the same file... hm...
             // todo :: let me think about this...
@@ -127,9 +127,8 @@ namespace Freakylay.Game.BeatSaber {
          * displays additional setting and registers the event to the connection only settings
          * @param settingsTab
          * @param helper
-         * @param config
          */
-        public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper, config: Config): void {
+        public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
             settingsTab.append(
                 helper.booleanSettingLine('use ScoreWithMultipliers', this.onUseScoreWithMultipliers)
             );

@@ -240,10 +240,12 @@ namespace Freakylay.Ui {
             this.config.looks.timeCircleLikeOtherCircles.register(() => {
                 let min = 50;
                 let max = 100;
-                if (this.connection) {
+
+                if (this.connection && this.connection.onTimeElapsedChange.Value != null && this.connection.onTimeLengthChange.Value != null) {
                     min = this.connection.onTimeElapsedChange.Value;
                     max = this.connection.onTimeLengthChange.Value;
                 }
+
                 this.onTimeElapsedChangeSetText(min, max);
                 this.helper.generateUrlText();
             });
@@ -265,11 +267,19 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
             this.config.looks.showRanked.register((enabled: boolean) => {
-                this.ranked.display(enabled);
+                if (this.connection) {
+                    this.ranked.display(this.connection.getCompatibility().supportsPerformancePoints)
+                } else {
+                    this.ranked.display(enabled);
+                }
                 this.helper.generateUrlText();
             });
             this.config.looks.showStars.register((enabled: boolean) => {
-                this.stars.display(enabled);
+                if (this.connection) {
+                    this.stars.display(this.connection.getCompatibility().supportsStar);
+                } else {
+                    this.stars.display(enabled);
+                }
                 this.helper.generateUrlText();
             });
             this.config.looks.showAccuracyRank.register((enabled) => {
@@ -646,6 +656,8 @@ namespace Freakylay.Ui {
             // practice mode
             this.checkCompatibility(c.supportsPracticeMode, true, this.practiceModeInfo, this.connection.onPracticeModeChange, (a) => {
                 this.onPracticeModeChange(a);
+            }, () => {
+                this.practiceModeInfo.display(false);
             });
             this.checkCompatibility(c.supportsPracticeModeSpeed, true, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
                 this.onPracticeModeSpeedChange(a);
@@ -729,33 +741,11 @@ namespace Freakylay.Ui {
             }
             if (c.supportsPlayerColorsUsage) {
                 this.connection.onPlayerColorAChange.register((newColor: Color) => {
-                    this.handleColorChange(this.config.looks.useMapColorForBackgroundColor.Value, newColor);
+                    this.setBackgroundColor(newColor);
                 });
                 this.connection.onPlayerColorBChange.register((newColor: Color) => {
-                    this.handleColorChange(this.config.looks.useMapColorForTextColor.Value, newColor);
-                });
-            }
-        }
-
-        /**
-         * changes colors of the background or text based on a settings value
-         * @param setting
-         * @param newColor
-         * @private
-         */
-        private handleColorChange(setting: number, newColor: Color): void {
-            switch (setting.clamp(0, 2)) {
-                case 0:
-                    // reset to config colors
-                    this.setBackgroundColor(this.config.colors.background.Value);
-                    this.setTextColor(this.config.colors.text.Value);
-                    break
-                case 1:
-                    this.setBackgroundColor(newColor);
-                    break;
-                case 2:
                     this.setTextColor(newColor);
-                    break;
+                });
             }
         }
 
@@ -827,15 +817,16 @@ namespace Freakylay.Ui {
         }
 
         /**
-         * helper function to check if compatibility bit is set and registers event to property with callback if true
+         * helper function to check if compatibility bit is set and registers event to property with callback if true or false
          * @param value compatibility bit
          * @param isModifier true if the element is a modifier
          * @param element element to enable/disable
          * @param event EventProperty<T> to register to
          * @param callback callback for event
+         * @param ifNotCallback callback if value is false
          * @private
          */
-        private checkCompatibility<T>(value: boolean, isModifier: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void): void {
+        private checkCompatibility<T>(value: boolean, isModifier: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void, ifNotCallback: () => void = null): void {
             if (!isModifier) {
                 if (element.tagName.toLowerCase() == 'div') {
                     element.display(value);
@@ -845,6 +836,10 @@ namespace Freakylay.Ui {
             }
             if (value) {
                 event.register(callback);
+            } else {
+                if (typeof ifNotCallback == 'function') {
+                    ifNotCallback();
+                }
             }
         }
 
@@ -1378,12 +1373,6 @@ namespace Freakylay.Ui {
         }
 
         private onMultiplayerChange(isMultiplayer: boolean): void {
-        }
-
-        private onPlayerColorAChange(color: string): void {
-        }
-
-        private onPlayerColorBChange(color: string): void {
         }
 
         /**

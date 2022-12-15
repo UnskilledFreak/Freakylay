@@ -12,6 +12,7 @@ namespace Freakylay.Game {
         protected compatibility: Compatibility = new Compatibility();
         protected isConnected: boolean = false;
         protected linkStatus: EventProperty<Freakylay.Game.GameLinkStatus>;
+        protected readonly config: Config;
 
         /**
          * returns the unique name of the connection
@@ -37,9 +38,8 @@ namespace Freakylay.Game {
          * event when the connection was selected to display additional connection specific settings
          * @param settingsTab
          * @param helper
-         * @param config
          */
-        public abstract displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper, config: Config): void;
+        public abstract displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void;
 
         /**
          * event when the connection should unregister, this is the opposite of displayConnectionSettings()
@@ -146,10 +146,12 @@ namespace Freakylay.Game {
         /**
          * internal constructor, will also register the generic modifier change event to all modifier events
          * @param gameLinkStatus
+         * @param config
          * @protected
          */
-        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
             this.linkStatus = gameLinkStatus;
+            this.config = config;
 
             this.setCompatibility();
 

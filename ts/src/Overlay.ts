@@ -117,7 +117,7 @@ namespace Freakylay {
             }
             let list: BaseConnection[] = [];
             Freakylay.Game[gameName]['Connection'].foreach((connectionName: string) => {
-                list.push(new (<any>Freakylay.Game)[gameName]['Connection'][connectionName](this.gameLinkState));
+                list.push(new (<any>Freakylay.Game)[gameName]['Connection'][connectionName](this.gameLinkState, this.config));
             });
             return list;
         }
