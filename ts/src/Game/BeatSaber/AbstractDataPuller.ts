@@ -61,8 +61,7 @@ namespace Freakylay.Game.BeatSaber {
             return false;
         }
 
-        public connect(gameLinkStatus: EventProperty<GameLinkStatus>): boolean {
-            this.linkStatus = gameLinkStatus;
+        public connect(): boolean {
             this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connecting;
             this.connection = new WebSocketConnection(this.ip, this.port);
             this.connection.addEndpoint('BSDataPuller/LiveData', (a) => {
@@ -90,8 +89,7 @@ namespace Freakylay.Game.BeatSaber {
 
         public reconnect(): boolean {
             this.disconnect();
-            this.connect(this.linkStatus);
-            return false;
+            return this.connect();
         }
 
         public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper, config: Config): void {

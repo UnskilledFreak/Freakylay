@@ -15,7 +15,7 @@ namespace Freakylay.Game {
 
         public abstract getName(): string;
 
-        public abstract connect(gameLinkStatus: EventProperty<GameLinkStatus>): boolean;
+        public abstract connect(): boolean;
 
         public abstract disconnect(): boolean;
 
@@ -94,8 +94,9 @@ namespace Freakylay.Game {
         public onPlayerColorAChange: EventProperty<Color> = new EventProperty<Color>();
         public onPlayerColorBChange: EventProperty<Color> = new EventProperty<Color>();
 
-        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
             this.linkStatus = gameLinkStatus;
+
             this.setCompatibility();
 
             this.onModifierNoFailChange.register(() => {

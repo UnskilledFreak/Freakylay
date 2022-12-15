@@ -53,7 +53,7 @@ namespace Freakylay {
             this.helper = new ConfigHelper(this.config, this.pulsoid, this.gameList, this.gameLinkState);
             this.events = new Events(this.config, this.helper, this.pulsoid);
 
-            this.tabManager = new TabManager(this.isDev, this.events, this.config);
+            this.tabManager = new TabManager(this.isDev, this.events, this.config, this.gameLinkState);
 
             this.gameLinkState.Value = Freakylay.Game.GameLinkStatus.NotConnected;
 
@@ -69,7 +69,7 @@ namespace Freakylay {
                     return;
                 }
                 this.events.registerConnection(this.helper.onGameConnectionChange.Value);
-                this.helper.onGameConnectionChange.Value.connect(this.gameLinkState);
+                this.helper.onGameConnectionChange.Value.connect();
             });
             this.helper.initLoader();
 
@@ -122,7 +122,7 @@ namespace Freakylay {
             }
             let list: BaseConnection[] = [];
             Freakylay.Game[gameName]['Connection'].foreach((connectionName: string) => {
-                list.push(new (<any>Freakylay.Game)[gameName]['Connection'][connectionName]());
+                list.push(new (<any>Freakylay.Game)[gameName]['Connection'][connectionName](this.gameLinkState));
             });
             return list;
         }

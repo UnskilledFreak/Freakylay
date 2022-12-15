@@ -4,6 +4,8 @@ namespace Freakylay.Ui {
     import DataPuller_2_0_12 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_0_12;
     import DataPuller_2_1_0 = Freakylay.Game.BeatSaber.Connection.DataPuller_2_1_0;
     import Config = Freakylay.Internal.Config.Config;
+    import EventProperty = Freakylay.Internal.EventProperty;
+    import GameLinkStatus = Freakylay.Game.GameLinkStatus;
 
     /**
      * tab manager for option panel
@@ -11,7 +13,7 @@ namespace Freakylay.Ui {
     export class TabManager {
         private tabs: Tab[];
 
-        constructor(developmentMode: boolean, events: Events, config: Config) {
+        constructor(developmentMode: boolean, events: Events, config: Config, gameLinkState: EventProperty<GameLinkStatus>) {
             this.tabs = [];
 
             document.getAll<HTMLDivElement[]>('div[data-tab-name]').forEach((element: HTMLDivElement) => {
@@ -26,21 +28,21 @@ namespace Freakylay.Ui {
                 let content = this.addTab('TEST');
                 content.append(
                     document.button('DP2_0_12_PAUSE', () => {
-                        let c = new DataPuller_2_0_12();
+                        let c = new DataPuller_2_0_12(gameLinkState);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(true);
                         c.testLiveData();
                     }),
                     document.button('DP2_0_12_NO_PAUSE', () => {
-                        let c = new DataPuller_2_0_12();
+                        let c = new DataPuller_2_0_12(gameLinkState);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(false);
                         c.testLiveData();
                     }),
                     document.button('DP2_1_0', () => {
-                        let c = new DataPuller_2_1_0();
+                        let c = new DataPuller_2_1_0(gameLinkState);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData();
