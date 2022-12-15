@@ -1,7 +1,6 @@
 ///<reference path="Internal/Config/Config.ts"/>
 ///<reference path="Game/BaseGame.ts"/>
 ///<reference path="Game/BeatSaber/BeatSaber.ts"/>
-///<reference path="Game/Test/Test.ts"/>
 ///<reference path="Ui/TabManager.ts"/>
 ///<reference path="Ui/ConfigHelper.ts"/>
 ///<reference path="Ui/Events.ts"/>
@@ -64,8 +63,9 @@ namespace Freakylay {
             this.pulsoid.start();
 
             // last but not least, connect to game if any
-            this.helper.onConnection.register(_ => {
-                if (this.helper.onGameChange.Value == null || this.helper.onGameConnectionChange.Value == null) {
+            this.helper.onConnection.register((value) => {
+                console.log(this.helper.onGameChange, this.helper.onGameConnectionChange, value);
+                if (this.helper.onGameChange.Value == null || this.helper.onGameConnectionChange.Value == null || !value) {
                     return;
                 }
                 this.events.registerConnection(this.helper.onGameConnectionChange.Value);
@@ -85,29 +85,24 @@ namespace Freakylay {
         private loadGameList(): BaseGame[] {
             let list: BaseGame[] = [];
             Freakylay.Game.foreach((gameName: string) => {
-                switch (gameName) {
-                    case 'BaseGame':
-                    case 'BaseConnection':
-                    case 'Compatibility':
-                    case 'ConnectionElement':
-                    case 'GameLinkStatus':
-                        return false;
-                    default:
-                        if (!this.isDev && gameName == 'Test') {
-                            return false;
-                        }
-
-                        let game: BaseGame = new (<any>Freakylay.Game)[gameName][gameName]();
-                        game.initialize();
-                        game.addConnections(this.loadConnectionForGame(gameName));
-
-                        if (game.isValid()) {
-                            list.push(game);
-                        }
-                        return true;
+                let game: BaseGame;
+                try {
+                    game = new (<any>Freakylay.Game)[gameName][gameName]();
+                } catch (TypeError) {
+                    return false;
                 }
-            });
+                if (!('initialize' in game && 'addConnections' in game && 'isValid' in game)) {
+                    return false;
+                }
+                game.initialize();
+                game.addConnections(this.loadConnectionForGame(gameName));
 
+                if (game.isValid()) {
+                    list.push(game);
+                }
+                return true;
+            });
+            console.log(list);
             return list;
         }
 
