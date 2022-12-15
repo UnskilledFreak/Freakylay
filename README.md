@@ -36,6 +36,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
 - Pulsoid heart rate fully integrated to match style
+- completely event-driven
 
 ## Games
 
@@ -44,8 +45,8 @@ Freakylay supports multiple games and mods:
 - Beat Saber
   - [DataPuller 2.0.12](https://github.com/ReadieFur/BSDataPuller/releases/tag/2.0.12)
   - [DataPuller 2.1.0](https://github.com/ReadieFur/BSDataPuller)
-  - ~~[HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)~~ <-- sadly to old for Freakylay V3 since it only supports Beat Saber up to 1.19.0. But, it is compatible with HttpSiraStatus.
-  - IN-DEV: [HttpSiraStatus 9.0.1+](https://github.com/denpadokei/HttpSiraStatus)
+  - [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
+  - [HttpSiraStatus 9.0.1+](https://github.com/denpadokei/HttpSiraStatus)
   - BeatSaberPlus: *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission and claiming to be done by himself which is just a no-go. I may be wrong but this is as far as I know. If I am wrong just tell me. If you want to use Freakylay with BeatSaberPlus implement the connection yourself. PR might be possible.*
 - BoomBox
   - TODO: Data grabbing is possible from vanilla game, no need for mods yay :3
