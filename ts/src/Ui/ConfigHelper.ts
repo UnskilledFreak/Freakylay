@@ -17,26 +17,16 @@ namespace Freakylay.Ui {
      * is used as an interface between option panel (UI) and config values
      */
     export class ConfigHelper {
-
-        public readonly optionsOpen: EventProperty<boolean>;
-        public readonly onGameChange: EventProperty<BaseGame>;
-        public readonly onGameConnectionChange: EventProperty<BaseConnection>;
-        public readonly onConnection: EventProperty<boolean>;
-
         private readonly logger: Logger;
         private readonly config: Config;
         private readonly pulsoid: Pulsoid;
         private readonly urlText: HTMLTextAreaElement;
+        private readonly backgroundImageTest: EventProperty<boolean>;
         private options: HTMLDivElement;
         private gameConnectionSetting: HTMLDivElement;
-
         private backgroundColorInput: ColorInput;
         private textColorInput: ColorInput;
-
-        private readonly backgroundImageTest: EventProperty<boolean>;
-
         private gameList: BaseGame[];
-
         // pulsoid
         private pulsoidFeedText: HTMLLabelElement;
         private pulsoidFeedInput: HTMLInputElement;
@@ -46,6 +36,11 @@ namespace Freakylay.Ui {
         private gameListElement: HTMLSelectElement;
         private connectionListElement: HTMLSelectElement;
         private applyGameButton: HTMLButtonElement;
+
+        public readonly optionsOpen: EventProperty<boolean>;
+        public readonly onGameChange: EventProperty<BaseGame>;
+        public readonly onGameConnectionChange: EventProperty<BaseConnection>;
+        public readonly onConnection: EventProperty<boolean>;
 
         constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
             this.logger = new Logger('ConfigHelper');

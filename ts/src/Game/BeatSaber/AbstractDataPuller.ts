@@ -13,7 +13,6 @@ namespace Freakylay.Game.BeatSaber {
         protected songSubName: string;
         protected difficulty: string;
         protected customDifficulty: string;
-        protected linkStatus: EventProperty<GameLinkStatus>;
         protected score: number;
         protected maxScore: number;
         // workaround vars for bugs in DataPuller 2.0.12 (never fixed) and 2.1.0 (not fixed yet)
@@ -24,8 +23,8 @@ namespace Freakylay.Game.BeatSaber {
 
         private readonly onUseScoreWithMultipliers: EventProperty<boolean>;
 
-        protected constructor() {
-            super();
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
+            super(gameLinkStatus);
             // todo :: check plugin version return on connect to auto-select correct connection?
             // todo :: this would also mean that both versions would share the same file... hm...
             // todo :: let me think about this...

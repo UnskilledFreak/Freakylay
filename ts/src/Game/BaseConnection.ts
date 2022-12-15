@@ -11,6 +11,7 @@ namespace Freakylay.Game {
 
         protected compatibility: Compatibility = new Compatibility();
         protected isConnected: boolean = false;
+        protected linkStatus: EventProperty<Freakylay.Game.GameLinkStatus>;
 
         public abstract getName(): string;
 
@@ -93,7 +94,8 @@ namespace Freakylay.Game {
         public onPlayerColorAChange: EventProperty<Color> = new EventProperty<Color>();
         public onPlayerColorBChange: EventProperty<Color> = new EventProperty<Color>();
 
-        constructor() {
+        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>) {
+            this.linkStatus = gameLinkStatus;
             this.setCompatibility();
 
             this.onModifierNoFailChange.register(() => {
