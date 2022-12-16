@@ -1,4 +1,6 @@
 .idea
 node_modules
-Freakylay.*
 notes.md
+freakylay.js*
+freakylay.min.js
+freakylay.css*
