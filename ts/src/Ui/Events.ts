@@ -26,6 +26,7 @@ namespace Freakylay.Ui {
         private songInfo: HTMLDivElement;
         private modifiers: HTMLDivElement;
         private practiceMode: HTMLDivElement;
+        private versionHint: HTMLDivElement;
 
         // counter section
         private combo: HTMLDivElement;
@@ -342,6 +343,17 @@ namespace Freakylay.Ui {
             } else {
                 this.showElements.Value = false;
             }
+
+            // show hint about new version
+            console.log(this.config.wasOldConfigUsed);
+            if (this.config.wasOldConfigUsed) {
+                document.getId<HTMLSpanElement>('versionHintVersion').innerText = helper.fullVersionString;
+                document.getId<HTMLButtonElement>('versionHintOptions').onclick = () => {
+                    this.helper.toggleOptionPanel();
+                    this.versionHint.display(false);
+                }
+                this.versionHint.removeClass('inactive');
+            }
         }
 
         /**
@@ -356,6 +368,7 @@ namespace Freakylay.Ui {
             this.counterSection = document.getDiv('counterSection');
             this.songInfo = document.getDiv('songInfo');
             this.modifiers = document.getDiv('modifiers');
+            this.versionHint = document.getDiv('versionHint');
 
             // counter section
             this.combo = document.getDiv('combo');

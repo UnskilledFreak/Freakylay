@@ -12,10 +12,11 @@ namespace Freakylay.Internal.Config {
         public colors: Colors;
         public looks: Looks;
         public pulsoid: Pulsoid;
-
         public game: EventProperty<string>;
         public connection: EventProperty<string>;
         public connectionSetting: {};
+
+        private oldConfigWasUsed: boolean;
         private urlSearchParams: URLSearchParams;
         private randomBackground: Color = Color.random(.7);
         private randomText: Color = this.randomBackground.getHighLowComplementary(1);
@@ -25,6 +26,10 @@ namespace Freakylay.Internal.Config {
             return this.shouldOpenOptionsAfterLoad;
         }
 
+        get wasOldConfigUsed(): boolean {
+            return this.oldConfigWasUsed;
+        }
+
         constructor() {
             this.game = new EventProperty<string>('');
             this.connection = new EventProperty<string>('');
@@ -32,6 +37,7 @@ namespace Freakylay.Internal.Config {
             this.looks = new Looks();
             this.pulsoid = new Pulsoid();
             this.connectionSetting = {};
+            this.oldConfigWasUsed = false;
 
             // parse config from window search
             this.urlSearchParams = new URLSearchParams(location.search);
@@ -48,7 +54,11 @@ namespace Freakylay.Internal.Config {
          * @private
          */
         private getConfig<T>(key: string, defaultValue: T): T {
-            return this.urlSearchParams.has(key) ? (this.urlSearchParams.get(key) as unknown) as T : defaultValue;
+            if (!this.oldConfigWasUsed && key != 'w') {
+                this.oldConfigWasUsed = this.urlSearchParams.has(key)
+            }
+
+            return  this.urlSearchParams.has(key) ? (this.urlSearchParams.get(key) as unknown) as T : defaultValue;
         }
 
         /**

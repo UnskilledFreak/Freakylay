@@ -8,7 +8,7 @@ namespace Freakylay.Internal.Config {
     export class Colors implements IConfigable {
         public text: EventProperty<Color> = new EventProperty<Color>();
         public background: EventProperty<Color> = new EventProperty<Color>();
-        // todo :: those 2 will declare if the overlay should start with random colors
+        // todo :: idea :: those 2 will declare if the overlay should start with random colors
         // but on what base? new map? on reload? score? ...
         /*
         public textIsRandom: EventProperty<boolean> = new EventProperty<boolean>(false);

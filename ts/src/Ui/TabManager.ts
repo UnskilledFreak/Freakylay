@@ -30,14 +30,14 @@ namespace Freakylay.Ui {
                 let content = this.addTab('TEST');
                 content.append(
                     document.button('DP2_0_12_PAUSE', () => {
-                        let c = new DataPuller_2_0_12(gameLinkState);
+                        let c = new DataPuller_2_0_12(gameLinkState, config);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(true);
                         c.testLiveData();
                     }),
                     document.button('DP2_0_12_NO_PAUSE', () => {
-                        let c = new DataPuller_2_0_12(gameLinkState);
+                        let c = new DataPuller_2_0_12(gameLinkState, config);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(false);
@@ -45,7 +45,7 @@ namespace Freakylay.Ui {
                     }),
                     document.create('hr'),
                     document.button('DP2_1_0', () => {
-                        let c = new DataPuller_2_1_0(gameLinkState);
+                        let c = new DataPuller_2_1_0(gameLinkState, config);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData();
@@ -53,7 +53,7 @@ namespace Freakylay.Ui {
                     }),
                     document.create('hr'),
                     document.button('HSS_9_0_1', () => {
-                        let c = new HttpSiraStatus_9_0_1(gameLinkState);
+                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.test();

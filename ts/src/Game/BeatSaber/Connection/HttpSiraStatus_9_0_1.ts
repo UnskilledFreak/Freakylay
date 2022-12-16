@@ -312,7 +312,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 // old HttpStatus
                 this.onAccuracyChange.Value = Math.round(score * 100 / currentMaxScore);
             }
-            // todo :: max score toggle
+            // todo :: idea :: max score toggle
             // max score -> score
             // score -> rawScore
             this.onScoreChange.Value = data.isset('rawScore', 0);

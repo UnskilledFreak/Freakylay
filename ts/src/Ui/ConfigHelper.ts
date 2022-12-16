@@ -42,6 +42,10 @@ namespace Freakylay.Ui {
         public readonly onGameConnectionChange: EventProperty<BaseConnection>;
         public readonly onConnection: EventProperty<boolean>;
 
+        get fullVersionString(): string {
+            return 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');;
+        }
+
         constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
             this.logger = new Logger('ConfigHelper');
             this.optionsOpen = new EventProperty<boolean>(false);
@@ -54,17 +58,15 @@ namespace Freakylay.Ui {
             this.onGameConnectionChange = new EventProperty<BaseConnection>();
             this.onConnection = new EventProperty<boolean>(false);
 
-            let version = 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');
-
-            document.getDiv('copyright').innerText = version;
-            document.getId<HTMLSpanElement>('welcomeVersion').innerText = version;
+            document.getDiv('copyright').innerText = this.fullVersionString;
+            document.getId<HTMLSpanElement>('welcomeVersion').innerText = this.fullVersionString;
             document.getDiv('songInfo').ondblclick = () => {
                 this.toggleOptionPanel();
             }
 
             if (Overlay.IsAlpha) {
                 let alphaWarning = document.getDiv('alphaWarning');
-                alphaWarning.innerText = version + ' - early testing version';
+                alphaWarning.innerText = this.fullVersionString + ' - early testing version';
             }
 
             this.gameListElement = document.getId<HTMLSelectElement>('gameList');
