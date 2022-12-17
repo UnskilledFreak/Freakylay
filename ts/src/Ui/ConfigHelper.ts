@@ -43,7 +43,7 @@ namespace Freakylay.Ui {
         public readonly onConnection: EventProperty<boolean>;
 
         get fullVersionString(): string {
-            return 'Freakylay ' + Overlay.Version + (Overlay.IsAlpha ? ' Alpha' : '');;
+            return 'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');;
         }
 
         constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
@@ -64,8 +64,9 @@ namespace Freakylay.Ui {
                 this.toggleOptionPanel();
             }
 
-            if (Overlay.IsAlpha) {
-                let alphaWarning = document.getDiv('alphaWarning');
+            let alphaWarning = document.getDiv('versionWarning');
+            if (Overlay.Branch.toLowerCase() != 'release') {
+                alphaWarning.display(true);
                 alphaWarning.innerText = this.fullVersionString + ' - early testing version';
             }
 

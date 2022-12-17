@@ -130,7 +130,7 @@ It is possible to access unreleased or unstable versions by using its number in 
 
 | Freakylay Version        | State                 | Url                                                                                                            |
 |--------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------|
-| 3.0.0                    | alpha testing         | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
+| 3.0.0                    | beta testing          | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
 | 2.2.3 (DataPuller 2.0.9) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/) |
 | 2.2.2 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/) |
 | 2.2.1 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/) |
