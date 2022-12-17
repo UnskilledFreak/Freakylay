@@ -21,6 +21,8 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - [Configuration](#Configuration)
 - [List of Parameters](#Parameters)
 - [Older Versions](#Versions)
+- [Known Issues](#Issues)
+- [FAQ](#FAQ)
 - [Changelog](#changelog)
 
 ## Features
@@ -138,6 +140,11 @@ It is possible to access unreleased or unstable versions by using its number in 
 | 2.1.0 (DataPuller 2.0.3) | unreleased / unstable | [http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.1.0/) |
 | 2.0.0 (DataPuller 2.0.2) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/2.0.0/) |
 | 1.1.0 (DataPuller 1.2.1) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/1.1.0/) |
+
+## Issues
+
+**Known issues**
+- when using DataPuller 2.1.0 or earlier, the miss counter is sometimes a few counts behind the actual value, this is a known bug from the mod. See [DataPuller Issue #26](https://github.com/ReadieFur/BSDataPuller/issues/26). Sadly I cannot do anything about it, there is already a workaround implemented, but this does not cover all the missing miss increments on the mod side.
 
 ## FAQ
 
