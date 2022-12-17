@@ -345,7 +345,6 @@ namespace Freakylay.Ui {
             }
 
             // show hint about new version
-            console.log(this.config.wasOldConfigUsed);
             if (this.config.wasOldConfigUsed) {
                 document.getId<HTMLSpanElement>('versionHintVersion').innerText = helper.fullVersionString;
                 document.getId<HTMLButtonElement>('versionHintOptions').onclick = () => {
