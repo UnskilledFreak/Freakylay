@@ -8,6 +8,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private author: string;
         private songSubName: string;
         private nullColor: Color;
+        private timeTimeout: number;
 
         constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
             super(gameLinkStatus, config);
@@ -152,14 +153,17 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 case 'pause':
                     this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = true;
+                    this.clearInternalTimeTimeout();
                     break;
                 case 'resume':
                     this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = false;
+                    this.clearInternalTimeTimeout();
                     break;
                 case 'finished':
                     this.onLevelChange.Value = false;
                     this.onLevelFinishedChange.Value = true;
+                    this.clearInternalTimeTimeout();
                     break;
                 case 'menu':
                     this.reset();
@@ -188,6 +192,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onLevelFailedChange.Value = false;
             this.onLevelQuitChange.Value = false;
             this.onLevelPausedChange.Value = false;
+
+            this.clearInternalTimeTimeout();
         }
 
         /**
@@ -290,6 +296,11 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onComboChange.Value = data.isset('combo', 0);
             // no currentMaxScore
             this.onTimeElapsedChange.Value = data.isset('currentSongTime', 0);
+            // starting additional timout for slower songs, Http(Sira)Status will not send an event when just time elapses
+            this.clearInternalTimeTimeout();
+            this.timeTimeout = window.setInterval(() => {
+                this.internalTimeTimeout();
+            }, 1000);
             this.onHealthChange.Value = Math.floor(data.isset('energy', 1) * 100);
             // no hitBombs
             // no hitNotes
@@ -434,6 +445,24 @@ namespace Freakylay.Game.BeatSaber.Connection {
             }
 
             return this.author;
+        }
+
+        /**
+         * internal interval to update time even if no updates from Http(Sira)Status where received
+         * @private
+         */
+        private internalTimeTimeout(): void {
+            this.onTimeElapsedChange.Value = this.onTimeElapsedChange.Value + 1;
+        }
+
+        /**
+         * clears internal interval for time updates
+         * @private
+         */
+        private clearInternalTimeTimeout(): void {
+            if (this.timeTimeout) {
+                window.clearInterval(this.timeTimeout);
+            }
         }
 
         /**
