@@ -23,6 +23,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - [Older Versions](#Versions)
 - [Known Issues](#Issues)
 - [FAQ](#FAQ)
+- [Special Thanks](#Testers)
 - [Changelog](#changelog)
 
 ## Features
@@ -144,7 +145,8 @@ It is possible to access unreleased or unstable versions by using its number in 
 ## Issues
 
 **Known issues**
-- when using DataPuller 2.1.0 or earlier, the miss counter is sometimes a few counts behind the actual value, this is a known bug from the mod. See [DataPuller Issue #26](https://github.com/ReadieFur/BSDataPuller/issues/26). Sadly I cannot do anything about it, there is already a workaround implemented, but this does not cover all the missing miss increments on the mod side.
+- when using DataPuller 2.1.0 or earlier, the miss counter is sometimes a few counts behind the actual value, this is a known bug from the mod. See [DataPuller Issue #26](https://github.com/ReadieFur/BSDataPuller/issues/26). Sadly I cannot do anything about it, there is already a workaround implemented, but this does not cover all the missing miss increments on the mod side.  
+For most stability, use DataPuller 2.0.12 (which does not have the double-combo bug, only missing misses sometimes)
 
 ## FAQ
 
@@ -160,13 +162,23 @@ It is possible to access unreleased or unstable versions by using its number in 
 **Q:** The overlay won't show anything even when I play a song!  
 **A:** Make sure the overlay is set up correctly. Double-check the selected game and connection, especially correct version, and copy the URL to your application. Also check if your mods ar up and running.
 
+## Testers
+
+Special thanks and much love to everyone who helped me on developing and testing:
+
+- [Nini_Miautastisch](https://www.twitch.tv/nini_miautastisch)
+- [Mr_Laubsauger](https://www.twitch.tv/mr_laubsauger)
+- [Fefeland](https://www.twitch.tv/fefeland)
+
 ## Changelog
 - 3.0.0
-  - completely rewritten
-  - added multi game support
-  - added different connection types
-  - fully integrated Pulsoid with OAuth2
-  - changed configuration storage and handling
+  - completely rewritten but kept all features of version 2.2.3
+  - added Http(Sira)Status 9.0.1+
+  - added DataPuller 2.1.0
+  - added generic multi game support
+  - added generic connection types (Websocket / HTTP(s))
+  - added Pulsoid Token API
+  - changed configuration storage and handling, still compatible with version 2.2.3 and bellow
   - tons of fixes and improvements
 - 2.2.3
   - fixed timer offset when playing in practice mode
