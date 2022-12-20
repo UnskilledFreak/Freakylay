@@ -231,9 +231,9 @@ namespace Freakylay.Game.BeatSaber {
         /**
          * event handler for map data
          * @param data
-         * @private
+         * @protected
          */
-        private handleMapDataValid(data: {}): void {
+        protected handleMapDataValid(data: {}): void {
             let inLevel = data.isset('InLevel', false);
             let levelFinished = data.isset('LevelFinished', false);
             let levelFailed = data.isset('LevelFailed', false);

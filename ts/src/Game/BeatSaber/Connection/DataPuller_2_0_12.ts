@@ -70,7 +70,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * @param isPause
          */
         public testMapData(isPause: boolean): void {
-            this.handleMapData({
+            this.handleMapDataValid({
                 'GameVersion': '1.24.1',
                 'PluginVersion': '2.0.12.0',
                 'InLevel': true,
@@ -130,21 +130,21 @@ namespace Freakylay.Game.BeatSaber.Connection {
          */
         public testLiveData(): void {
             this.handleLiveDataValid({
-                'Score': 99999999,
-                'ScoreWithMultipliers': 8888888,
+                'Score': (0).random(8888888),
+                'ScoreWithMultipliers': (0).random(9999999),
                 'MaxScore': 0,
                 'MaxScoreWithMultipliers': 0,
-                'Rank': 'E',
+                'Rank': 'SSS',
                 'FullCombo': false,
-                'Combo': 8888,
-                'Misses': 9999,
-                'Accuracy': 95.0,
+                'Combo': (0).random(9999),
+                'Misses': (0).random(9999),
+                'Accuracy': (100).random(10000) / 100,
                 'BlockHitScore': [
                     0,
                     0,
                     0
                 ],
-                'PlayerHealth': 100.0,
+                'PlayerHealth': (0).random(100),
                 'ColorType': 0,
                 'TimeElapsed': 6,
                 'unixTimestamp': 1662375499415,

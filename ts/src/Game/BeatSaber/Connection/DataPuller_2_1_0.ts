@@ -70,7 +70,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * test map data
          */
         public testMapData(): void {
-            this.handleMapData({
+            this.handleMapDataValid({
                 'GameVersion': '1.24.1',
                 'PluginVersion': '2.1.0',
                 'InLevel': true,
