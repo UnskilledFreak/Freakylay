@@ -196,7 +196,11 @@ namespace Freakylay.Game.BeatSaber {
             this.sendCorrectScore();
             // no MaxScore
             // no MaxScoreWithMultipliers
-            this.onRankChange.Value = data.isset('Rank', 'F');
+            let rank = data.isset('Rank', 'E').toUpperCase();
+            if (rank == 'F') {
+                rank = 'E';
+            }
+            this.onRankChange.Value = rank;
 
             // fix missing full combo break and miss increment on bad cut on DataPuller 2.0.12 & 2.1.0
             let misses = data.isset('Misses', 0);
