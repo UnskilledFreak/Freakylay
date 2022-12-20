@@ -89,9 +89,9 @@ Number.prototype.leadingZero = function (length: number): string {
 
 // noinspection JSUnusedGlobalSymbols
 interface Element {
-    addClass<T>(name: string): T;
+    addClass<T>(...names: string[]): T;
 
-    removeClass<T>(name: string): T;
+    removeClass<T>(...names: string[]): T;
 
     toggleClassByValue<T>(value: boolean, name: string): T;
 
@@ -114,21 +114,25 @@ interface Element {
 
 /**
  * adds a CSS class name on given element
- * @param name CSS class name
+ * @param names CSS class names
  */
-Element.prototype.addClass = function <T>(name: string): T {
-    if (!this.classList.contains(name)) {
-        this.classList.add(name);
+Element.prototype.addClass = function <T>(...names: string[]): T {
+    for (let name of names) {
+        if (!this.classList.contains(name)) {
+            this.classList.add(name);
+        }
     }
     return this;
 }
 
 /**
  * removes a CSS class name on given element
- * @param name CSS class name
+ * @param names CSS class names
  */
-Element.prototype.removeClass = function <T>(name: string): T {
-    this.classList.remove(name);
+Element.prototype.removeClass = function <T>(...names: string[]): T {
+    for (let name of names) {
+        this.classList.remove(name);
+    }
     return this;
 }
 

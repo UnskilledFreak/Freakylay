@@ -538,8 +538,7 @@ namespace Freakylay.Ui {
 
                 ar.forEach((element: HTMLDivElement) => {
 
-                    element.removeClass('last');
-                    element.removeClass('first');
+                    element.removeClass('last', 'first');
 
                     if (!element.classList.contains('active')) {
                         return;
@@ -974,6 +973,14 @@ namespace Freakylay.Ui {
          * @private
          */
         private onRankChange(rank: string): void {
+            rank = rank.toUpperCase();
+            if (rank == 'SS') {
+                this.accuracyRank.removeClass<HTMLDivElement>('acc_sss').addClass('acc_ss');
+            } else if (rank == 'SSS') {
+                this.accuracyRank.removeClass<HTMLDivElement>('acc_ss').addClass('acc_sss');
+            } else {
+                this.accuracyRank.removeClass('acc_ss', 'acc_sss');
+            }
             this.accuracyRank.innerText = rank;
         }
 

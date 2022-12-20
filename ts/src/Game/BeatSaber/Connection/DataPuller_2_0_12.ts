@@ -134,7 +134,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 'ScoreWithMultipliers': (0).random(9999999),
                 'MaxScore': 0,
                 'MaxScoreWithMultipliers': 0,
-                'Rank': 'SSS',
+                'Rank': 'S',
                 'FullCombo': false,
                 'Combo': (0).random(9999),
                 'Misses': (0).random(9999),
