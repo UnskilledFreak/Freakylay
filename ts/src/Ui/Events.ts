@@ -106,6 +106,9 @@ namespace Freakylay.Ui {
         private valuePreviousScore: number;
         private levelIsPaused: boolean;
         private levelIsPausedTimeInterval: number;
+        private totalScore: number;
+        private currentScore: number;
+        private scoreAnimateInterval: number;
 
         /**
          * constructor of Event class
@@ -304,6 +307,9 @@ namespace Freakylay.Ui {
             });
             this.config.looks.borderRadius.register((newRadius: number) => {
                 this.setRootCss('radius', newRadius + 'px');
+                this.helper.generateUrlText();
+            });
+            this.config.looks.animateScore.register(() => {
                 this.helper.generateUrlText();
             });
 
@@ -703,6 +709,11 @@ namespace Freakylay.Ui {
                 this.onPerformancePointsChange(a);
             });
             // simple check for those because they do not bind to DOM by value
+            if (c.supportsScore) {
+                this.connection.onMaxScoreChange.register((maxScore) => {
+                    this.onMaxScoreChange(maxScore);
+                });
+            }
             if (c.supportsSongInfoDifficulty) {
                 this.connection.onSongInfoDifficultyChange.register((difficulty) => {
                     this.onSongInfoDifficultyChange(difficulty);
@@ -775,6 +786,7 @@ namespace Freakylay.Ui {
             this.connection.onComboChange.unregister();
             this.connection.onMissChange.unregister();
             this.connection.onScoreChange.unregister();
+            this.connection.onMaxScoreChange.unregister();
             this.connection.onPreviousScoreChange.unregister();
             this.connection.onBlockSpeedChange.unregister();
             this.connection.onBpmChange.unregister();
@@ -878,17 +890,12 @@ namespace Freakylay.Ui {
          * @private
          */
         private onScoreChange(score: number): void {
-            switch (this.config.looks.compareWithPreviousScore.Value) {
-                case 0:
-                    this.score.innerText = score.toString();
-                    break;
-                case 1:
-                    this.score.innerHTML = (this.valuePreviousScore < score ? '&u' : '&d') + 'arr; ' + score.toString();
-                    break;
-                case 2:
-                    this.score.innerText = (score - this.valuePreviousScore).toString();
-                    break;
+            if (this.config.looks.animateScore.Value) {
+                this.scoreIncrementorInternal(score);
+                return;
             }
+
+            this.totalScore = score;
         }
 
         /**
@@ -1344,6 +1351,22 @@ namespace Freakylay.Ui {
          */
         private onLevelChange(changed: boolean): void {
             this.showElements.Value = changed;
+            if (!this.config.looks.animateScore.Value) {
+                if (this.scoreAnimateInterval) {
+                    window.clearInterval(this.scoreAnimateInterval);
+                    this.scoreAnimateInterval = null;
+                }
+                return;
+            }
+            if (changed) {
+                this.onMaxScoreChange(0);
+                this.currentScore = 0;
+                this.scoreAnimateInterval = window.setInterval(() => {
+                    this.scoreIncrementor();
+                }, 5);
+            } else if (this.scoreAnimateInterval) {
+                window.clearInterval(this.scoreAnimateInterval);
+            }
         }
 
         /**
@@ -1409,8 +1432,57 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongTimeOffsetWithModifierName(offset: string): string {
-            //return (this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset) + 's';
             return this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset;
+        }
+
+        /**
+         * generates a delta to fake animate the score counter
+         * @private
+         */
+        private scoreIncrementor(): void {
+            if (this.currentScore >= this.totalScore) {
+                this.scoreIncrementorInternal(this.totalScore);
+                return;
+            }
+            let diff = this.totalScore - this.currentScore;
+            let step: number;
+
+            // forgot how to make this better with math...
+            if (diff > 1000) {
+                step = 1000;
+            } else if (diff > 100) {
+                step = 100;
+            } else if (diff > 10) {
+                step = 10;
+            } else {
+                step = 1;
+            }
+
+            this.currentScore += step;
+            this.scoreIncrementorInternal(this.currentScore);
+        }
+
+        /**
+         * displays given score based on config setting
+         * @param displayScore
+         * @private
+         */
+        private scoreIncrementorInternal(displayScore: number): void {
+            switch (this.config.looks.compareWithPreviousScore.Value) {
+                case 0:
+                    this.score.innerText = displayScore.toString();
+                    break;
+                case 1:
+                    this.score.innerHTML = (this.valuePreviousScore < displayScore ? '&u' : '&d') + 'arr; ' + displayScore.toString();
+                    break;
+                case 2:
+                    this.score.innerText = (displayScore - this.valuePreviousScore).toString();
+                    break;
+            }
+        }
+
+        private onMaxScoreChange(maxScore: number): void {
+            this.totalScore = maxScore;
         }
     }
 }

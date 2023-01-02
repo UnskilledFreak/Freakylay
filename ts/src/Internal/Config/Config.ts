@@ -124,6 +124,7 @@ namespace Freakylay.Internal.Config {
             this.looks.useMapColorForTextColor.Value = 0;
             this.looks.showAccuracyRank.Value = true;
             this.looks.borderRadius.Value = 10;
+            this.looks.animateScore.Value = true;
         }
 
         /**

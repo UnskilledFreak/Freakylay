@@ -43,7 +43,7 @@ namespace Freakylay.Ui {
         public readonly onConnection: EventProperty<boolean>;
 
         get fullVersionString(): string {
-            return 'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');;
+            return 'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');
         }
 
         constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
@@ -354,6 +354,7 @@ namespace Freakylay.Ui {
                         this.config.looks.compareWithPreviousScore.Value = parseInt(value);
                     }
                 ),
+                this.booleanSettingLine('animate score increment', this.config.looks.animateScore),
                 this.booleanSettingLine('show song speed as relative values (-20% instead of 80%)', this.config.looks.speedDisplayRelative),
                 this.booleanSettingLine('test with background image', this.backgroundImageTest),
                 document.headline('Info'),

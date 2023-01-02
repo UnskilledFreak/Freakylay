@@ -17,7 +17,9 @@ namespace Freakylay.Game.BeatSaber {
         protected difficulty: string;
         protected customDifficulty: string;
         protected score: number;
+        protected scoreWithMultipliers: number;
         protected maxScore: number;
+        protected maxScoreWithMultipliers: number;
         // workaround vars for bugs in DataPuller 2.0.12 (never fixed) and 2.1.0 (not fixed yet)
         protected lastCombo: number; // combo will not get reset on bad cut
         protected lastMiss: number;
@@ -41,7 +43,7 @@ namespace Freakylay.Game.BeatSaber {
             this.lostFullCombo = false;
 
             this.score = 0;
-            this.maxScore = 0;
+            this.scoreWithMultipliers = 0;
 
             this.onUseScoreWithMultipliers = new EventProperty<boolean>(false);
 
@@ -181,7 +183,8 @@ namespace Freakylay.Game.BeatSaber {
          * @protected
          */
         protected sendCorrectScore(): void {
-            this.onScoreChange.Value = this.onUseScoreWithMultipliers.Value ? this.maxScore : this.score;
+            this.onScoreChange.Value = this.onUseScoreWithMultipliers.Value ? this.scoreWithMultipliers : this.score;
+            this.onMaxScoreChange.Value = this.onUseScoreWithMultipliers.Value ? this.maxScoreWithMultipliers : this.maxScore;
         }
 
         /**
@@ -192,10 +195,10 @@ namespace Freakylay.Game.BeatSaber {
          */
         protected handleLiveDataValid(data: {}): void {
             this.score = data.isset('Score', 0);
-            this.maxScore = data.isset('ScoreWithMultipliers', 0);
+            this.scoreWithMultipliers = data.isset('ScoreWithMultipliers', 0);
+            this.maxScore = data.isset('MaxScore', 0);
+            this.maxScoreWithMultipliers = data.isset('MaxScoreWithMultipliers', 0);
             this.sendCorrectScore();
-            // no MaxScore
-            // no MaxScoreWithMultipliers
             let rank = data.isset('Rank', 'E').toUpperCase();
             if (rank == 'F') {
                 rank = 'E';

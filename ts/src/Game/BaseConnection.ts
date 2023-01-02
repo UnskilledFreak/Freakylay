@@ -86,6 +86,7 @@ namespace Freakylay.Game {
         public onComboChange: EventProperty<number> = new EventProperty<number>();
         public onMissChange: EventProperty<number> = new EventProperty<number>();
         public onScoreChange: EventProperty<number> = new EventProperty<number>();
+        public onMaxScoreChange: EventProperty<number> = new EventProperty<number>();
         public onPreviousScoreChange: EventProperty<number> = new EventProperty<number>();
         public onBlockSpeedChange: EventProperty<number> = new EventProperty<number>();
         public onBpmChange: EventProperty<number> = new EventProperty<number>();

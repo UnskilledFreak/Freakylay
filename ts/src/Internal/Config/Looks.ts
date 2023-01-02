@@ -32,6 +32,7 @@ namespace Freakylay.Internal.Config {
         public useMapColorForTextColor: EventProperty<number> = new EventProperty<number>();
         public showAccuracyRank: EventProperty<boolean> = new EventProperty<boolean>();
         public borderRadius: EventProperty<number> = new EventProperty<number>();
+        public animateScore: EventProperty<boolean> = new EventProperty<boolean>();
 
         /**
          * loads config data from an json object
@@ -62,6 +63,7 @@ namespace Freakylay.Internal.Config {
             this.useMapColorForTextColor.Value = data.isset('v', this.useMapColorForTextColor.Value);
             this.showAccuracyRank.Value = data.isset('w', this.showAccuracyRank.Value);
             this.borderRadius.Value = data.isset('x', this.borderRadius.Value);
+            this.animateScore.Value = data.isset('y', this.animateScore.Value);
         }
 
         /**
@@ -92,7 +94,8 @@ namespace Freakylay.Internal.Config {
                 u: this.useMapColorForBackgroundColor.Value,
                 v: this.useMapColorForTextColor.Value,
                 w: this.showAccuracyRank.Value,
-                x: this.borderRadius.Value
+                x: this.borderRadius.Value,
+                y: this.animateScore.Value
             };
         }
     }

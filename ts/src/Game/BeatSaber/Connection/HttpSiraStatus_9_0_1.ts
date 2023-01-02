@@ -216,7 +216,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onSongInfoMapperNameChange.Value = data.isset('levelAuthorName', '');
             // no levelId
             // no maxRank
-            // no maxScore
+            this.onMaxScoreChange.Value = data.isset('maxScore', 0);
             this.onBlockSpeedChange.Value = data.isset('noteJumpSpeed', 10);
             // no noteJumpStartBeatOffset
             // no notesCount
