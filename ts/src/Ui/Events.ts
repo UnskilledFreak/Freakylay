@@ -888,7 +888,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onScoreChange(score: number): void {
-            if (this.config.looks.animateScore.Value) {
+            if (!this.config.looks.animateScore.Value) {
                 this.scoreIncrementorInternal(score);
                 return;
             }
@@ -1426,6 +1426,7 @@ namespace Freakylay.Ui {
                 this.scoreIncrementorInternal(this.currentScore);
                 return;
             }
+
             let diff = this.currentScore - this.currentAnimScore;
             let step: number;
 

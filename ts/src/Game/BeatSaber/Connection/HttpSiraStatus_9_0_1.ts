@@ -313,6 +313,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             let relativeScore: number | undefined = data.isset('relativeScore', 0);
             let score = data.isset('score', 0);
             let currentMaxScore = data.isset('currentMaxScore', 0);
+
             if (typeof relativeScore == 'number') {
                 // new HttpSiraStatus
                 this.onAccuracyChange.Value = Math.round(relativeScore * 10000) / 100;
