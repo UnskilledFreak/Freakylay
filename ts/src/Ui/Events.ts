@@ -108,6 +108,7 @@ namespace Freakylay.Ui {
         private levelIsPausedTimeInterval: number;
         private totalScore: number;
         private currentScore: number;
+        private currentAnimScore: number;
         private scoreAnimateInterval: number;
 
         /**
@@ -534,9 +535,6 @@ namespace Freakylay.Ui {
                 this.modifiers.flex(true);
             }
 
-            // todo :: this might fix the missing practice mode element on Http(Sira)Status
-            //this.onPracticeModeChange(this.practiceModeTimeOffset.innerText != '' && this.practiceModeSongSpeed.innerText != '')
-
             this.allModifiers.forEach((ar: HTMLDivElement[]) => {
 
                 let firstFound: boolean = false;
@@ -895,7 +893,7 @@ namespace Freakylay.Ui {
                 return;
             }
 
-            this.totalScore = score;
+            this.currentScore = score;
         }
 
         /**
@@ -1015,8 +1013,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoFailChange(modifier: boolean): void {
-            this.modifierNoFailOn0Energy.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierNoFailOn0Energy, modifier);
         }
 
         /**
@@ -1025,8 +1022,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierOneLifeChange(modifier: boolean): void {
-            this.modifierOneLife.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierOneLife, modifier);
         }
 
         /**
@@ -1035,8 +1031,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierFourLivesChange(modifier: boolean): void {
-            this.modifierFourLives.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierFourLives, modifier);
         }
 
         /**
@@ -1045,8 +1040,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoBombsChange(modifier: boolean): void {
-            this.modifierNoBombs.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierNoBombs, modifier);
         }
 
         /**
@@ -1055,8 +1049,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoWallsChange(modifier: boolean): void {
-            this.modifierNoWalls.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierNoWalls, modifier);
         }
 
         /**
@@ -1065,8 +1058,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierNoArrowsChange(modifier: boolean): void {
-            this.modifierNoArrows.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierNoArrows, modifier);
         }
 
         /**
@@ -1075,8 +1067,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierGhostNotesChange(modifier: boolean): void {
-            this.modifierGhostNotes.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierGhostNotes, modifier);
         }
 
         /**
@@ -1085,8 +1076,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierDisappearingArrowsChange(modifier: boolean): void {
-            this.modifierDisappearingArrows.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierDisappearingArrows, modifier);
         }
 
         /**
@@ -1095,8 +1085,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierSmallNotesChange(modifier: boolean): void {
-            this.modifierSmallNotes.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierSmallNotes, modifier);
         }
 
         /**
@@ -1105,8 +1094,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierProModeChange(modifier: boolean): void {
-            this.modifierProMode.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierProMode, modifier);
         }
 
         /**
@@ -1115,8 +1103,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierStrictAnglesChange(modifier: boolean): void {
-            this.modifierStrictAngles.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierStrictAngles, modifier);
         }
 
         /**
@@ -1125,8 +1112,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierZenModeChange(modifier: boolean): void {
-            this.modifierZenMode.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierZenMode, modifier);
         }
 
         /**
@@ -1135,8 +1121,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierSlowerSongChange(modifier: boolean): void {
-            this.modifierSlowerSong.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierSlowerSong, modifier);
         }
 
         /**
@@ -1145,8 +1130,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierFasterSongChange(modifier: boolean): void {
-            this.modifierFasterSong.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierFasterSong, modifier);
         }
 
         /**
@@ -1155,8 +1139,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onModifierSuperFastSongChange(modifier: boolean): void {
-            this.modifierSuperFastSong.toggleClassByValue(modifier, 'active');
-            this.addModifierClasses();
+            this.displayModifier(this.modifierSuperFastSong, modifier);
         }
 
         /**
@@ -1174,12 +1157,12 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeSpeedChange(speed: number): void {
-            let data;
-            this.practiceModeSongSpeed.toggleClassByValue(speed != 1, 'active');
+            this.displayModifier(this.practiceModeSongSpeed, speed != 1);
             if (speed == 1) {
                 return;
             }
 
+            let data;
             speed = Math.floor(speed * 100);
             if (this.config.looks.speedDisplayRelative.Value) {
                 speed -= 100;
@@ -1188,7 +1171,6 @@ namespace Freakylay.Ui {
                 data = speed.toString();
             }
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName(data);
-            this.addModifierClasses();
         }
 
         /**
@@ -1197,9 +1179,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private onPracticeModeTimeOffset(modifier: number): void {
-            this.practiceModeTimeOffset.toggleClassByValue(modifier > 0, 'active');
             this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName(modifier.toDateString(true))
-            this.addModifierClasses();
+            this.displayModifier(this.practiceModeTimeOffset, modifier > 0);
         }
 
         /**
@@ -1361,6 +1342,7 @@ namespace Freakylay.Ui {
             if (changed) {
                 this.onMaxScoreChange(0);
                 this.currentScore = 0;
+                this.currentAnimScore = 0;
                 this.scoreAnimateInterval = window.setInterval(() => {
                     this.scoreIncrementor();
                 }, 5);
@@ -1440,11 +1422,11 @@ namespace Freakylay.Ui {
          * @private
          */
         private scoreIncrementor(): void {
-            if (this.currentScore >= this.totalScore) {
-                this.scoreIncrementorInternal(this.totalScore);
+            if (this.currentAnimScore >= this.currentScore) {
+                this.scoreIncrementorInternal(this.currentScore);
                 return;
             }
-            let diff = this.totalScore - this.currentScore;
+            let diff = this.currentScore - this.currentAnimScore;
             let step: number;
 
             // forgot how to make this better with math...
@@ -1458,8 +1440,8 @@ namespace Freakylay.Ui {
                 step = 1;
             }
 
-            this.currentScore += step;
-            this.scoreIncrementorInternal(this.currentScore);
+            this.currentAnimScore += step;
+            this.scoreIncrementorInternal(this.currentAnimScore);
         }
 
         /**
