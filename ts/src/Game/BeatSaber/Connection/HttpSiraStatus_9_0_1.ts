@@ -151,12 +151,10 @@ namespace Freakylay.Game.BeatSaber.Connection {
                     this.parsePerformance(performance);
                     break;
                 case 'pause':
-                    this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = true;
                     this.clearInternalTimeTimeout();
                     break;
                 case 'resume':
-                    this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = false;
                     this.clearInternalTimeTimeout();
                     break;
@@ -171,7 +169,6 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 case 'noteMissed':
                 case 'scoreChanged':
                 case 'energyChanged':
-                    this.onLevelChange.Value = true;
                     this.parsePerformance(performance);
                     break;
                 default:
