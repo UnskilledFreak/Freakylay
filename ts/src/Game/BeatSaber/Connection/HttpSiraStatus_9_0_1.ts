@@ -98,6 +98,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * @protected
          */
         protected setCompatibility(): void {
+            this.compatibility.supportsKey = false;
             this.compatibility.supportsSongInfoCustomDifficulty = false;
             this.compatibility.supportsPreviousKey = false;
             this.compatibility.supportsPreviousScore = false;
