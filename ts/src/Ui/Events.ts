@@ -25,7 +25,6 @@ namespace Freakylay.Ui {
         private counterSection: HTMLDivElement;
         private songInfo: HTMLDivElement;
         private modifiers: HTMLDivElement;
-        private practiceMode: HTMLDivElement;
         private versionHint: HTMLDivElement;
 
         // counter section
@@ -163,8 +162,7 @@ namespace Freakylay.Ui {
             this.toggleElements = [
                 this.counterSection,
                 this.modifiers,
-                this.songInfo,
-                this.practiceMode
+                this.songInfo
             ];
 
             // internal
@@ -235,7 +233,6 @@ namespace Freakylay.Ui {
             });
             this.config.looks.modifiersOnRightSide.register((enabled: boolean) => {
                 this.modifiers.toggleClassByValue(enabled, 'flip');
-                this.practiceMode.toggleClassByValue(enabled, 'flip');
                 this.helper.generateUrlText();
             });
             this.config.looks.hideFullComboModifier.register((enabled: boolean) => {
@@ -260,7 +257,6 @@ namespace Freakylay.Ui {
             });
             this.config.looks.hideAllModifiers.register((enabled: boolean) => {
                 this.modifiers.flex(!enabled);
-                this.practiceMode.flex(!enabled);
                 this.helper.generateUrlText();
             });
             this.config.looks.hideCounterSection.register((enabled: boolean) => {
@@ -447,7 +443,6 @@ namespace Freakylay.Ui {
             this.modifierSuperFastSong = document.getDiv('superFastSong');
 
             // practice mode
-            this.practiceMode = document.getDiv('practice');
             this.practiceModeInfo = document.getDiv('practiceMode');
             this.practiceModeSongSpeed = document.getDiv('practiceModeSongSpeed');
             this.practiceModeTimeOffset = document.getDiv('practiceModeTimeOffset');
@@ -527,11 +522,9 @@ namespace Freakylay.Ui {
          */
         private addModifierClasses(): void {
             if (this.config.looks.hideAllModifiers.Value) {
-                this.practiceMode.flex(false);
                 this.modifiers.flex(false);
                 return;
             } else {
-                this.practiceMode.flex(true);
                 this.modifiers.flex(true);
             }
 
@@ -669,10 +662,8 @@ namespace Freakylay.Ui {
                 this.onModifierSuperFastSongChange(a);
             });
             // practice mode
-            this.checkCompatibility(c.supportsPracticeMode, true, this.practiceModeInfo, this.connection.onPracticeModeChange, (a) => {
-                this.onPracticeModeChange(a);
-            }, () => {
-                this.practiceModeInfo.display(false);
+            this.checkCompatibility(c.supportsPracticeMode, true, this.practiceModeInfo, this.connection.onPracticeModeChange, () => {
+                this.checkIfInPracticeMode();
             });
             this.checkCompatibility(c.supportsPracticeModeSpeed, true, this.practiceModeSongSpeed, this.connection.onPracticeModeSpeedChange, (a) => {
                 this.onPracticeModeSpeedChange(a);
@@ -1175,6 +1166,7 @@ namespace Freakylay.Ui {
                 data = speed.toString();
             }
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName(data);
+            this.checkIfInPracticeMode();
         }
 
         /**
@@ -1185,6 +1177,23 @@ namespace Freakylay.Ui {
         private onPracticeModeTimeOffset(modifier: number): void {
             this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName(modifier.toDateString(true))
             this.displayModifier(this.practiceModeTimeOffset, modifier > 0);
+            this.checkIfInPracticeMode();
+        }
+
+        /**
+         * will show practice mode modifier when any practice mode setting is applied
+         * @private
+         */
+        private checkIfInPracticeMode(): void {
+            if (typeof this.connection.onPracticeModeSpeedChange.Value != 'undefined' && this.connection.onPracticeModeSpeedChange.Value != 1) {
+                this.onPracticeModeChange(true);
+                return;
+            }
+            if (typeof this.connection.onPracticeModeTimeOffset.Value != 'undefined' && this.connection.onPracticeModeTimeOffset.Value > 0) {
+                this.onPracticeModeChange(true);
+                return;
+            }
+            this.onPracticeModeChange(false);
         }
 
         /**
