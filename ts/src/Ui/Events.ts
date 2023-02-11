@@ -681,9 +681,6 @@ namespace Freakylay.Ui {
                 this.onPracticeModeTimeOffset(a);
             });
             // song info
-            this.checkCompatibility(c.supportsKey, false, this.mapKey, this.connection.onKeyChange, (a) => {
-                this.onKeyChange(a);
-            });
             this.checkCompatibility(c.supportsPreviousKey, false, this.previousMapKey, this.connection.onPreviousKeyChange, (a) => {
                 this.onPreviousKeyChange(a);
             });
@@ -707,6 +704,13 @@ namespace Freakylay.Ui {
                 this.onPerformancePointsChange(a);
             });
             // simple check for those because they do not bind to DOM by value
+            if (c.supportsKey) {
+                this.connection.onKeyChange.register((key) => {
+                    this.onKeyChange(key);
+                });
+            } else {
+                this.onKeyChange('');
+            }
             if (c.supportsScore) {
                 this.connection.onMaxScoreChange.register((maxScore) => {
                     this.onMaxScoreChange(maxScore);
