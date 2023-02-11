@@ -4,10 +4,9 @@ namespace Freakylay.Ui {
     import Config = Freakylay.Internal.Config.Config;
     import Color = Freakylay.Internal.Color;
     import EventProperty = Freakylay.Internal.EventProperty;
-    import FeedType = Freakylay.DataTransfer.Pulsoid.FeedType;
     import Logger = Freakylay.Internal.Logger;
-    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
-    import ConnectionState = Freakylay.DataTransfer.Pulsoid.ConnectionState;
+    import AbstractHeartRate = Freakylay.DataTransfer.HeartRate.HeartRate;
+    import ConnectionState = Freakylay.DataTransfer.HeartRate.ConnectionState;
     import BaseGame = Freakylay.Game.BaseGame;
     import BaseConnection = Freakylay.Game.BaseConnection;
     import GameLinkStatus = Freakylay.Game.GameLinkStatus;
@@ -17,26 +16,35 @@ namespace Freakylay.Ui {
      * is used as an interface between option panel (UI) and config values
      */
     export class ConfigHelper {
+        // generic
         private readonly logger: Logger;
         private readonly config: Config;
-        private readonly pulsoid: Pulsoid;
         private readonly urlText: HTMLTextAreaElement;
-        private readonly backgroundImageTest: EventProperty<boolean>;
+        private readonly isDev: boolean;
         private options: HTMLDivElement;
         private gameConnectionSettingElement: HTMLDivElement;
         private backgroundColorInput: ColorInput;
         private textColorInput: ColorInput;
+
+        // heart rate
+        private heartRate: AbstractHeartRate;
+        private heartRateFeedText: HTMLLabelElement;
+        private heartRateFeedInput: HTMLInputElement;
+        private heartRateHintJson: HTMLDivElement;
+        private heartRateHintToken: HTMLDivElement;
+        private heartRateHintSession: HTMLDivElement;
+        private heartRatePulsoidThanks: HTMLDivElement;
+        private heartRateHypeRateThanks: HTMLDivElement;
+        private heartRateConnectionState: HTMLSpanElement;
+
+        // game
         private gameList: BaseGame[];
-        // Pulsoid
-        private pulsoidFeedText: HTMLLabelElement;
-        private pulsoidFeedInput: HTMLInputElement;
-        private pulsoidHintJson: HTMLDivElement;
-        private pulsoidHintToken: HTMLDivElement;
-        private pulsoidConnectionState: HTMLSpanElement;
         private gameListElement: HTMLSelectElement;
         private connectionListElement: HTMLSelectElement;
         private applyGameButton: HTMLButtonElement;
 
+        // helper events
+        private readonly backgroundImageTest: EventProperty<boolean>;
         public readonly optionsOpen: EventProperty<boolean>;
         public readonly onGameChange: EventProperty<BaseGame>;
         public readonly onGameConnectionChange: EventProperty<BaseConnection>;
@@ -46,12 +54,13 @@ namespace Freakylay.Ui {
             return 'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');
         }
 
-        constructor(config: Config, pulsoid: Pulsoid, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>) {
+        constructor(config: Config, heartRate: AbstractHeartRate, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>, isDev: boolean) {
             this.logger = new Logger('ConfigHelper');
             this.optionsOpen = new EventProperty<boolean>(false);
             this.config = config;
-            this.pulsoid = pulsoid;
+            this.heartRate = heartRate;
             this.gameList = gameList;
+            this.isDev = isDev;
             this.urlText = document.get<HTMLTextAreaElement>('#urlText');
             this.backgroundImageTest = new EventProperty<boolean>(false);
             this.onGameChange = new EventProperty<BaseGame>();
@@ -67,33 +76,38 @@ namespace Freakylay.Ui {
             let alphaWarning = document.getDiv('versionWarning');
             if (Overlay.Branch.toLowerCase() != 'release') {
                 alphaWarning.display(true);
-                alphaWarning.innerText = this.fullVersionString + ' - early testing version';
+                alphaWarning.innerText = this.fullVersionString;
             }
 
             this.gameListElement = document.getId<HTMLSelectElement>('gameList');
             this.connectionListElement = document.getId<HTMLSelectElement>('connectionList');
 
+            // heart rate elements
+            this.heartRateFeedText = document.getId<HTMLLabelElement>('heartRateFeedUrlText');
+            this.heartRateFeedInput = document.getId<HTMLInputElement>('heartRateFeed');
+            this.heartRateHintJson = document.getDiv('heartRateHintJson');
+            this.heartRateHintToken = document.getDiv('heartRateHintToken');
+            this.heartRateHintSession = document.getDiv('heartRateHintSession');
+            this.heartRateConnectionState = document.getDiv('heartRateConnectionState');
+            this.heartRatePulsoidThanks = document.getDiv('pulsoidThanks');
+            this.heartRateHypeRateThanks = document.getDiv('hypeRateThanks');
+
+            // build panels
             this.buildGameTab();
             this.buildColorTab();
             this.buildSettingsTab();
-            this.buildPulsoidTab();
+            this.buildHeartRateTab();
 
+            // register events
             this.backgroundImageTest.register((enabled: boolean) => {
                 document.body.toggleClassByValue(enabled, 'test');
             });
 
-            // Pulsoid
-            this.pulsoidFeedText = document.getId<HTMLLabelElement>('pulsoidFeedUrlText');
-            this.pulsoidFeedInput = document.getId<HTMLInputElement>('pulsoidFeed');
-            this.pulsoidHintJson = document.getDiv('pulsoidHintJson');
-            this.pulsoidHintToken = document.getDiv('pulsoidHintToken');
-            this.pulsoidConnectionState = document.getDiv('pulsoidConnectionState');
-
-            this.pulsoid.connectionState.register((state: ConnectionState) => {
-                this.pulsoidConnectionState.innerText = Freakylay.DataTransfer.Pulsoid.ConnectionState[state];
+            this.heartRate.connectionState.register((state: ConnectionState) => {
+                this.heartRateConnectionState.innerText = Freakylay.DataTransfer.HeartRate.ConnectionState[state];
             });
-
-            this.checkPulsoidFeedType(this.config.pulsoid.type.Value, true);
+            this.heartRate.connectionState.trigger();
+            this.checkHeartRateFeedType(true);
 
             this.onGameChange.register((game: BaseGame) => {
                 if (game == null) {
@@ -383,99 +397,151 @@ namespace Freakylay.Ui {
          * builds Pulsoid tab, see Pulsoid config and data classes for more information
          * @private
          */
-        private buildPulsoidTab(): void {
-            let selector = document.getId<HTMLSelectElement>('pulsoidFeedType');
+        private buildHeartRateTab(): void {
+            let selector = document.getId<HTMLSelectElement>('heartRateFeedType');
 
-            Freakylay.DataTransfer.Pulsoid.FeedType.foreach((value: string) => {
+            Freakylay.DataTransfer.HeartRate.FeedType.foreach((value: string) => {
                 if (!isNaN(Number(value))) {
                     return;
                 }
 
+                let name;
+                switch (value) {
+                    default:
+                        name = value;
+                        break;
+                    case 'JSON':
+                        name = 'Pulsoid JSON (deprecated)';
+                        break;
+                    case 'Token':
+                        name = 'Pulsoid Token';
+                        break;
+                    case 'Dummy':
+                        if (!this.isDev) {
+                            return;
+                        }
+                        name = value;
+                        break;
+                }
+
                 selector.append(this.createOptionForSelect(
                     value,
-                    value + (value == 'JSON' ? ' (deprecated)' : ''),
-                    Freakylay.DataTransfer.Pulsoid.FeedType[value] == this.config.pulsoid.type.Value
+                    name,
+                    Freakylay.DataTransfer.HeartRate.FeedType[value] == this.config.heartRate.type.Value
                 ));
             });
 
             selector.onchange = () => {
-                this.checkPulsoidFeedType(Freakylay.DataTransfer.Pulsoid.FeedType[selector.value], false);
+                this.heartRate.stop();
+                this.config.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType[selector.value];
+                this.checkHeartRateFeedType(false);
             };
 
-            let feedInput = document.getId<HTMLInputElement>('pulsoidFeed');
-            feedInput.value = this.config.pulsoid.tokenOrUrl.Value;
+            this.heartRateFeedInput.value = this.config.heartRate.tokenOrUrl.Value;
+            /*
+            this.heartRateFeedInput.onchange = () => {
+                this.config.heartRate.tokenOrUrl.Value = this.heartRateFeedInput.value;
+            }
+            */
 
-            document.getId<HTMLInputElement>('pulsoidFeedButton').onclick = () => {
-                this.config.pulsoid.tokenOrUrl.Value = feedInput.value;
-                this.config.pulsoid.type.Value = Freakylay.DataTransfer.Pulsoid.FeedType[selector.value];
+            document.getId<HTMLInputElement>('heartRateFeedButton').onclick = () => {
+                this.config.heartRate.tokenOrUrl.Value = this.heartRateFeedInput.value;
+                this.config.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType[selector.value];
 
-                this.generateUrlText();
+                this.heartRate.registerNewType();
             }
 
-            let url = new URL('https://pulsoid.net/oauth2/authorize');
-
-            url.searchParams.append('response_type', 'token');
-            url.searchParams.append('redirect_uri', '');
-            url.searchParams.append('scope', 'data:heart_rate:read');
-            url.searchParams.append('state', 'a52beaeb-c491-4cd3-b915-16fed71e17a8');
-            url.searchParams.append('response_mode', 'web_page');
-            url.searchParams.append('client_id', 'a5cd6120-1f13-4a74-9bb9-1183523517aa');
-
-            document.getId<HTMLButtonElement>('pulsoidAuthLink').onclick = () => {
-                window.open(url, '_blank');
-            };
-
-            let settings = document.getDiv('pulsoidSettingList');
+            let settings = document.getDiv('heartRateSettingList');
             settings.append(
-                this.booleanSettingLine('use dynamic max bpm', this.config.pulsoid.useDynamicBpm),
-                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.pulsoid.maxStaticBpm, 30, 500, 1)
+                this.booleanSettingLine('use dynamic max bpm', this.config.heartRate.useDynamicBpm),
+                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.heartRate.maxStaticBpm, 30, 500, 1)
             );
         }
 
         /**
-         * checks feedtype and enables or disables specific functions for Pulsoid settings
-         * @param type
+         * checks the feed type and enables or disables specific functions for heart rate settings
          * @param firstStart
          * @private
          */
-        private checkPulsoidFeedType(type: FeedType, firstStart: boolean): void {
-            switch (type) {
-                case Freakylay.DataTransfer.Pulsoid.FeedType.Disabled:
-                    this.pulsoidFeedText.innerText = 'URL or token';
+        private checkHeartRateFeedType(firstStart: boolean): void {
+            this.heartRateHintToken.display(false);
+            this.heartRateHintJson.display(false);
+            this.heartRateHintSession.display(false);
+            this.heartRatePulsoidThanks.display(false);
+            this.heartRateHypeRateThanks.display(false);
 
-                    this.pulsoidFeedInput.disabled = true;
+            let pulsoidUrl = new URL('https://pulsoid.net/oauth2/authorize');
 
-                    this.pulsoidHintToken.display(false);
-                    this.pulsoidHintJson.display(false);
+            pulsoidUrl.searchParams.append('response_type', 'token');
+            pulsoidUrl.searchParams.append('redirect_uri', '');
+            pulsoidUrl.searchParams.append('scope', 'data:heart_rate:read');
+            pulsoidUrl.searchParams.append('state', 'a52beaeb-c491-4cd3-b915-16fed71e17a8');
+            pulsoidUrl.searchParams.append('response_mode', 'web_page');
+            pulsoidUrl.searchParams.append('client_id', 'a5cd6120-1f13-4a74-9bb9-1183523517aa');
+
+            document.getId<HTMLButtonElement>('heartRateAuthLink').onclick = () => {
+                window.open(pulsoidUrl, '_blank');
+            };
+
+            switch (this.config.heartRate.type.Value) {
+                case Freakylay.DataTransfer.HeartRate.FeedType.Disabled:
+                    this.heartRateFeedText.innerText = 'URL or token';
+
+                    this.heartRateFeedInput.disabled = true;
+
+                    this.heartRateHintToken.display(false);
+                    this.heartRateHintJson.display(false);
                     break;
-                case Freakylay.DataTransfer.Pulsoid.FeedType.JSON:
-                    this.pulsoidFeedText.innerText = 'JSON URL';
+                case Freakylay.DataTransfer.HeartRate.FeedType.JSON:
+                    this.heartRateFeedText.innerText = 'JSON URL';
 
                     if (!firstStart) {
-                        this.pulsoidFeedInput.value = '';
+                        this.heartRateFeedInput.value = '';
                     }
 
-                    this.pulsoidFeedInput.disabled = false;
-                    this.pulsoidFeedInput.type = 'text';
+                    this.heartRateFeedInput.disabled = false;
+                    this.heartRateFeedInput.type = 'text';
 
-                    this.pulsoidHintToken.display(false);
-                    this.pulsoidHintJson.display(true);
+                    this.heartRateHintJson.display(true);
+                    this.heartRatePulsoidThanks.display(true);
                     break;
-                case Freakylay.DataTransfer.Pulsoid.FeedType.Token:
-                    this.pulsoidFeedText.innerText = 'Token';
+                case Freakylay.DataTransfer.HeartRate.FeedType.Token:
+                    this.heartRateFeedText.innerText = 'Token';
 
                     if (!firstStart) {
-                        this.pulsoidFeedInput.value = '';
+                        this.heartRateFeedInput.value = '';
                     }
 
-                    this.pulsoidFeedInput.disabled = false;
-                    this.pulsoidFeedInput.type = 'password';
+                    this.heartRateFeedInput.disabled = false;
+                    this.heartRateFeedInput.type = 'password';
 
-                    this.pulsoidHintToken.display(true);
-                    this.pulsoidHintJson.display(false);
+                    this.heartRateHintToken.display(true);
+                    this.heartRatePulsoidThanks.display(true);
+                    break;
+                case Freakylay.DataTransfer.HeartRate.FeedType.Dummy:
+                    this.heartRateFeedText.innerText = 'Token';
+                    this.heartRateFeedInput.disabled = true;
+                    this.heartRateFeedInput.value = 'not needed =)';
+                    this.heartRateFeedInput.type = 'text';
+
+                    this.heartRateHintJson.display(false);
+                    this.heartRateHintToken.display(false);
+                    break;
+                case Freakylay.DataTransfer.HeartRate.FeedType.HypeRate:
+                    this.heartRateFeedText.innerText = 'Session-ID';
+
+                    if (!firstStart) {
+                        this.heartRateFeedInput.value = '';
+                    }
+
+                    this.heartRateFeedInput.disabled = false;
+                    this.heartRateFeedInput.type = 'text';
+
+                    this.heartRateHintSession.display(true);
+                    this.heartRateHypeRateThanks.display(true);
                     break;
             }
-            this.pulsoidFeedText.innerText += ':';
+            this.heartRateFeedText.innerText += ':';
         }
 
         /**

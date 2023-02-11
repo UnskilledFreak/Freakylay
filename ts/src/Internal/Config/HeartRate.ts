@@ -1,11 +1,11 @@
 namespace Freakylay.Internal.Config {
     import EventProperty = Freakylay.Internal.EventProperty;
-    import FeedType = Freakylay.DataTransfer.Pulsoid.FeedType;
+    import FeedType = Freakylay.DataTransfer.HeartRate.FeedType;
 
     /**
      * main Pulsoid config file
      */
-    export class Pulsoid implements IConfigable {
+    export class HeartRate implements IConfigable {
         public maxStaticBpm: EventProperty<number> = new EventProperty<number>(220);
         public useDynamicBpm: EventProperty<boolean> = new EventProperty<boolean>(true);
         public type: EventProperty<FeedType> = new EventProperty<FeedType>(FeedType.Disabled);
@@ -23,7 +23,7 @@ namespace Freakylay.Internal.Config {
         }
 
         /**
-         * saves config data from an json object
+         * saves config data to an json object
          */
         save(): {} {
             return {

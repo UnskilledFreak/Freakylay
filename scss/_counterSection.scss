@@ -35,12 +35,12 @@
     }
   }
 
-  &.pulsoid {
-    width: calc($counterSectionWidth + $pulsoidWidth);
-    margin-left: calc(-#{$counterSectionWidth + $pulsoidWidth} / 2);
+  &.heartRate {
+    width: calc($counterSectionWidth + $heartRateWidth);
+    margin-left: calc(-#{$counterSectionWidth + $heartRateWidth} / 2);
 
     > .ears {
-      width: calc($counterSectionWidth + $pulsoidWidth);
+      width: calc($counterSectionWidth + $heartRateWidth);
     }
   }
 

@@ -5,7 +5,7 @@ namespace Freakylay.Ui {
     import Color = Freakylay.Internal.Color;
     import EventProperty = Freakylay.Internal.EventProperty;
     import Logger = Freakylay.Internal.Logger;
-    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
+    import HeartRate = Freakylay.DataTransfer.HeartRate.HeartRate;
 
     export class Events {
 
@@ -13,7 +13,7 @@ namespace Freakylay.Ui {
         private config: Config;
         private helper: ConfigHelper;
         private connection: BaseConnection;
-        private pulsoidConnection: Pulsoid;
+        private heartRate: HeartRate;
 
         // html elements
         private cssRootVariables: HTMLHtmlElement;
@@ -42,7 +42,7 @@ namespace Freakylay.Ui {
         private health: HTMLDivElement;
         private accuracy: HTMLDivElement;
         private time: HTMLDivElement;
-        private pulsoid: HTMLDivElement;
+        private heartRateElement: HTMLDivElement;
         private accuracyRank: HTMLDivElement;
         private ranked: HTMLDivElement;
         private stars: HTMLDivElement;
@@ -53,7 +53,7 @@ namespace Freakylay.Ui {
         private healthCircleBar: CircleBar;
         private accuracyCircleBar: CircleBar;
         private timeCircleBar: CircleBar;
-        private pulsoidCircleBar: CircleBar;
+        private heartRateCircleBar: CircleBar;
 
         // song info
         private mapKey: HTMLDivElement;
@@ -116,14 +116,14 @@ namespace Freakylay.Ui {
          * it also hooks into all events given by config and other stuff
          * @param config
          * @param helper
-         * @param pulsoid
+         * @param heartRate
          */
-        constructor(config: Config, helper: ConfigHelper, pulsoid: Pulsoid) {
+        constructor(config: Config, helper: ConfigHelper, heartRate: HeartRate) {
             // init
             this.logger = new Logger('Events');
             this.config = config;
             this.helper = helper;
-            this.pulsoidConnection = pulsoid;
+            this.heartRate = heartRate;
             this.levelIsPaused = false;
 
             this.showElements = new EventProperty<boolean>(false);
@@ -182,7 +182,7 @@ namespace Freakylay.Ui {
                         element.addClass(className);
                     }
                 });
-            })
+            });
 
             // option panel
             this.helper.optionsOpen.register((show: boolean) => {
@@ -314,31 +314,31 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
 
-            // config Pulsoid
-            this.config.pulsoid.type.register(() => {
-                this.pulsoidConnection.stop();
-            });
-            this.config.pulsoid.tokenOrUrl.register(() => {
-                this.pulsoidConnection.stop();
-            });
-            this.config.pulsoid.maxStaticBpm.register(() => {
+            // config heart rate
+            this.config.heartRate.type.register(() => {
                 this.helper.generateUrlText();
             });
-            this.config.pulsoid.useDynamicBpm.register(() => {
+            this.config.heartRate.tokenOrUrl.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.maxStaticBpm.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.useDynamicBpm.register(() => {
                 this.helper.generateUrlText();
             });
 
             // Pulsoid event on data receive
-            this.pulsoidConnection.bpm.register((bpm: number) => {
+            this.heartRate.bpm.register((bpm: number) => {
                 let enabled = bpm > 0;
-                this.pulsoid.display(enabled);
-                this.counterSection.toggleClassByValue(enabled, 'pulsoid');
+                this.heartRateElement.display(enabled);
+                this.counterSection.toggleClassByValue(enabled, 'heartRate');
                 if (!enabled) {
                     return;
                 }
 
-                this.pulsoidCircleBar.setProgress(bpm, this.pulsoidConnection.maxBpm.Value);
-                this.pulsoidCircleBar.setText('Heart<br>' + bpm);
+                this.heartRateCircleBar.setProgress(bpm, this.heartRate.maxBpm.Value);
+                this.heartRateCircleBar.setText('Heart<br>' + bpm);
             });
 
             // start all marquees for auto-animation
@@ -395,7 +395,7 @@ namespace Freakylay.Ui {
             this.health = document.getDiv('healthHolder');
             this.accuracy = document.getDiv('accuracyHolder');
             this.time = document.getDiv('timerHolder');
-            this.pulsoid = document.getDiv('pulsoidHolder');
+            this.heartRateElement = document.getDiv('heartRateHolder');
 
             this.timeCircleBar = new CircleBar(this.time);
             this.healthCircleBar = new CircleBar(this.health, (percent: string) => {
@@ -405,14 +405,14 @@ namespace Freakylay.Ui {
                 return '<small>Accuracy</small>' + percent + '%';
             });
             this.accuracyRank = document.getDiv('rank');
-            this.pulsoidCircleBar = new CircleBar(this.pulsoid);
+            this.heartRateCircleBar = new CircleBar(this.heartRateElement);
 
             this.healthCircleBar.setProgress(50, 100);
             this.accuracyCircleBar.setProgress(50, 100);
             this.timeCircleBar.setProgress(50, 100);
             this.onTimeElapsedChangeSetText(50, 100);
-            this.pulsoidCircleBar.setProgress(50, 100);
-            this.pulsoid.display(false);
+            this.heartRateCircleBar.setProgress(50, 100);
+            this.heartRateElement.display(false);
 
             this.fullCombo = document.getDiv('fullCombo');
 
@@ -1225,7 +1225,7 @@ namespace Freakylay.Ui {
         private onSongInfoDifficultyChange(difficulty: string): void {
             this.valueDifficulty = difficulty;
             if (this.valueCustomDifficulty == undefined) {
-                this.valueCustomDifficulty = "";
+                this.valueCustomDifficulty = '';
             }
             this.setCompleteDifficultyLabel();
         }
@@ -1238,7 +1238,7 @@ namespace Freakylay.Ui {
         private onSongInfoCustomDifficultyChange(difficulty: string): void {
             this.valueCustomDifficulty = difficulty;
             if (this.valueDifficulty == undefined) {
-                this.valueDifficulty = "";
+                this.valueDifficulty = '';
             }
             this.setCompleteDifficultyLabel();
         }
@@ -1464,6 +1464,11 @@ namespace Freakylay.Ui {
             }
         }
 
+        /**
+         * stores possible max score for compare effects
+         * @param maxScore
+         * @private
+         */
         private onMaxScoreChange(maxScore: number): void {
             this.totalScore = maxScore;
         }

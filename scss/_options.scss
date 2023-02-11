@@ -149,7 +149,7 @@
     }
   }
 
-  div[data-tab-content=pulsoid] {
+  div[data-tab-content=heartRate] {
     label {
       display: inline-block;
       width: 150px;
@@ -163,9 +163,16 @@
       width: 100px;
     }
 
-    #pulsoidThanks {
+    #pulsoidThanks,
+    #hypeRateThanks {
       margin-top: 15px;
       margin-bottom: 15px;
+      display: none;
+    }
+
+    #heartRateConnectionState {
+      display: inline-block;
+      width: 200px;
     }
   }
 }

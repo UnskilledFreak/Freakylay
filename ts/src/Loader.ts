@@ -4,7 +4,6 @@
  * contains a small library of helpers to make work easy
  * loads and starts the overlay when the document is ready for
  */
-// noinspection JSUnusedGlobalSymbols
 interface Object {
     isset<T>(key: number | string, defaultValue: T): T;
 
@@ -29,7 +28,6 @@ Object.prototype.foreach = function <T>(callback: (string) => void): void {
     Object.keys(this).filter(callback);
 }
 
-// noinspection JSUnusedGlobalSymbols
 interface Number {
     clamp(min: number, max: number, round?: boolean): number;
 
@@ -87,29 +85,12 @@ Number.prototype.leadingZero = function (length: number): string {
     return tmp;
 }
 
-// noinspection JSUnusedGlobalSymbols
 interface Element {
     addClass<T>(...names: string[]): T;
 
     removeClass<T>(...names: string[]): T;
 
     toggleClassByValue<T>(value: boolean, name: string): T;
-
-    toggleClass<T>(name: string): T;
-
-    visibility<T>(visible: boolean): T;
-
-    display<T>(display: boolean, isInline?: boolean): T;
-
-    inline<T>(inline: boolean): T;
-
-    flex<T>(flex: boolean): T;
-
-    removeChildren<T>(): T;
-
-    setDataAttr(name: string, value: string): void;
-
-    getDataAttr(name: string): string;
 }
 
 /**
@@ -149,12 +130,31 @@ Element.prototype.toggleClassByValue = function <T>(value: boolean, name: string
     return this.removeClass(name);
 }
 
+
+interface HTMLElement {
+    toggleClass<T>(name: string): T;
+
+    visibility<T>(visible: boolean): T;
+
+    display<T>(display: boolean, isInline?: boolean): T;
+
+    inline<T>(inline: boolean): T;
+
+    flex<T>(flex: boolean): T;
+
+    removeChildren<T>(): T;
+
+    setDataAttr(name: string, value: string): void;
+
+    getDataAttr(name: string): string;
+}
+
 /**
  * toggles a CSS class on given element
  * if class exists it will get removed, otherwise added
  * @param name CSS class name
  */
-Element.prototype.toggleClass = function <T>(name: string): T {
+HTMLElement.prototype.toggleClass = function <T>(name: string): T {
     if (this.classList.contains(name)) {
         return this.removeClass(name);
     }
@@ -165,7 +165,7 @@ Element.prototype.toggleClass = function <T>(name: string): T {
  * toggles CSS visible value on given element
  * @param visible boolean, true is 'visible', false is 'hidden'
  */
-Element.prototype.visibility = function <T>(visible: boolean): T {
+HTMLElement.prototype.visibility = function <T>(visible: boolean): T {
     this.style.visibility = visible ? 'visible' : 'hidden';
     return this;
 }
@@ -175,7 +175,7 @@ Element.prototype.visibility = function <T>(visible: boolean): T {
  * @param display boolean, true is 'block', false is 'none'
  * @param isInline optional, if true the display will use 'inline-block' instead of 'block'
  */
-Element.prototype.display = function <T>(display: boolean, isInline: boolean = false): T {
+HTMLElement.prototype.display = function <T>(display: boolean, isInline: boolean = false): T {
     this.style.display = display ? (isInline ? 'inline-block' : 'block') : 'none';
     return this;
 }
@@ -184,7 +184,7 @@ Element.prototype.display = function <T>(display: boolean, isInline: boolean = f
  * similar to display but for inline layers
  * @param inline boolean, true is 'flex', false is 'none'
  */
-Element.prototype.inline = function <T>(inline: boolean): T {
+HTMLElement.prototype.inline = function <T>(inline: boolean): T {
     return this.display(inline, true);
 }
 
@@ -192,7 +192,7 @@ Element.prototype.inline = function <T>(inline: boolean): T {
  * similar to display but for flex layers
  * @param flex boolean, true is 'flex', false is 'none'
  */
-Element.prototype.flex = function <T>(flex: boolean): T {
+HTMLElement.prototype.flex = function <T>(flex: boolean): T {
     this.style.display = flex ? 'flex' : 'none';
     return this;
 }
@@ -200,7 +200,7 @@ Element.prototype.flex = function <T>(flex: boolean): T {
 /**
  * removes all children from a node if any
  */
-Element.prototype.removeChildren = function <T>(): T {
+HTMLElement.prototype.removeChildren = function <T>(): T {
     let x = this.lastElementChild;
     while (x) {
         this.removeChild(x);
@@ -214,7 +214,7 @@ Element.prototype.removeChildren = function <T>(): T {
  * @param name
  * @param value
  */
-Element.prototype.setDataAttr = function (name: string, value: string): void {
+HTMLElement.prototype.setDataAttr = function (name: string, value: string): void {
     if (this.dataset) {
         this.dataset[name.toDataAttr()] = value;
         return
@@ -227,7 +227,7 @@ Element.prototype.setDataAttr = function (name: string, value: string): void {
  * gets the value of a data-* attribute of given element
  * @param name
  */
-Element.prototype.getDataAttr = function (name: string): string {
+HTMLElement.prototype.getDataAttr = function (name: string): string {
     if (this.dataset) {
         return this.dataset[name.toDataAttr()];
     }
@@ -235,7 +235,6 @@ Element.prototype.getDataAttr = function (name: string): string {
     return this.getAttribute(name);
 }
 
-// noinspection JSUnusedGlobalSymbols
 interface String {
     repeat(length: number): string;
 
@@ -319,7 +318,6 @@ String.prototype.toDataAttr = function (): string {
     return dsName;
 }
 
-// noinspection JSUnusedGlobalSymbols
 interface Document {
     get<T>(selector: string): T;
 
@@ -470,7 +468,6 @@ Document.prototype.inputRange = function (value: number, min: number, max: numbe
     return input;
 }
 
-// noinspection JSUnusedGlobalSymbols
 interface Array<T> {
     firstOrError(check?: (T) => boolean): T;
 

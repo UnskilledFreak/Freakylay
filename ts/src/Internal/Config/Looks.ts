@@ -67,7 +67,7 @@ namespace Freakylay.Internal.Config {
         }
 
         /**
-         * saves config data from an json object
+         * saves config data to an json object
          */
         save(): {} {
             return {

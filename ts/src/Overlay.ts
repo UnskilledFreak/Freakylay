@@ -6,7 +6,7 @@
 ///<reference path="Ui/Events.ts"/>
 ///<reference path="Ui/Marquee.ts"/>
 ///<reference path="Internal/Logger.ts"/>
-///<reference path="DataTransfer/Pulsoid/Pulsoid.ts"/>
+///<reference path="DataTransfer/HeartRate/HeartRate.ts"/>
 namespace Freakylay {
     import Config = Freakylay.Internal.Config.Config;
     import BaseGame = Freakylay.Game.BaseGame;
@@ -16,8 +16,8 @@ namespace Freakylay {
     import Events = Freakylay.Ui.Events;
     import EventProperty = Freakylay.Internal.EventProperty;
     import Logger = Freakylay.Internal.Logger;
-    import Pulsoid = Freakylay.DataTransfer.Pulsoid.Pulsoid;
     import GameLinkStatus = Freakylay.Game.GameLinkStatus;
+    import HeartRate = Freakylay.DataTransfer.HeartRate.HeartRate;
 
     /**
      * main overlay class
@@ -33,7 +33,7 @@ namespace Freakylay {
         private readonly config: Config;
         private readonly helper: ConfigHelper;
         private readonly gameList: BaseGame[];
-        private readonly pulsoid: Pulsoid;
+        private readonly heartRate: HeartRate;
         private readonly gameLinkState: EventProperty<GameLinkStatus>;
         private readonly events: Events;
         private tabManager: TabManager;
@@ -46,11 +46,11 @@ namespace Freakylay {
 
             this.gameLinkState = new EventProperty<GameLinkStatus>();
             this.config = new Config();
+            this.heartRate = new HeartRate(this.config);
             this.gameList = this.loadGameList();
 
-            this.pulsoid = new Pulsoid(this.config);
-            this.helper = new ConfigHelper(this.config, this.pulsoid, this.gameList, this.gameLinkState);
-            this.events = new Events(this.config, this.helper, this.pulsoid);
+            this.helper = new ConfigHelper(this.config, this.heartRate, this.gameList, this.gameLinkState, this.isDev);
+            this.events = new Events(this.config, this.helper, this.heartRate);
 
             this.tabManager = new TabManager(this.isDev, this.events, this.config, this.gameLinkState);
 
@@ -59,8 +59,8 @@ namespace Freakylay {
             // force fire all events once so config values take effect after hooking into events
             this.fireAllConfigEvents(true);
 
-            // start Pulsoid as standalone worker
-            this.pulsoid.start();
+            // register heart rate or NullBeat if none
+            this.heartRate.registerNewType();
 
             // last but not least, connect to game if any
             this.helper.onConnection.register((value) => {
@@ -129,8 +129,6 @@ namespace Freakylay {
         private fireAllConfigEvents(includeGameAndConnection: boolean): void {
             this.config.colors.text.trigger();
             this.config.colors.background.trigger();
-            //this.config.colors.textIsRandom.fire();
-            //this.config.colors.backgroundIsRandom.fire();
 
             this.config.looks.shortModifierNames.trigger();
             this.config.looks.showPreviousKey.trigger();
@@ -154,9 +152,9 @@ namespace Freakylay {
             this.config.looks.showAccuracyRank.trigger();
             this.config.looks.borderRadius.trigger();
 
-            this.config.pulsoid.type.trigger();
-            this.config.pulsoid.tokenOrUrl.trigger();
-            this.config.pulsoid.useDynamicBpm.trigger();
+            this.config.heartRate.type.trigger();
+            this.config.heartRate.tokenOrUrl.trigger();
+            this.config.heartRate.useDynamicBpm.trigger();
 
             if (includeGameAndConnection) {
                 this.config.game.trigger();

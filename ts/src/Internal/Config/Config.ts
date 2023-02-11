@@ -1,9 +1,9 @@
 ///<reference path="../Color.ts"/>
-///<reference path="../../DataTransfer/Pulsoid/FeedType.ts"/>
+///<reference path="../../DataTransfer/HeartRate/FeedType.ts"/>
 namespace Freakylay.Internal.Config {
 
     import Color = Freakylay.Internal.Color;
-    import FeedType = Freakylay.DataTransfer.Pulsoid.FeedType;
+    import FeedType = Freakylay.DataTransfer.HeartRate.FeedType;
 
     /**
      * main config
@@ -11,7 +11,7 @@ namespace Freakylay.Internal.Config {
     export class Config implements IConfigable {
         public colors: Colors;
         public looks: Looks;
-        public pulsoid: Pulsoid;
+        public heartRate: HeartRate;
         public game: EventProperty<string>;
         public connection: EventProperty<string>;
         public connectionSetting: {};
@@ -35,7 +35,7 @@ namespace Freakylay.Internal.Config {
             this.connection = new EventProperty<string>('');
             this.colors = new Colors();
             this.looks = new Looks();
-            this.pulsoid = new Pulsoid();
+            this.heartRate = new HeartRate();
             this.connectionSetting = {};
             this.oldConfigWasUsed = false;
 
@@ -66,7 +66,6 @@ namespace Freakylay.Internal.Config {
          * @private
          */
         private useOldConfigAsDefault(): void {
-            // todo :: show info when old values are used that the overlay is now on a newer version?
             this.colors.background.Value = this.getConfig('a', this.randomBackground);
             this.colors.text.Value = this.getConfig('b', this.randomText);
             this.looks.shortModifierNames.Value = this.getConfig('c', false);
@@ -85,10 +84,10 @@ namespace Freakylay.Internal.Config {
             this.looks.hideDefaultDifficultyOnCustomDifficulty.Value = this.getConfig('p', false);
             this.looks.hideAllModifiers.Value = this.getConfig('q', false);
 
-            let pulsoidFeed = this.getConfig('r', '');
-            if (pulsoidFeed != '') {
-                this.pulsoid.type.Value = FeedType.JSON;
-                this.pulsoid.tokenOrUrl.Value = pulsoidFeed;
+            let heartRateFeed = this.getConfig('r', '');
+            if (heartRateFeed != '') {
+                this.heartRate.type.Value = FeedType.JSON;
+                this.heartRate.tokenOrUrl.Value = heartRateFeed;
             }
 
             //this.getConfig('s', false);
@@ -99,15 +98,19 @@ namespace Freakylay.Internal.Config {
             if (feedTypeData != '') {
                 switch (feedTypeData) {
                     case 'token':
-                        this.pulsoid.type.Value = FeedType.Token;
+                        this.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType.Token;
                         break;
                     case 'json':
-                        this.pulsoid.type.Value = FeedType.JSON;
+                        this.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType.JSON;
+                        break;
+                    case 'dummy':
+                        this.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType.Dummy;
+                        break;
+                    case 'hyperate':
+                        this.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType.HypeRate;
                         break;
                     default:
-                        if (pulsoidFeed == '') {
-                            this.pulsoid.type.Value = FeedType.Disabled;
-                        }
+                        this.heartRate.type.Value = Freakylay.DataTransfer.HeartRate.FeedType.Disabled;
                         break;
                 }
             }
@@ -136,7 +139,7 @@ namespace Freakylay.Internal.Config {
                 return;
             }
 
-            let jsonConfData = "{}";
+            let jsonConfData = '{}';
             let confData = this.getConfig('w', '');
 
             if (confData.length > 0) {
@@ -162,7 +165,7 @@ namespace Freakylay.Internal.Config {
             this.connection.Value = data.isset('b', '');
             this.colors.load(data.isset('c', {}));
             this.looks.load(data.isset('d', {}));
-            this.pulsoid.load(data.isset('e', {}));
+            this.heartRate.load(data.isset('e', {}));
             this.connectionSetting = data.isset('f', {});
         }
 
@@ -175,7 +178,7 @@ namespace Freakylay.Internal.Config {
                 b: this.connection.Value,
                 c: this.colors.save(),
                 d: this.looks.save(),
-                e: this.pulsoid.save(),
+                e: this.heartRate.save(),
                 f: this.connectionSetting
             };
         }
