@@ -1,7 +1,9 @@
+///<reference path="../../../DataTransfer/MapData/BeatSaver.ts"/>
 namespace Freakylay.Game.BeatSaber.Connection {
     import WebSocketConnection = Freakylay.DataTransfer.WebSocket.WebSocketConnection;
     import Color = Freakylay.Internal.Color;
     import Config = Freakylay.Internal.Config.Config;
+    import BeatSaver = Freakylay.DataTransfer.MapData.BeatSaver;
 
     export class HttpSiraStatus_9_0_1 extends BaseConnection {
         private connection: WebSocketConnection = null;
@@ -9,12 +11,14 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private songSubName: string;
         private nullColor: Color;
         private timeTimeout: number;
+        private beatSaver: BeatSaver;
 
         constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
             super(gameLinkStatus, config);
             this.author = '';
             this.songSubName = '';
             this.nullColor = new Color(0, 0, 0);
+            this.beatSaver = new BeatSaver();
         }
 
         /**
@@ -98,7 +102,6 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * @protected
          */
         protected setCompatibility(): void {
-            this.compatibility.supportsKey = false;
             this.compatibility.supportsSongInfoCustomDifficulty = false;
             this.compatibility.supportsPreviousKey = false;
             this.compatibility.supportsPreviousScore = false;
@@ -179,6 +182,18 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
 
         /**
+         * requests map key via BeatSaver API
+         * @param mapHash
+         * @private
+         */
+        private requestMapData(mapHash: string): void {
+            this.onKeyChange.Value = 'Loading...';
+            this.beatSaver.requestKeyFromMapHash(mapHash, (data: string) => {
+                this.onKeyChange.Value = data;
+            });
+        }
+
+        /**
          * resets all needed events and variables for next map
          * @private
          */
@@ -212,6 +227,13 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no environmentName
             this.onTimeLengthChange.Value = Math.floor(data.isset('length', 12000) / 1000);
             this.onSongInfoMapperNameChange.Value = data.isset('levelAuthorName', '');
+            let levelId = data.isset('levelId', '');
+            if (levelId != '') {
+                levelId = levelId.replace('custom_level_', '');
+                if (levelId.length > 20) {
+                    this.requestMapData(levelId);
+                }
+            }
             // no levelId
             // no maxRank
             this.onMaxScoreChange.Value = data.isset('maxScore', 0);
