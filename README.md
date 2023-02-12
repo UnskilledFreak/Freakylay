@@ -38,7 +38,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - it hides itself when in menus
 - flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
-- Pulsoid heart rate fully integrated to match style
+- Pulsoid & HypeRate heart rate fully integrated to match style
 - completely event-driven
 
 ## Games
@@ -173,11 +173,13 @@ Special thanks and much love to everyone who helped me on developing and testing
 ## Changelog
 - 3.0.0
   - completely rewritten but kept all features of version 2.2.3
+  - added BSR Key sync for Http(Sira)Status from Beat Saver
   - added Http(Sira)Status 9.0.1+
   - added DataPuller 2.1.0
   - added generic multi game support
   - added generic connection types (Websocket / HTTP(s))
-  - added Pulsoid Token API
+  - added Pulsoid Token API (Heart rate)
+  - added HypeRate API (Heart rate)
   - changed configuration storage and handling, still compatible with version 2.2.3 and bellow
   - tons of fixes and improvements
 - 2.2.3
