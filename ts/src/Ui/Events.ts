@@ -1464,6 +1464,11 @@ namespace Freakylay.Ui {
          * @private
          */
         private scoreIncrementorInternal(displayScore: number): void {
+            if (!this.connection.getCompatibility().supportsPreviousScore) {
+                this.score.innerText = displayScore.toString();
+                return;
+            }
+
             switch (this.config.looks.compareWithPreviousScore.Value) {
                 case 0:
                     this.score.innerText = displayScore.toString();
