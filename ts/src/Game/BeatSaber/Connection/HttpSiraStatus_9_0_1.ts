@@ -227,13 +227,6 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no environmentName
             this.onTimeLengthChange.Value = Math.floor(data.isset('length', 12000) / 1000);
             this.onSongInfoMapperNameChange.Value = data.isset('levelAuthorName', '');
-            let levelId = data.isset('levelId', '');
-            if (levelId != '') {
-                levelId = levelId.replace('custom_level_', '');
-                if (levelId.length > 20) {
-                    this.requestMapData(levelId);
-                }
-            }
             // no levelId
             // no maxRank
             this.onMaxScoreChange.Value = data.isset('maxScore', 0);
@@ -253,6 +246,10 @@ namespace Freakylay.Game.BeatSaber.Connection {
             }
 
             this.onSongInfoCoverImageChange.Value = cover;
+            let songHash = data.isset('songHash', '');
+            if (songHash != '') {
+                this.requestMapData(songHash);
+            }
             // no songHash
             this.onSongInfoSongNameChange.Value = data.isset('songName', '???');
             this.songSubName = data.isset('songSubName', '');
