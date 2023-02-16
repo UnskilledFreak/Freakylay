@@ -56,6 +56,12 @@
     width: 230px;
 
     .line {
+
+      &:first-child {
+        line-height: 19px;
+        height: 21px;
+      }
+
       margin: 8px 0;
       font-size: 17px;
       line-height: 19px;
