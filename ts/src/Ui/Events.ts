@@ -1378,6 +1378,7 @@ namespace Freakylay.Ui {
             } else {
                 if (this.levelIsPausedTimeInterval > 0) {
                     window.clearInterval(this.levelIsPausedTimeInterval);
+                    this.onTimeElapsedChangeSetText(this.connection.onTimeElapsedChange.Value, this.connection.onTimeLengthChange.Value);
                 }
             }
         }
