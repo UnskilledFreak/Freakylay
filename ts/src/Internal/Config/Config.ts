@@ -84,6 +84,13 @@ namespace Freakylay.Internal.Config {
             this.looks.hideDefaultDifficultyOnCustomDifficulty.Value = this.getConfig('p', false);
             this.looks.hideAllModifiers.Value = this.getConfig('q', false);
 
+            if (!(this.colors.background.Value instanceof Color)) {
+                this.colors.background.Value = Color.fromUrl(this.colors.background.Value);
+            }
+            if (!(this.colors.text.Value instanceof Color)) {
+                this.colors.text.Value = Color.fromUrl(this.colors.text.Value);
+            }
+
             let heartRateFeed = this.getConfig('r', '');
             if (heartRateFeed != '') {
                 this.heartRate.type.Value = FeedType.JSON;
