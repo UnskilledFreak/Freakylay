@@ -301,6 +301,8 @@ namespace Freakylay.Ui {
             colorInfo.innerText = defaultColorInfoText;
 
             this.getTabContentDom('settings').append(
+                //document.headline('Info'),
+                info,
                 document.headline('Looks'),
                 this.booleanSettingLine('display short modifier names', this.config.looks.shortModifierNames),
                 this.booleanSettingLine('show previous map key', this.config.looks.showPreviousKey),
@@ -371,8 +373,6 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('animate score increment', this.config.looks.animateScore),
                 this.booleanSettingLine('show song speed as relative values (-20% instead of 80%)', this.config.looks.speedDisplayRelative),
                 this.booleanSettingLine('test with background image', this.backgroundImageTest),
-                document.headline('Info'),
-                info
             );
         }
 
