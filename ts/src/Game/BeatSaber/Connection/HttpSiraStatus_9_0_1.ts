@@ -283,9 +283,10 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onModifierFasterSongChange.Value = false;
             this.onModifierSuperFastSongChange.Value = false;
             this.onModifierSlowerSongChange.Value = false;
+            let songSpeedIsFromModifier = true;
             switch (songSpeed) {
                 case 'Normal':
-                    // ignore
+                    songSpeedIsFromModifier = false;
                     break;
                 case 'Slower':
                     this.onModifierSlowerSongChange.Value = true;
@@ -297,7 +298,13 @@ namespace Freakylay.Game.BeatSaber.Connection {
                     this.onModifierSuperFastSongChange.Value = true;
                     break;
             }
-            this.onPracticeModeSpeedChange.Value = Math.round(data.isset('songSpeedMultiplier', 1) * 100) / 100;
+            let songSpeedMultiplier = data.isset('songSpeedMultiplier', 1);
+            if (songSpeedIsFromModifier) {
+                this.onPracticeModeSpeedChange.Value = 1;
+            } else {
+                this.onPracticeModeSpeedChange.Value = Math.round(songSpeedMultiplier * 100) / 100;
+            }
+            this.onTimeLengthChange.Value = this.onTimeLengthChange.Value * songSpeedMultiplier;
             this.onModifierStrictAnglesChange.Value = data.isset('strictAngles', false);
             this.onModifierZenModeChange.Value = data.isset('zenMode', false);
         }
