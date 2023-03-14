@@ -66,7 +66,7 @@ Number.prototype.toDateString = function (removeMinutesIfZero: boolean): string 
     if (removeMinutesIfZero && minutes == 0) {
         return seconds.toString();
     }
-    let s = seconds.leadingZero(2);
+    let s = Math.floor(seconds).leadingZero(2);
     return minutes < 0 ? s : minutes + ':' + s;
 }
 
