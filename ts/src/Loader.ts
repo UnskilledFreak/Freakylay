@@ -249,6 +249,8 @@ interface String {
     toCapital(): string;
 
     toDataAttr(): string;
+
+    cleanBullshit(): string;
 }
 
 /**
@@ -316,6 +318,17 @@ String.prototype.toDataAttr = function (): string {
         dsName += s.toCapital();
     }
     return dsName;
+}
+
+/**
+ * cleans a string from bullshit input, that is a break line and double whitespaces
+ */
+String.prototype.cleanBullshit = function (): string {
+    let tmp = this.replace(/\n/g,' ');
+    while (tmp.indexOf("  ") > 0) {
+        tmp = tmp.replace(/  /g, ' ');
+    }
+    return tmp;
 }
 
 interface Document {

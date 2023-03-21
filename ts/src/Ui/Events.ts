@@ -1227,7 +1227,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onSongInfoMapperNameChange(mapperName: string): void {
-            this.mapper.innerText = mapperName;
+            this.mapper.innerText = mapperName.cleanBullshit();
         }
 
         /**
@@ -1272,7 +1272,7 @@ namespace Freakylay.Ui {
                     text = this.valueCustomDifficulty + ' - ' + this.valueDifficulty;
                 }
             }
-            this.marquee['difficulty'].setValue(text);
+            this.marquee['difficulty'].setValue(text.cleanBullshit());
         }
 
         /**
@@ -1281,7 +1281,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onSongInfoSongAuthorChange(songAuthor: string): void {
-            this.marquee['songArtist'].setValue(songAuthor);
+            this.marquee['songArtist'].setValue(songAuthor.cleanBullshit());
         }
 
         /**
@@ -1290,7 +1290,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private onSongInfoSongNameChange(songName: string): void {
-            this.marquee['songName'].setValue(songName);
+            this.marquee['songName'].setValue(songName.cleanBullshit());
         }
 
         /**
