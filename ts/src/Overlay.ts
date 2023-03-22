@@ -26,8 +26,7 @@ namespace Freakylay {
         public static Version: string = '3.0.0';
         public static Branch: string = 'Beta';
 
-        //private isDev: boolean = window.location.protocol == undefined || window.location.protocol == 'file:';
-        private isDev: boolean = false;
+        private isDev: boolean = false; //window.location.protocol == undefined || window.location.protocol == 'file:';
 
         private readonly logger: Logger;
         private readonly config: Config;
@@ -155,6 +154,17 @@ namespace Freakylay {
             this.config.heartRate.type.trigger();
             this.config.heartRate.tokenOrUrl.trigger();
             this.config.heartRate.useDynamicBpm.trigger();
+
+            this.config.heartRate.graph.enabled.trigger();
+            this.config.heartRate.graph.anchor.trigger();
+            this.config.heartRate.graph.offsetX.trigger();
+            this.config.heartRate.graph.offsetY.trigger();
+            this.config.heartRate.graph.disableCircleBar.trigger();
+            this.config.heartRate.graph.eventsToShow.trigger();
+            this.config.heartRate.graph.displayNumbers.trigger();
+            this.config.heartRate.graph.useBackground.trigger();
+            this.config.heartRate.graph.width.trigger();
+            this.config.heartRate.graph.height.trigger();
 
             if (includeGameAndConnection) {
                 this.config.game.trigger();

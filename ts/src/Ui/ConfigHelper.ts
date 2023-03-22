@@ -77,6 +77,8 @@ namespace Freakylay.Ui {
             if (Overlay.Branch.toLowerCase() != 'release') {
                 alphaWarning.display(true);
                 alphaWarning.innerText = this.fullVersionString;
+            } else {
+                alphaWarning.display(false);
             }
 
             this.gameListElement = document.getId<HTMLSelectElement>('gameList');
@@ -319,8 +321,8 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('show if map is ranked', this.config.looks.showRanked),
                 this.booleanSettingLine('show ranked star/difficulty info', this.config.looks.showStars),
                 this.booleanSettingLine('show rank behind the accuracy circle', this.config.looks.showAccuracyRank),
-                this.rangeSetting('border radius', this.config.looks.borderRadius, 0, 20, 1),
-                this.dropDownSetting(
+                this.rangeSettingLine('border radius', this.config.looks.borderRadius, 0, 20, 1),
+                this.dropDownSettingLine(
                     'override background color with map color',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForBackgroundColor.Value == 0),
@@ -336,7 +338,7 @@ namespace Freakylay.Ui {
                         this.checkUserOverrideColorSetting(colorInfo, defaultColorInfoText);
                     }
                 ),
-                this.dropDownSetting(
+                this.dropDownSettingLine(
                     'override text color with map color',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
@@ -359,7 +361,7 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('move counter section to top', this.config.looks.counterSectionOnTop),
                 this.booleanSettingLine('move modifiers to right side', this.config.looks.modifiersOnRightSide),
                 document.headline('Misc'),
-                this.dropDownSetting(
+                this.dropDownSettingLine(
                     'compare score with last score',
                     [
                         this.createOptionForSelect(0, 'do not compare', this.config.looks.compareWithPreviousScore.Value == 0),
@@ -418,7 +420,7 @@ namespace Freakylay.Ui {
                         break;
                     case 'Dummy':
                         if (!this.isDev) {
-                            return;
+                            //return;
                         }
                         name = value;
                         break;
@@ -451,10 +453,44 @@ namespace Freakylay.Ui {
                 this.heartRate.registerNewType();
             }
 
+            let offsetHint = document.div();
+            offsetHint.innerHTML = 'If it does not show up, it might be out of bounds. Try adjusting the offset values and make sure the connection is in fetching state.';
+
+            let pullInfo = document.div();
+            pullInfo.innerHTML = 'A higher number means more data to show, lower will show a more fast paced graph. Normally a bpm event is received about every second but it can vary.';
+
             let settings = document.getDiv('heartRateSettingList');
             settings.append(
                 this.booleanSettingLine('use dynamic max bpm', this.config.heartRate.useDynamicBpm),
-                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.heartRate.maxStaticBpm, 30, 500, 1)
+                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.heartRate.maxStaticBpm, 30, 500, 1),
+                document.headline('Graph'),
+                offsetHint,
+                this.booleanSettingLine('display graph', this.config.heartRate.graph.enabled),
+                this.booleanSettingLine('use background', this.config.heartRate.graph.useBackground),
+                this.booleanSettingLine('stroke line with background color in no background mode', this.config.heartRate.graph.useBackgroundColorForStroke),
+                this.rangeSettingLine('width', this.config.heartRate.graph.width, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerWidth, 1),
+                this.rangeSettingLine('height', this.config.heartRate.graph.height, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight, 1),
+                this.booleanSettingLine('disable circle bar in counter section', this.config.heartRate.graph.disableCircleBar),
+                this.booleanSettingLine('display numbers', this.config.heartRate.graph.displayNumbers),
+                this.rangeSettingLine('font size for min and max bpm', this.config.heartRate.graph.smallFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
+                this.rangeSettingLine('font size for current bpm', this.config.heartRate.graph.bigFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
+                this.dropDownSettingLine(
+                    'anchor',
+                    [
+                        this.createOptionForSelect(0, 'top left', this.config.heartRate.graph.anchor.Value == 0),
+                        this.createOptionForSelect(1, 'top right', this.config.heartRate.graph.anchor.Value == 1),
+                        this.createOptionForSelect(2, 'bottom left', this.config.heartRate.graph.anchor.Value == 2),
+                        this.createOptionForSelect(3, 'bottom right', this.config.heartRate.graph.anchor.Value == 3),
+                        this.createOptionForSelect(4, 'center screen', this.config.heartRate.graph.anchor.Value == 4),
+                    ],
+                    (change) => {
+                        this.config.heartRate.graph.anchor.Value = parseInt(change);
+                    }
+                ),
+                this.rangeSettingLine('offset X', this.config.heartRate.graph.offsetX, 0, window.outerWidth, 1),
+                this.rangeSettingLine('offset Y', this.config.heartRate.graph.offsetY, 0, window.outerHeight, 1),
+                this.rangeSettingLine('events to show', this.config.heartRate.graph.eventsToShow, Freakylay.Internal.Config.HeartGraph.MinTimespan, Freakylay.Internal.Config.HeartGraph.MaxTimespan, 10),
+                pullInfo
             );
         }
 
@@ -633,7 +669,7 @@ namespace Freakylay.Ui {
          * @param changeCallback
          * @private
          */
-        private dropDownSetting(name: string, valueArray: HTMLOptionElement[], changeCallback: (value: string) => void): HTMLDivElement {
+        private dropDownSettingLine(name: string, valueArray: HTMLOptionElement[], changeCallback: (value: string) => void): HTMLDivElement {
             let line = document.div().addClass<HTMLDivElement>('settingsLine');
             let info = document.span();
             let select = document.create<HTMLSelectElement>('select');
@@ -712,7 +748,7 @@ namespace Freakylay.Ui {
          * @param step
          * @private
          */
-        private rangeSetting(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
+        private rangeSettingLine(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
             let line = document.div().addClass<HTMLDivElement>('settingsLine');
             let info = document.span();
 

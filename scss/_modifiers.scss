@@ -1,4 +1,5 @@
-@mixin modifierBar {
+#modifiers {
+  bottom: 200px;
   position: absolute;
   text-align: right;
   font-size: 14px;
@@ -60,11 +61,6 @@
       }
     }
   }
-}
-
-#modifiers {
-  bottom: 200px;
-  @include modifierBar;
 
   #practiceModeSpacer {
     height: 25px;

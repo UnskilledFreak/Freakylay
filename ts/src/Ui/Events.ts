@@ -94,6 +94,11 @@ namespace Freakylay.Ui {
         private readonly practiceModifiers: HTMLDivElement[];
         private readonly allModifiers: HTMLDivElement[][];
 
+        // heart graph
+        private heartGraphHolder: HTMLDivElement;
+        private heartGraphCanvas: HTMLCanvasElement;
+        private heartGraphGfx: CanvasRenderingContext2D;
+
         // elements array
         private readonly toggleElements: HTMLDivElement[];
 
@@ -109,6 +114,9 @@ namespace Freakylay.Ui {
         private currentScore: number;
         private currentAnimScore: number;
         private scoreAnimateInterval: number;
+
+        // heart rate graph data array
+        private readonly heartGraphList: number[];
 
         /**
          * constructor of Event class
@@ -164,6 +172,8 @@ namespace Freakylay.Ui {
                 this.modifiers,
                 this.songInfo
             ];
+
+            this.heartGraphList = [];
 
             // internal
             this.showElements.register((show: boolean) => {
@@ -324,9 +334,67 @@ namespace Freakylay.Ui {
                 this.helper.generateUrlText();
             });
 
+            // heart graph
+            this.config.heartRate.graph.enabled.register((enabled) => {
+                this.heartGraphHolder.display(enabled);
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.anchor.register((anchor) => {
+                this.calculateHeartGraph(anchor, this.config.heartRate.graph.offsetX.Value, this.config.heartRate.graph.offsetY.Value);
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.offsetX.register((offsetX) => {
+                this.calculateHeartGraph(this.config.heartRate.graph.anchor.Value, offsetX, this.config.heartRate.graph.offsetY.Value);
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.offsetY.register((offsetY) => {
+                this.calculateHeartGraph(this.config.heartRate.graph.anchor.Value, this.config.heartRate.graph.offsetX.Value, offsetY);
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.disableCircleBar.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.eventsToShow.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.displayNumbers.register(() => {
+                this.helper.generateUrlText();
+            })
+            this.config.heartRate.graph.useBackground.register((useBackground) => {
+                this.heartGraphHolder.toggleClassByValue(useBackground, 'background');
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.width.register((width) => {
+                this.heartGraphHolder.style.width = width + 'px';
+                this.heartGraphCanvas.width = width;
+                this.helper.generateUrlText();
+                this.calculateHeartGraph(this.config.heartRate.graph.anchor.Value, this.config.heartRate.graph.offsetX.Value, this.config.heartRate.graph.offsetY.Value);
+            });
+            this.config.heartRate.graph.height.register((height) => {
+                this.heartGraphHolder.style.height = height + 'px';
+                this.heartGraphCanvas.height = height;
+                this.helper.generateUrlText();
+                this.calculateHeartGraph(this.config.heartRate.graph.anchor.Value, this.config.heartRate.graph.offsetX.Value, this.config.heartRate.graph.offsetY.Value);
+            });
+            this.config.heartRate.graph.useBackgroundColorForStroke.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.smallFontSize.register(() => {
+                this.helper.generateUrlText();
+            });
+            this.config.heartRate.graph.bigFontSize.register(() => {
+                this.helper.generateUrlText();
+            });
+
             // Pulsoid event on data receive
             this.heartRate.bpm.register((bpm: number) => {
-                let enabled = bpm > 0;
+                this.heartGraphList.push(bpm);
+                while (this.heartGraphList.length > Freakylay.Internal.Config.HeartGraph.MaxTimespan) {
+                    this.heartGraphList.shift();
+                }
+                this.drawHeartGraph();
+
+                let enabled = bpm > 0 && !this.config.heartRate.graph.disableCircleBar.Value;
                 this.heartRateElement.display(enabled);
                 this.counterSection.toggleClassByValue(enabled, 'heartRate');
                 if (!enabled) {
@@ -446,6 +514,11 @@ namespace Freakylay.Ui {
             this.practiceModeInfo = document.getDiv('practiceMode');
             this.practiceModeSongSpeed = document.getDiv('practiceModeSongSpeed');
             this.practiceModeTimeOffset = document.getDiv('practiceModeTimeOffset');
+
+            // heart graph
+            this.heartGraphHolder = document.getDiv('heartGraphHolder');
+            this.heartGraphCanvas = document.get<HTMLCanvasElement>('#heartGraph');
+            this.heartGraphGfx = this.heartGraphCanvas.getContext('2d');
         }
 
         /**
@@ -1320,7 +1393,7 @@ namespace Freakylay.Ui {
             if (!this.config.looks.showRanked.Value) {
                 return;
             }
-
+            // todo :: this does not seem to work anymore with DataPuller ???
             if (stars > 0) {
                 this.stars.display(true);
                 this.starsValue.innerText = stars.toFixed(1);
@@ -1490,6 +1563,116 @@ namespace Freakylay.Ui {
          */
         private onMaxScoreChange(maxScore: number): void {
             this.totalScore = maxScore;
+        }
+
+        /**
+         * calculates position and offset of it based on values
+         * @param anchor
+         * @param offsetX
+         * @param offsetY
+         * @private
+         */
+        private calculateHeartGraph(anchor: number, offsetX: number, offsetY: number): void {
+            let style = this.heartGraphHolder.style;
+            style.top = '';
+            style.left = '';
+            style.bottom = '';
+            style.right = '';
+            style.marginLeft = '';
+            style.marginTop = '';
+
+            switch (anchor) {
+                case 0: // top left
+                    style.left = '0px';
+                    style.top = '0px';
+                    style.marginLeft = offsetX + 'px';
+                    style.marginTop = offsetY + 'px';
+                    break;
+                case 1: // top right
+                    style.top = '0px';
+                    style.right = '0px';
+                    style.marginRight = offsetX + 'px';
+                    style.marginTop = offsetY + 'px';
+                    break;
+                case 2: // bottom left
+                    style.bottom = '0px';
+                    style.left = '0px';
+                    style.marginLeft = offsetX + 'px';
+                    style.marginBottom = offsetY + 'px';
+                    break;
+                case 3: // bottom right
+                    style.bottom = '0px';
+                    style.right = '0px';
+                    style.marginRight = offsetX + 'px';
+                    style.marginBottom = offsetY + 'px';
+                    break;
+                case 4: // center
+                    style.top = '50%';
+                    style.left = '50%';
+                    style.marginLeft = (-window.outerWidth / 2 + offsetX - this.config.heartRate.graph.width.Value / 2) + 'px';
+                    style.marginTop = (-window.outerHeight / 2 + offsetY - this.config.heartRate.graph.height.Value / 2) + 'px';
+                    break;
+            }
+        }
+
+        /**
+         * draws stored heart data to canvas if enabled
+         * also autodetect min and max bpm values to fill the entire canvas all the time
+         * @private
+         */
+        private drawHeartGraph(): void {
+            if (!this.config.heartRate.graph.enabled.Value) {
+                return;
+            }
+
+            let eventCount = this.config.heartRate.graph.eventsToShow.Value;
+
+            let data = this.heartGraphList.length > eventCount
+                ? this.heartGraphList.slice(-eventCount)
+                : this.heartGraphList;
+
+            let color = this.config.heartRate.graph.useBackground.Value
+                ? this.config.colors.text.Value.toCss()
+                : this.config.heartRate.graph.useBackgroundColorForStroke.Value
+                    ? this.config.colors.background.Value.toCss()
+                    : this.config.colors.text.Value.toCss();
+
+            let minBpm = Math.min(...data);
+            let realMaxBpm = Math.max(...data);
+            let maxBpm = this.heartRate.maxBpm.Value;
+            let canvasWidth = this.config.heartRate.graph.width.Value;
+            let canvasHeight = this.config.heartRate.graph.height.Value;
+            let lastY = 0;
+
+            this.heartGraphGfx.clearRect(0, 0, canvasWidth, canvasHeight);
+            this.heartGraphGfx.beginPath();
+
+            for (let x = 0; x < data.length; x++) {
+                let y = canvasHeight - data[x] / (maxBpm - minBpm) * canvasHeight;
+                if (x == 0) {
+                    this.heartGraphGfx.moveTo(0, y);
+                } else {
+                    this.heartGraphGfx.lineTo((x + 1) / data.length * canvasWidth, y);
+                }
+                lastY = y;
+            }
+            this.heartGraphGfx.strokeStyle = color;
+            this.heartGraphGfx.lineWidth = 2;
+            this.heartGraphGfx.stroke();
+
+            if (!this.config.heartRate.graph.displayNumbers.Value) {
+                return;
+            }
+
+            this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.smallFontSize.Value + 'px Montserrat';
+            this.heartGraphGfx.fillStyle = color;
+            this.heartGraphGfx.textAlign = 'left';
+            this.heartGraphGfx.fillText(minBpm.toString(), 10, canvasHeight - 10);
+            this.heartGraphGfx.fillText(realMaxBpm.toString(), 10, 20);
+            this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.bigFontSize.Value + 'px Montserrat';
+            this.heartGraphGfx.fillText(data[data.length - 1].toString(), 10, 6 + canvasHeight / 2);
+            this.heartGraphGfx.textAlign = 'right';
+            this.heartGraphGfx.fillText(data[data.length - 1].toString(), canvasWidth - 10, lastY + 6);
         }
     }
 }
