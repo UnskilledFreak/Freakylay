@@ -165,6 +165,9 @@ namespace Freakylay {
             this.config.heartRate.graph.useBackground.trigger();
             this.config.heartRate.graph.width.trigger();
             this.config.heartRate.graph.height.trigger();
+            this.config.heartRate.graph.useBackgroundColorForStroke.trigger();
+            this.config.heartRate.graph.smallFontSize.trigger();
+            this.config.heartRate.graph.bigFontSize.trigger();
 
             if (includeGameAndConnection) {
                 this.config.game.trigger();
