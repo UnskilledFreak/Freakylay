@@ -25,14 +25,15 @@ namespace Freakylay.Internal.Config {
         public hideSongInfo: EventProperty<boolean> = new EventProperty<boolean>();
         // if true, speed is displayed as +50% or -50%
         // if false then it's basically the percent of speed where 100% is normal, everything lower than 100% is slower and everything higher is faster
-        public speedDisplayRelative: EventProperty<boolean> = new EventProperty<boolean>();
-        public showRanked: EventProperty<boolean> = new EventProperty<boolean>();
-        public showStars: EventProperty<boolean> = new EventProperty<boolean>();
-        public useMapColorForBackgroundColor: EventProperty<number> = new EventProperty<number>();
-        public useMapColorForTextColor: EventProperty<number> = new EventProperty<number>();
-        public showAccuracyRank: EventProperty<boolean> = new EventProperty<boolean>();
-        public borderRadius: EventProperty<number> = new EventProperty<number>();
-        public animateScore: EventProperty<boolean> = new EventProperty<boolean>();
+        public speedDisplayRelative: EventProperty<boolean> = new EventProperty<boolean>(true);
+        public showRanked: EventProperty<boolean> = new EventProperty<boolean>(true);
+        public showStars: EventProperty<boolean> = new EventProperty<boolean>(true);
+        public useMapColorForBackgroundColor: EventProperty<number> = new EventProperty<number>(0);
+        public useMapColorForTextColor: EventProperty<number> = new EventProperty<number>(0);
+        public showAccuracyRank: EventProperty<boolean> = new EventProperty<boolean>(true);
+        public borderRadius: EventProperty<number> = new EventProperty<number>(10);
+        public animateScore: EventProperty<boolean> = new EventProperty<boolean>(true);
+        public margin: EventProperty<number> = new EventProperty<number>(5);
 
         /**
          * loads config data from an json object
@@ -64,6 +65,7 @@ namespace Freakylay.Internal.Config {
             this.showAccuracyRank.Value = data.isset('w', this.showAccuracyRank.Value);
             this.borderRadius.Value = data.isset('x', this.borderRadius.Value);
             this.animateScore.Value = data.isset('y', this.animateScore.Value);
+            this.margin.Value = data.isset('z', this.margin.Value).clamp(-5, 50);
         }
 
         /**
@@ -95,7 +97,8 @@ namespace Freakylay.Internal.Config {
                 v: this.useMapColorForTextColor.Value,
                 w: this.showAccuracyRank.Value,
                 x: this.borderRadius.Value,
-                y: this.animateScore.Value
+                y: this.animateScore.Value,
+                z: this.margin.Value
             };
         }
     }

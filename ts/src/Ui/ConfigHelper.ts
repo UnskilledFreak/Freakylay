@@ -360,6 +360,7 @@ namespace Freakylay.Ui {
                 this.booleanSettingLine('move song into to top', this.config.looks.songInfoOnTopSide),
                 this.booleanSettingLine('move counter section to top', this.config.looks.counterSectionOnTop),
                 this.booleanSettingLine('move modifiers to right side', this.config.looks.modifiersOnRightSide),
+                this.rangeSettingLine('margin', this.config.looks.margin, -5, 50, 1),
                 document.headline('Misc'),
                 this.dropDownSettingLine(
                     'compare score with last score',
@@ -420,7 +421,7 @@ namespace Freakylay.Ui {
                         break;
                     case 'Dummy':
                         if (!this.isDev) {
-                            //return;
+                            return;
                         }
                         name = value;
                         break;

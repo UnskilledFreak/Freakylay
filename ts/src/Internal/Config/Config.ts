@@ -125,16 +125,6 @@ namespace Freakylay.Internal.Config {
             if (!this.shouldOpenOptionPanelAfterLoad) {
                 this.shouldOpenOptionsAfterLoad = this.urlSearchParams.has('options');
             }
-
-            // defaults for new fields
-            this.looks.speedDisplayRelative.Value = true;
-            this.looks.showRanked.Value = true;
-            this.looks.showStars.Value = true;
-            this.looks.useMapColorForBackgroundColor.Value = 0;
-            this.looks.useMapColorForTextColor.Value = 0;
-            this.looks.showAccuracyRank.Value = true;
-            this.looks.borderRadius.Value = 10;
-            this.looks.animateScore.Value = true;
         }
 
         /**

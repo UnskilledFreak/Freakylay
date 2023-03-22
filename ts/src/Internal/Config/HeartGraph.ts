@@ -20,19 +20,19 @@ namespace Freakylay.Internal.Config {
         public static MaxFontSize = 72;
 
         public load(data: {}): void {
-            this.enabled.Value = data.isset('a', false);
-            this.anchor.Value = data.isset('b', 0).clamp(0, 4);
-            this.offsetX.Value = data.isset('c', 0).clamp(0, window.outerWidth);
-            this.offsetY.Value = data.isset('d', 0).clamp(0, window.outerHeight);
-            this.disableCircleBar.Value = data.isset('e', false);
-            this.eventsToShow.Value = data.isset('f', 120).clamp(Freakylay.Internal.Config.HeartGraph.MinTimespan, Freakylay.Internal.Config.HeartGraph.MaxTimespan);
-            this.displayNumbers.Value = data.isset('g', true);
-            this.useBackground.Value = data.isset('h', true);
-            this.width.Value = data.isset('i', 200).clamp(Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerWidth);
-            this.height.Value = data.isset('j', 80).clamp(Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight);
-            this.useBackgroundColorForStroke.Value = data.isset('k', false);
-            this.smallFontSize.Value = data.isset('l', 12);
-            this.bigFontSize.Value = data.isset('m', 20);
+            this.enabled.Value = data.isset('a', this.enabled.Value);
+            this.anchor.Value = data.isset('b', this.anchor.Value).clamp(0, 4);
+            this.offsetX.Value = data.isset('c', this.offsetX.Value).clamp(0, window.outerWidth);
+            this.offsetY.Value = data.isset('d', this.offsetY.Value).clamp(0, window.outerHeight);
+            this.disableCircleBar.Value = data.isset('e', this.disableCircleBar.Value);
+            this.eventsToShow.Value = data.isset('f', this.eventsToShow.Value).clamp(Freakylay.Internal.Config.HeartGraph.MinTimespan, Freakylay.Internal.Config.HeartGraph.MaxTimespan);
+            this.displayNumbers.Value = data.isset('g', this.displayNumbers.Value);
+            this.useBackground.Value = data.isset('h', this.useBackground.Value);
+            this.width.Value = data.isset('i', this.width.Value).clamp(Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerWidth);
+            this.height.Value = data.isset('j', this.height.Value).clamp(Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight);
+            this.useBackgroundColorForStroke.Value = data.isset('k', this.useBackgroundColorForStroke.Value);
+            this.smallFontSize.Value = data.isset('l', this.smallFontSize.Value);
+            this.bigFontSize.Value = data.isset('m', this.bigFontSize.Value);
         }
 
         public save(): {} {

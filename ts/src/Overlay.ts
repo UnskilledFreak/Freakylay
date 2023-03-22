@@ -150,6 +150,7 @@ namespace Freakylay {
             this.config.looks.useMapColorForTextColor.trigger();
             this.config.looks.showAccuracyRank.trigger();
             this.config.looks.borderRadius.trigger();
+            this.config.looks.margin.trigger();
 
             this.config.heartRate.type.trigger();
             this.config.heartRate.tokenOrUrl.trigger();

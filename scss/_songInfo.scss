@@ -15,8 +15,8 @@
 
   .textBottom {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: var(--margin);
+    right: var(--margin);
 
     #beatMapCover {
       background-color: var(--background);
@@ -85,7 +85,7 @@
 
     .textBottom {
       right: inherit;
-      left: 5px;
+      left: var(--margin);
       width: 50%;
 
       .previousBSRWrapper {
@@ -122,7 +122,7 @@
 
   &.top {
     .textBottom {
-      top: 5px;
+      top: var(--margin);
 
       #previousBSR[style*="display: block"] {
         ~ #beatMapCover {

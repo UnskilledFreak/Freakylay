@@ -3,7 +3,7 @@
   position: absolute;
   height: $counterSectionHeight;
   width: $counterSectionWidth;
-  bottom: 5px;
+  bottom: var(--margin);
   left: 50%;
   margin-left: calc(-#{$counterSectionWidth} / 2);
   transition: 1s all;
@@ -129,7 +129,7 @@
 
   &.flip {
     bottom: inherit;
-    top: 5px;
+    top: var(--margin);
 
     &.inactive {
       top: -150px;

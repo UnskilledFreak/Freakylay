@@ -9,7 +9,8 @@
   flex-wrap: nowrap;
   align-items: flex-end;
   justify-content: flex-start;
-  right: 5px;
+  right: var(--margin);
+  margin-right: var(--marginModifiers);
 
   &.inactive {
     right: -250px;
@@ -42,7 +43,9 @@
 
   &.flip {
     right: inherit;
-    left: 5px;
+    left: var(--margin);
+    margin-right: inherit;
+    margin-left: var(--marginModifiers);
     align-items: flex-start;
 
     &.inactive {
