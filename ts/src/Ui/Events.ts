@@ -1660,6 +1660,7 @@ namespace Freakylay.Ui {
             let canvasWidth = this.config.heartRate.graph.width.Value;
             let canvasHeight = this.config.heartRate.graph.height.Value;
             let lastY = 0;
+            let bigFontSizeHalf = this.config.heartRate.graph.smallFontSize.Value / 2;
 
             this.heartGraphGfx.clearRect(0, 0, canvasWidth, canvasHeight);
             this.heartGraphGfx.beginPath();
@@ -1687,9 +1688,9 @@ namespace Freakylay.Ui {
             this.heartGraphGfx.fillText(minBpm.toString(), 10, canvasHeight - 10);
             this.heartGraphGfx.fillText(realMaxBpm.toString(), 10, 20);
             this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.bigFontSize.Value + 'px Montserrat';
-            this.heartGraphGfx.fillText(data[data.length - 1].toString(), 10, 6 + canvasHeight / 2);
+            this.heartGraphGfx.fillText(data[data.length - 1].toString(), 10, bigFontSizeHalf + canvasHeight / 2);
             this.heartGraphGfx.textAlign = 'right';
-            this.heartGraphGfx.fillText(data[data.length - 1].toString(), canvasWidth - 10, lastY + 6);
+            this.heartGraphGfx.fillText(data[data.length - 1].toString(), canvasWidth - 10, lastY + bigFontSizeHalf);
         }
     }
 }
