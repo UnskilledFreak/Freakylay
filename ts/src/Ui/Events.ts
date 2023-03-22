@@ -396,7 +396,14 @@ namespace Freakylay.Ui {
 
             // Pulsoid event on data receive
             this.heartRate.bpm.register((bpm: number) => {
-                this.heartGraphList.push(bpm);
+                if (bpm <= 0) {
+                    let deathCheck = this.heartGraphList.length > 0
+                        ? this.heartGraphList[this.heartGraphList.length - 1]
+                        : -1;
+                    this.heartGraphList.push(deathCheck);
+                } else {
+                    this.heartGraphList.push(bpm);
+                }
                 while (this.heartGraphList.length > Freakylay.Internal.Config.HeartGraph.MaxTimespan) {
                     this.heartGraphList.shift();
                 }
@@ -1635,9 +1642,11 @@ namespace Freakylay.Ui {
 
             let eventCount = this.config.heartRate.graph.eventsToShow.Value;
 
-            let data = this.heartGraphList.length > eventCount
-                ? this.heartGraphList.slice(-eventCount)
-                : this.heartGraphList;
+            let data = (
+                this.heartGraphList.length > eventCount
+                    ? this.heartGraphList.slice(-eventCount)
+                    : this.heartGraphList
+            ).filter(x => x > 0);
 
             let color = this.config.heartRate.graph.useBackground.Value
                 ? this.config.colors.text.Value.toCss()
