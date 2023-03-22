@@ -321,13 +321,14 @@ namespace Freakylay.Ui {
             });
             this.config.looks.margin.register((newMargin) => {
                 this.setRootCss('margin', newMargin + 'px');
+
                 let modifierMargin = newMargin;
                 if (modifierMargin > 5) {
                     modifierMargin = 0
                 } else if (modifierMargin < 0) {
                     modifierMargin = -newMargin;
                 }
-                console.log(newMargin, modifierMargin)
+
                 this.setRootCss('marginModifiers', modifierMargin + 'px');
                 this.helper.generateUrlText();
             });
