@@ -1655,25 +1655,35 @@ namespace Freakylay.Ui {
                     : this.config.colors.text.Value.toCss();
 
             let minBpm = Math.min(...data);
-            let realMaxBpm = this.config.heartRate.useDynamicBpm.Value
+            let maxBpm = this.config.heartRate.useDynamicBpm.Value
                 ? Math.max(...data)
                 : this.heartRate.maxBpm.Value;
             let canvasWidth = this.config.heartRate.graph.width.Value;
             let canvasHeight = this.config.heartRate.graph.height.Value;
             let lastY = 0;
+            let lastBpm = 0;
             let bigFontSizeHalf = this.config.heartRate.graph.bigFontSize.Value / 2;
+            let boundary = 20;
+            let fakeHeightMargin = 10;
+
+            if (maxBpm - boundary < minBpm) {
+                maxBpm = minBpm + boundary;
+            }
+
+            let fakeHeight = canvasHeight - fakeHeightMargin;
 
             this.heartGraphGfx.clearRect(0, 0, canvasWidth, canvasHeight);
             this.heartGraphGfx.beginPath();
 
             for (let x = 0; x < data.length; x++) {
-                let y = canvasHeight - ((data[x] / (realMaxBpm - minBpm)) * canvasHeight);
+                let y = fakeHeight - (((data[x] - minBpm) / (maxBpm - minBpm)) * fakeHeight) + fakeHeightMargin / 2;
                 if (x == 0) {
                     this.heartGraphGfx.moveTo(0, y);
                 } else {
                     this.heartGraphGfx.lineTo((x + 1) / data.length * canvasWidth, y);
                 }
                 lastY = y;
+                lastBpm = data[x];
             }
             this.heartGraphGfx.strokeStyle = color;
             this.heartGraphGfx.lineWidth = 2;
@@ -1685,19 +1695,22 @@ namespace Freakylay.Ui {
 
             let xMargin = 10;
             this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.smallFontSize.Value + 'px Montserrat';
+            this.heartGraphGfx.textBaseline = 'top';
             this.heartGraphGfx.fillStyle = color;
             this.heartGraphGfx.textAlign = 'left';
-            this.heartGraphGfx.fillText(minBpm.toString(), xMargin, canvasHeight - this.config.heartRate.graph.smallFontSize.Value);
-            this.heartGraphGfx.fillText(realMaxBpm.toString(), xMargin, this.config.heartRate.graph.smallFontSize.Value + 5);
+            this.heartGraphGfx.fillText(maxBpm.toString(), xMargin, 5);
+            this.heartGraphGfx.textBaseline = 'bottom';
+            this.heartGraphGfx.fillText(minBpm.toString(), xMargin, canvasHeight - 5);
+            this.heartGraphGfx.textBaseline = 'middle'
             this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.bigFontSize.Value + 'px Montserrat';
-            this.heartGraphGfx.fillText(data[data.length - 1].toString(), xMargin, bigFontSizeHalf + canvasHeight / 2);
+            this.heartGraphGfx.fillText(lastBpm.toString(), xMargin, canvasHeight / 2);
             this.heartGraphGfx.textAlign = 'right';
-            if (lastY <= bigFontSizeHalf) {
-                lastY = bigFontSizeHalf;
-            } else if (lastY >= canvasHeight - bigFontSizeHalf) {
-                lastY = canvasHeight - bigFontSizeHalf;
+            if (lastY <= this.config.heartRate.graph.bigFontSize.Value) {
+                lastY = this.config.heartRate.graph.bigFontSize.Value;
+            } else if (lastY >= canvasHeight - this.config.heartRate.graph.bigFontSize.Value) {
+                lastY = canvasHeight - this.config.heartRate.graph.bigFontSize.Value;
             }
-            this.heartGraphGfx.fillText(data[data.length - 1].toString(), canvasWidth - xMargin, lastY + bigFontSizeHalf);
+            this.heartGraphGfx.fillText(lastBpm.toString(), canvasWidth - xMargin, lastY + bigFontSizeHalf / 2);
         }
     }
 }
