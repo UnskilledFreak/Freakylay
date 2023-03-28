@@ -55,10 +55,27 @@ namespace Freakylay.Internal.Config {
          */
         private getConfig<T>(key: string, defaultValue: T): T {
             if (!this.oldConfigWasUsed && key != 'w') {
-                this.oldConfigWasUsed = this.urlSearchParams.has(key)
+                this.oldConfigWasUsed = this.urlSearchParams.has(key);
             }
 
-            return  this.urlSearchParams.has(key) ? (this.urlSearchParams.get(key) as unknown) as T : defaultValue;
+            if (this.urlSearchParams.has(key)) {
+                switch (key) {
+                    default:
+                        return <T>true;
+                    case 'a':
+                    case 'b':
+                        return <T>Color.fromUrl(this.urlSearchParams.get(key));
+                    case 'l':
+                        return <T>1;
+                    case 'w':
+                        return <T>this.urlSearchParams.get(key);
+                }
+            } else {
+                if (key == 'b') {
+                    return <T>new Color(255, 255, 255, 1);
+                }
+                return defaultValue;
+            }
         }
 
         /**
