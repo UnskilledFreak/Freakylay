@@ -48,6 +48,7 @@
   button, input[type=submit], input[type=button] {
     @include button;
   }
+
   /*
   // todo :: I need to find a better style for them
   */
@@ -91,6 +92,10 @@
   div.settingsLine {
     > select {
       margin-right: 5px;
+    }
+
+    > input[type=range] {
+      width: 200px;
     }
   }
 

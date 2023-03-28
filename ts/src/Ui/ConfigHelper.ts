@@ -307,23 +307,23 @@ namespace Freakylay.Ui {
                 info,
                 document.headline('Looks'),
                 this.booleanSettingLine('display short modifier names', this.config.looks.shortModifierNames),
-                this.booleanSettingLine('show previous map key', this.config.looks.showPreviousKey),
+                this.booleanSettingLine('show previous map key (DataPuller)', this.config.looks.showPreviousKey),
                 this.booleanSettingLine('show miss/bad hit counter', this.config.looks.showMissCounter),
                 this.booleanSettingLine('show BPM', this.config.looks.showBpm),
                 this.booleanSettingLine('show block speed', this.config.looks.showBlockSpeed),
                 this.booleanSettingLine('show combo', this.config.looks.showCombo),
                 this.booleanSettingLine('hide full combo info', this.config.looks.hideFullComboModifier),
-                this.booleanSettingLine('hide default difficulty if difficulty has custom name', this.config.looks.hideDefaultDifficultyOnCustomDifficulty),
+                this.booleanSettingLine('hide default difficulty if difficulty has custom name (DataPuller)', this.config.looks.hideDefaultDifficultyOnCustomDifficulty),
                 this.booleanSettingLine('hide complete modifier section', this.config.looks.hideAllModifiers),
                 this.booleanSettingLine('hide complete counter section', this.config.looks.hideCounterSection),
                 this.booleanSettingLine('hide complete song info section', this.config.looks.hideSongInfo),
                 this.booleanSettingLine('time circle matches other circles', this.config.looks.timeCircleLikeOtherCircles),
-                this.booleanSettingLine('show if map is ranked', this.config.looks.showRanked),
-                this.booleanSettingLine('show ranked star/difficulty info', this.config.looks.showStars),
-                this.booleanSettingLine('show rank behind the accuracy circle', this.config.looks.showAccuracyRank),
+                this.booleanSettingLine('show if map is ranked (DataPuller)', this.config.looks.showRanked),
+                this.booleanSettingLine('show ranked star/difficulty info (DataPuller)', this.config.looks.showStars),
+                this.booleanSettingLine('show rank behind the accuracy circle (DataPuller)', this.config.looks.showAccuracyRank),
                 this.rangeSettingLine('border radius', this.config.looks.borderRadius, 0, 20, 1),
                 this.dropDownSettingLine(
-                    'override background color with map color',
+                    'override background color with map color (HttpSiraStatus)',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForBackgroundColor.Value == 0),
                         this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
@@ -339,7 +339,7 @@ namespace Freakylay.Ui {
                     }
                 ),
                 this.dropDownSettingLine(
-                    'override text color with map color',
+                    'override text color with map color (HttpSiraStatus)',
                     [
                         this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
                         this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForTextColor.Value == 1),
@@ -363,7 +363,7 @@ namespace Freakylay.Ui {
                 this.rangeSettingLine('margin', this.config.looks.margin, -5, 50, 1),
                 document.headline('Misc'),
                 this.dropDownSettingLine(
-                    'compare score with last score',
+                    'compare score with last score (DataPuller)',
                     [
                         this.createOptionForSelect(0, 'do not compare', this.config.looks.compareWithPreviousScore.Value == 0),
                         this.createOptionForSelect(1, 'legacy - Freakylay 2 Arrow', this.config.looks.compareWithPreviousScore.Value == 1),
