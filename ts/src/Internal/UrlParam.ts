@@ -1,8 +1,11 @@
 /// <reference path="../Data/Color.ts">
 
 namespace Freakylay.Internal {
-    import Color = Freakylay.Data.Color;
+    import Color = Freakylay.Internal.Color;
 
+    /**
+     * @deprecated
+     */
     export class UrlParam<T> {
 
         private default: T;

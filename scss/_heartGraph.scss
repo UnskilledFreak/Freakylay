@@ -1,0 +1,8 @@
+#heartGraphHolder {
+  position: absolute;
+
+  &.background {
+    border-radius: var(--radius);
+    background-color: var(--background);
+  }
+}

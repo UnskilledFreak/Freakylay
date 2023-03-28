@@ -1,0 +1,58 @@
+.marqueeBody {
+  $marqueeWidth: 400px;
+  max-width: $marqueeWidth !important;
+  overflow: hidden;
+  padding-right: 5px;
+
+  /*
+  // todo :: transparent gradient edges
+  // neat idea but background blends into itself due to alpha usage...
+  &:after {
+    content: ' ';
+    position: absolute;
+    height: 30px;
+    margin-top: 30px;
+    width: $marqueeWidth;
+    margin-left: calc(-#{$marqueeWidth - 10px});
+    background: linear-gradient(90deg, var(--background) 0%, transparent 3%, transparent 97%, var(--background) 100%);
+    border-radius: var(--radius);
+  }
+
+  &#mapName:after {
+    height: 40px;
+    margin-top: -40px;
+  }
+  */
+
+  > .marquee {
+    width: max-content;
+    white-space: pre;
+
+    &.start {
+      animation: marquee 15s linear infinite;
+    }
+  }
+}
+
+@keyframes marquee {
+  0% {
+    color: var(--text);
+    transform: translateX(0%);
+  }
+  10% {
+    color: var(--text);
+    transform: translateX(0%);
+  }
+  90% {
+    color: var(--text);
+    transform: translateX(-100%);
+  }
+  90.00001% {
+    color: var(--background);
+    transform: translateX(100%);
+  }
+  100% {
+    color: var(--text);
+    transform: translateX(0%);
+  }
+}

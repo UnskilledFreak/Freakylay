@@ -4,13 +4,15 @@
     <title>Freakylay</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
 
     <meta property="og:site_name" content="Freakylay">
-    <meta property="og:title" content="Freakylay - An alternative DataPuller Overlay">
+    <meta property="og:title" content="Freakylay - stream overlay for multiple games">
+    <meta property="title" content="Freakylay - stream overlay for multiple games">
     <meta property="og:description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
+    <meta property="description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
     <meta property="og:image" content="http://u.unskilledfreak.zone/overlay/freakylay/beta/img/Freakylay.png">
 
     <link rel="stylesheet" type="text/css" href="css/freakylay.css">
@@ -18,84 +20,186 @@
 
     <link rel="icon" href="img/favicon.png">
 
-    <script src="Freakylay.min.js"></script>
+    <script src="freakylay.js"></script>
 </head>
 <body>
 <div id="songInfo">
     <div class="textBottom">
-        <div class="previousBSRWrapper">
-            <div id="previousBSRTop" class="line backGroundColor borderRadiusTopLeft borderRadiusTopRight">PREVIOUS BSR</div>
+        <div class="previousBSRWrapper" id="previousBSR">
+            <div class="line">PREVIOUS BSR</div>
         </div>
-        <div id="beatMapCover" class="backGroundColor borderRadiusBottomRight borderRadiusBottomLeft borderRadiusTopRight borderRadiusTopLeft">
-            <div id="cover" class="borderRadiusTopLeft borderRadiusBottomLeft borderRadiusBottomRight borderRadiusTopRight borderRadiusTopLeft"></div>
+        <div id="beatMapCover">
+            <div id="cover"></div>
         </div>
         <div id="infoText">
-            <div id="bsr" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">BSR</div>
-            <div id="mapper" class="line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">MAPPER</div>
-            <div id="difficulty" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
+            <div id="bsr" class="line borderRadius">BSR</div>
+            <div id="mapper" class="line borderRadius">MAPPER</div>
+            <div id="difficulty" class="marqueeBody line">
                 <div class="marquee" id="marqueeDifficulty">DIFFICULTY</div>
             </div>
-            <div id="artist" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
+            <div id="artist" class="marqueeBody line">
                 <div class="marquee" id="marqueeSongArtist">ARTIST</div>
             </div>
-            <div id="mapName" class="marqueeBody line backGroundColor borderRadiusTopLeft borderRadiusBottomLeft borderRadiusTopRight borderRadiusBottomRight">
-                <div class="marquee" id="marqueeSongName">SONGNAME</div>
+            <div id="mapName" class="marqueeBody line">
+                <div class="marquee" id="marqueeSongName">SONGNAME SONGNAME SONGNAME SONGNAME SONGNAME SONGNAME</div>
             </div>
         </div>
         <div class="clear"></div>
-        <div class="previousBSRWrapper">
-            <div id="previousBSRBottom" class="line backGroundColor borderRadiusBottomLeft borderRadiusBottomRight">PREVIOUS BSR</div>
-        </div>
     </div>
 </div>
 
-<div id="counterSection" class="borderRadiusTopLeft borderRadiusTopRight borderRadiusBottomRight borderRadiusBottomLeft backGroundColor">
+<div id="counterSection">
+    <div class="ears" id="fullCombo">
+        <div>Full Combo</div>
+    </div>
+    <div class="ears" id="ranked">
+        <div>Ranked</div>
+    </div>
+    <div class="ears" id="stars">
+        <div><span>Stars&nbsp;</span><span>0.0</span></div>
+    </div>
     <div class="holders rightText">
         <div class="line">
-            <div id="combo">COMBO</div>
-            <div id="miss">MISS</div>
+            <div id="combo">
+                <span>Combo</span>
+                <span>0</span>
+            </div>
+            <div id="miss">
+                <span>Miss</span>
+                <span>0</span>
+            </div>
         </div>
         <div class="line" id="score">SCORE</div>
         <div class="line">
-            <div id="njs">NJS</div>
-            <div id="bpm">BPM</div>
+            <div id="njs">
+                <span>NJS</span>
+                <span>0</span>
+            </div>
+            <div id="bpm">
+                <span>BPM</span>
+                <span>0</span></div>
         </div>
     </div>
     <div class="barHolder" id="timerHolder"></div>
     <div class="barHolder" id="healthHolder"></div>
-    <div class="barHolder" id="accuracyHolder"></div>
-    <div class="barHolder" id="pulsoidHolder"></div>
+    <div class="barHolder" id="accuracyHolder">
+        <div id="rank">C</div>
+    </div>
+    <div class="barHolder" id="heartRateHolder"></div>
 </div>
 
-<div id="modifiers"></div>
+<div id="modifiers">
+    <div id="practiceMode"></div>
+    <div id="practiceModeSongSpeed"></div>
+    <div id="practiceModeTimeOffset"></div>
+    <div id="practiceModeSpacer"></div>
+    <div id="noFailOn0Energy"></div>
+    <div id="oneLife"></div>
+    <div id="fourLives"></div>
+    <div id="noBombs"></div>
+    <div id="noWalls"></div>
+    <div id="noArrows"></div>
+    <div id="ghostNotes"></div>
+    <div id="disappearingArrows"></div>
+    <div id="smallNotes"></div>
+    <div id="proMode"></div>
+    <div id="strictAngles"></div>
+    <div id="zenMode"></div>
+    <div id="slowerSong"></div>
+    <div id="fasterSong"></div>
+    <div id="superFastSong"></div>
+</div>
 
-<div id="options" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight">
-    <div class="text">
-        <label for="ip">IP:</label>
-        <input id="ip" type="text">
-        <input type="button" id="changeIp" value="apply">
+<div id="options">
+    <div class="tabManager">
+        <div class="tabs">
+            <div class="tab" data-tab-name="splash">Welcome</div>
+            <div class="tab" data-tab-name="connection">Game &amp; Connection</div>
+            <div class="tab" data-tab-name="colors">Colors</div>
+            <div class="tab" data-tab-name="settings">Settings</div>
+            <div class="tab" data-tab-name="heartRate">Heart Rate</div>
+        </div>
+        <div class="tabContents">
+            <div class="tabContent" data-tab-content="splash">
+                <h2>Welcome to <span id="welcomeVersion"></span>!</h2>
+                <p>Please use 'Game & Connection' tab first to choose the correct game and mod you are using.</p>
+                <p>Version 3 was completely overhauled under its hood with focus of supporting multiple games and mods while still containing a bunch of useful features for content creators.</p>
+                <p>If you have any suggestions, issues or need help, let me know at <a href="https://github.com/UnskilledFreak/Freakylay/issues">Github issues</a>. Please provide as many infos as you can like what game and connection was in use and what went wrong.</p>
+                <p>Thanks! UnskilledFreak</p>
+            </div>
+            <div class="tabContent" data-tab-content="connection">
+                <div class="settingsLine">
+                    <span>Status:</span>
+                    <span id="gameLinkStatus"></span>
+                </div>
+                <div class="settingsLine">
+                    <sub>If this stays at 'Connecting...' for more than 20 seconds that means that something went wrong. Check the settings if any and make sure your game is running and mods are working.</sub>
+                </div>
+                <div class="settingsLine">
+                    <label for="gameList">Select game:</label>
+                    <select id="gameList">
+                        <option value="None">choose</option>
+                    </select>
+                </div>
+                <div class="settingsLine">
+                    <label for="connectionList">Connection:</label>
+                    <select id="connectionList">
+                        <option value="None">choose</option>
+                    </select>
+                </div>
+                <div id="gameConnectionSetting"></div>
+                <button id="connectToGame">Connect!</button>
+            </div>
+            <div class="tabContent" data-tab-content="colors">
+                <h1>Color management</h1>
+                <div id="bgColor"></div>
+                <div id="color"></div>
+            </div>
+            <div class="tabContent" data-tab-content="settings">
+            </div>
+            <div class="tabContent" data-tab-content="heartRate">
+                <h1>Connection type</h1>
+                <div>Connection state: <span id="heartRateConnectionState"></span><input type="button" id="heartRateFeedButton" value="Apply"></div>
+                <div>
+                    <label for="heartRateFeedType">Feed type:</label>
+                    <select id="heartRateFeedType">
+                    </select>
+                </div>
+                <div>
+                    <label for="heartRateFeed" id="heartRateFeedUrlText"></label>
+                    <input id="heartRateFeed" class="long" type="text">
+                </div>
+                <div id="heartRateHintJson">See config for 'Feed reference' at <a target="_blank" href="https://pulsoid.net/ui/configuration">Pulsoid Configuration</a>.<br><br>WARNING! This feed type is deprecated and will be removed in future releases of Freakylay or by Pulsoid team. It may not function at any moment.</div>
+                <div id="heartRateHintToken">Get or refresh Token <button id="heartRateAuthLink">here</button>.<br>Paste generated token into the input field above.</div>
+                <div id="heartRateHintSession">Paste your Session-ID given by the app.</div>
+                <div id="pulsoidThanks">Special thanks to the Pulsoid team for making this possible!</div>
+                <div id="hypeRateThanks">Special thanks to the HypeRate team for making this possible!</div>
+                <h2>Settings</h2>
+                <div id="heartRateSettingList"></div>
+            </div>
+        </div>
     </div>
-    <div class="text">
-        <label for="pulsoidFeed">Pulsoid Feed (JSON):</label>
-        <input id="pulsoidFeed" type="text">
-        <input type="button" id="pulsoidFeedButton" value="apply">
-        <br><div id="pulsoidHint">See config for 'Feed reference' at <a target="_blank" href="https://pulsoid.net/ui/configuration">https://pulsoid.net/ui/configuration</a></div>
-    </div>
     <hr>
-    <div id="bgColor"></div>
-    <div id="color"></div>
-    <hr>
-    <div id="optionsLines"></div>
-    <hr>
-    <div>
-        <label for="urlText">URL to use (click to copy to clipboard):</label><br>
+    <div class="urlText">
+        <label for="urlText">URL to use:</label><br>
         <textarea readonly="readonly" id="urlText"></textarea>
     </div>
+    <span id="huh">Who needs a fancy settings panel when it's not visible for 99.9% of usage time?</span>
+    <div id="copyright">Freakylay</div>
 </div>
 
-<div id="tutorial" class="backGroundColor borderRadiusBottomLeft borderRadiusTopLeft borderRadiusBottomRight borderRadiusTopRight"></div>
+<div id="versionHint" class="inactive">
+    <h2>Welcome & sorry to bother!</h2>
+    <p>You are using an old config for Freakylay.<br>This is the new version <span id="versionHintVersion"></span>!</p>
+    <p>While the new version is compatible with the old one's config, you have to change the game and connection in the options panel.</p>
+    <p>Please use the button bellow to open the option panel and make additional changes!</p>
+    <p><button id="versionHintOptions">Open Options</button></p>
+</div>
 
-<!-- ♥ made with love ♥-->
+<div id="versionWarning">Freakylay</div>
+
+<div id="heartGraphHolder"><canvas id="heartGraph"></canvas></div>
+<!--   ♥ made with ♥   -->
 <!-- by UnskilledFreak -->
 </body>
 </html>

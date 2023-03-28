@@ -1,0 +1,92 @@
+@import "variables";
+
+@mixin lineDefinition {
+  padding: 0 10px;
+  line-height: 30px;
+  width: fit-content;
+  margin-left: auto;
+  font-size: 18px;
+  max-width: 520px;
+}
+
+@mixin button {
+  padding: 4px;
+  margin: 4px;
+  background-color: var(--background);
+  border: 1px solid var(--text);
+  cursor: pointer;
+  color: var(--text);
+  border-radius: var(--radius);
+
+  &:hover {
+    background-color: var(--text);
+    color: var(--background);
+    border: 1px solid var(--background);
+  }
+}
+
+:root {
+  --background: rgba(255, 133, 255, 0.7);
+  --text: #ffffff;
+  --radius: 10px;
+  --margin: 5px;
+  --marginModifiers: 0px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.clear {
+  clear: both;
+}
+
+.rightText {
+  text-align: right;
+}
+
+@import "generics";
+@import "songInfo";
+@import "modifiers";
+@import "marquee";
+@import "counterSection";
+@import "heartGraph";
+@import "tabManager";
+@import "options";
+
+@media screen and (max-width: 1280px) {
+  body {
+    zoom: 75%;
+  }
+  #songInfo.top #bsr {
+    line-height: 23px;
+  }
+  #counterSection {
+    &:not(.flip) {
+      .ears {
+        margin-top: -30px;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 1281px) and (max-width: 1440px) {
+  body {
+    zoom: 90%;
+  }
+  #songInfo.top #bsr {
+    line-height: 23px;
+  }
+}
+
+@media screen and (min-width: 1921px) and (max-width: 2560px) {
+  body {
+    zoom: 110%;
+  }
+}
+
+@media screen and (min-width: 2561px) and (max-width: 2160px) {
+  body {
+    zoom: 125%;
+  }
+}

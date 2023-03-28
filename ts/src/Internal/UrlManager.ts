@@ -1,8 +1,9 @@
-/// <reference path="../Data/Color.ts" />
-
 namespace Freakylay.Internal {
-    import Color = Freakylay.Data.Color;
+    import Color = Freakylay.Internal.Color;
 
+    /**
+     * @deprecated
+     */
     export class UrlManager {
 
         public urlParams: URLSearchParams;
@@ -20,7 +21,7 @@ namespace Freakylay.Internal {
         public registerOptionParam<T>(key: string, defaultValue: T): UrlParam<T> {
             let compareFn = null;
             if (defaultValue instanceof Color) {
-                compareFn = Helper.areColorsEqual;
+                compareFn = defaultValue.equalTo;
             }
             let param = new UrlParam(this, key, defaultValue, compareFn);
             this.registeredParameters.push(param);
