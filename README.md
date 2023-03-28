@@ -5,8 +5,8 @@ A multi game overlay to display stats for streamers or other creators. It is foc
 **Double click somewhere on the page to open the options panel.**  
 I added that here too because most people will not read everything in this ReadMe.
 
-The old Info:  
-I kept it because of nostalgia and to have all of its versions listed, so basically the following info is still true for Freakylay Versions less than 3:  
+I kept the old info because of nostalgia and to have all of its versions listed, so basically the following info is still true for Freakylay Versions less than 3:
+#### The old Info:
 An alternative and customizable overlay for [DataPuller Mod](https://github.com/kOFReadie/DataPuller) which lets you choose your own style.  
 It's based on the [original overlay by kOF.Readie](https://github.com/kOFReadie/BSDP-Overlay) with some tweaks and a completely new way of displaying scores, combo, player health, accuracy and much more!  
 I am planning to implement HTTPStatus as well so the overlay would work with both mods :)
@@ -38,7 +38,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - it hides itself when in menus
 - flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
-- Pulsoid & HypeRate heart rate fully integrated to match style
+- Pulsoid & HypeRate heart rate fully integrated to match style including a graph if you want that
 - completely event-driven
 
 ## Games
@@ -173,13 +173,21 @@ Special thanks and much love to everyone who helped me on developing and testing
 ## Changelog
 - 3.0.0
   - completely rewritten but kept all features of version 2.2.3
+  - added support for Http(Sira)Status 9.0.1+
+  - added support for DataPuller 2.1.0
   - added BSR Key sync for Http(Sira)Status from Beat Saver
-  - added Http(Sira)Status 9.0.1+
-  - added DataPuller 2.1.0
   - added generic multi game support
   - added generic connection types (Websocket / HTTP(s))
   - added Pulsoid Token API (Heart rate)
   - added HypeRate API (Heart rate)
+  - added fully customizable heart rate graph
+  - added color sync with HttpSiraStatus 9.0.1+
+  - added rank info for DataPuller 2.0.12+
+  - added disable option for heart circle bar
+  - added margin setting for all elements
+  - added toggleable animation on score increase
+  - added more score compare options (DataPuller 2.0.12+ only) 
+  - added random color generator
   - changed configuration storage and handling, still compatible with version 2.2.3 and bellow
   - tons of fixes and improvements
 - 2.2.3
