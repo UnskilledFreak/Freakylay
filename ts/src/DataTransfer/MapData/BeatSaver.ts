@@ -1,6 +1,10 @@
 namespace Freakylay.DataTransfer.MapData {
     export class BeatSaver {
         public requestKeyFromMapHash(hash: string, callback: (string) => void): void {
+            if (hash == null || hash == '') {
+                callback('');
+                return;
+            }
             let request = new XMLHttpRequest();
             request.open('GET', 'https://api.beatsaver.com/maps/hash/' + hash, true);
             request.setRequestHeader('Accept', 'application/json');

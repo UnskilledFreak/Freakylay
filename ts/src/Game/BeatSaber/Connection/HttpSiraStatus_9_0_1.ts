@@ -247,10 +247,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
             this.onSongInfoCoverImageChange.Value = cover;
             let songHash = data.isset('songHash', '');
-            if (songHash != '') {
-                this.requestMapData(songHash);
-            }
-            // no songHash
+            this.requestMapData(songHash);
+
             this.onSongInfoSongNameChange.Value = data.isset('songName', '???');
             this.songSubName = data.isset('songSubName', '');
             // no songTimeOffset
@@ -493,7 +491,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         /**
          * test this connection
          */
-        public test(): void {
+        public test(useInvalidSongHash: boolean = false): void {
             this.handleData({
                 'status': {
                     'mod': {
@@ -555,7 +553,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                             'saberB': [255, 149, 255]
                         },
                         'obstaclesCount': 33,
-                        'songHash': '6B9F13A8FDF111DA8FAA849A3615E2BCDCB4954A',
+                        'songHash': useInvalidSongHash ? '' : '6B9F13A8FDF111DA8FAA849A3615E2BCDCB4954A',
                         'difficultyEnum': 'ExpertPlus'
                     },
                     'performance': {
@@ -596,6 +594,13 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 'time': 1671137353557,
                 'event': 'songStart'
             });
+        }
+
+        /**
+         * tests specific bug when a map without key is played after a map which had one
+         */
+        public testNoKeyAfterKeyMap(): void {
+            this.test(true);
         }
     }
 }

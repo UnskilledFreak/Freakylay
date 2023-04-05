@@ -57,6 +57,12 @@ namespace Freakylay.Ui {
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.test();
+                    }),
+                    document.button('HSS_9_0_1_noKeyAfterKeyMap', () => {
+                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config);
+                        c.loadConfig(config.connectionSetting);
+                        events.registerConnection(c);
+                        c.testNoKeyAfterKeyMap();
                     })
                 );
             }
