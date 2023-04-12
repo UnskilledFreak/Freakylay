@@ -99,9 +99,6 @@ namespace Freakylay.Ui {
         private heartGraphCanvas: HTMLCanvasElement;
         private heartGraphGfx: CanvasRenderingContext2D;
 
-        // elements array
-        private readonly toggleElements: HTMLDivElement[];
-
         private showElements: EventProperty<boolean>;
 
         // value holders...
@@ -167,12 +164,6 @@ namespace Freakylay.Ui {
                 this.practiceModifiers
             ];
 
-            this.toggleElements = [
-                this.counterSection,
-                this.modifiers,
-                this.songInfo
-            ];
-
             this.heartGraphList = [];
 
             // internal
@@ -182,14 +173,37 @@ namespace Freakylay.Ui {
                     ar.forEach((element: HTMLDivElement) => {
                         this.displayModifier(element, true);
                     });
-                })
-                this.toggleElements.forEach((element: HTMLDivElement) => {
-                    if (show) {
-                        element.removeClass(className);
-                    } else {
-                        element.addClass(className);
-                    }
                 });
+
+                if (this.config.looks.hideCounterSection.Value) {
+                    this.counterSection.addClass(className);
+                } else {
+                    if (show) {
+                        this.counterSection.removeClass(className);
+                    } else {
+                        this.counterSection.addClass(className);
+                    }
+                }
+
+                if (this.config.looks.hideAllModifiers.Value) {
+                    this.modifiers.addClass(className);
+                } else {
+                    if (show) {
+                        this.modifiers.removeClass(className);
+                    } else {
+                        this.modifiers.addClass(className);
+                    }
+                }
+
+                if (this.config.looks.hideSongInfo.Value) {
+                    this.songInfo.addClass(className);
+                } else {
+                    if (show) {
+                        this.songInfo.removeClass(className);
+                    } else {
+                        this.songInfo.addClass(className);
+                    }
+                }
             });
 
             // option panel

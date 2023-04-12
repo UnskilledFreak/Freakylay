@@ -69,9 +69,9 @@ namespace Freakylay.Ui {
 
             document.getDiv('copyright').innerText = this.fullVersionString;
             document.getId<HTMLSpanElement>('welcomeVersion').innerText = this.fullVersionString;
-            document.getDiv('songInfo').ondblclick = () => {
+            document.body.ondblclick = () => {
                 this.toggleOptionPanel();
-            }
+            };
 
             let alphaWarning = document.getDiv('versionWarning');
             if (Overlay.Branch.toLowerCase() != 'release') {
