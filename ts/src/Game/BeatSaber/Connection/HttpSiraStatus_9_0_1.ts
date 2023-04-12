@@ -143,7 +143,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             switch (event) {
                 case 'hello':
                     this.reset();
-
+                    this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
                     this.parseBeatMapData(beatMap, time);
                     this.parseModifiers(modifier);
                     this.parsePerformance(performance);
