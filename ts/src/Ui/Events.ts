@@ -111,6 +111,7 @@ namespace Freakylay.Ui {
         private currentScore: number;
         private currentAnimScore: number;
         private scoreAnimateInterval: number;
+        private heartGraphInterval: number;
 
         // heart rate graph data array
         private readonly heartGraphList: number[];
@@ -410,19 +411,6 @@ namespace Freakylay.Ui {
 
             // Pulsoid event on data receive
             this.heartRate.bpm.register((bpm: number) => {
-                if (bpm <= 0) {
-                    let deathCheck = this.heartGraphList.length > 0
-                        ? this.heartGraphList[this.heartGraphList.length - 1]
-                        : -1;
-                    this.heartGraphList.push(deathCheck);
-                } else {
-                    this.heartGraphList.push(bpm);
-                }
-                while (this.heartGraphList.length > Freakylay.Internal.Config.HeartGraph.MaxTimespan) {
-                    this.heartGraphList.shift();
-                }
-                this.drawHeartGraph();
-
                 let enabled = bpm > 0 && !this.config.heartRate.graph.disableCircleBar.Value;
                 this.heartRateElement.display(enabled);
                 this.counterSection.toggleClassByValue(enabled, 'heartRate');
@@ -433,6 +421,11 @@ namespace Freakylay.Ui {
                 this.heartRateCircleBar.setProgress(bpm, this.heartRate.maxBpm.Value);
                 this.heartRateCircleBar.setText('Heart<br>' + bpm);
             });
+
+            // start heart graph interval (even if it is disabled)
+            this.heartGraphInterval = window.setInterval(() => {
+                this.drawHeartGraph();
+            }, 1000);
 
             // start all marquees for auto-animation
             this.startAllMarquees();
@@ -1652,6 +1645,20 @@ namespace Freakylay.Ui {
         private drawHeartGraph(): void {
             if (!this.config.heartRate.graph.enabled.Value) {
                 return;
+            }
+
+            let bpm = this.heartRate.bpm.Value;
+            if (bpm <= 0) {
+                let deathCheck = this.heartGraphList.length > 0
+                    ? this.heartGraphList[this.heartGraphList.length - 1]
+                    : -1;
+                this.heartGraphList.push(deathCheck);
+            } else {
+                this.heartGraphList.push(bpm);
+            }
+
+            while (this.heartGraphList.length > Freakylay.Internal.Config.HeartGraph.MaxTimespan) {
+                this.heartGraphList.shift();
             }
 
             let eventCount = this.config.heartRate.graph.eventsToShow.Value;
