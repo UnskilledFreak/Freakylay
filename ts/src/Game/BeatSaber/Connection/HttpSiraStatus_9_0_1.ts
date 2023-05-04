@@ -11,7 +11,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private songSubName: string;
         private nullColor: Color;
         private timeTimeout: number;
-        private beatSaver: BeatSaver;
+        private beatSaver: BeatSaver
+        private lastCombo: number;
 
         constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
             super(gameLinkStatus, config);
@@ -150,6 +151,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                     break;
                 case 'songStart':
                     this.onLevelChange.Value = true;
+                    this.lastCombo = 0;
                     this.parseBeatMapData(beatMap, time);
                     this.parseModifiers(modifier);
                     this.parsePerformance(performance);
@@ -205,6 +207,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onLevelFailedChange.Value = false;
             this.onLevelQuitChange.Value = false;
             this.onLevelPausedChange.Value = false;
+            this.onFullComboChange.Value = true;
+            this.lastCombo = 0;
 
             this.clearInternalTimeTimeout();
         }
@@ -351,7 +355,12 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // score -> rawScore
             this.onScoreChange.Value = data.isset('rawScore', 0);
             // no softFailed
-            this.onFullComboChange.Value = this.onMissChange.Value == 0;
+            if (this.onComboChange.Value < this.lastCombo) {
+                this.onFullComboChange.Value = false;
+            } else {
+                this.onFullComboChange.Value = this.onFullComboChange.Value && this.onMissChange.Value == 0;
+            }
+            this.lastCombo = this.onComboChange.Value;
         }
 
         /**
