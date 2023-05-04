@@ -1669,6 +1669,10 @@ namespace Freakylay.Ui {
                     : this.heartGraphList
             ).filter(x => x > 0);
 
+            if (data.length == 0) {
+                data = [0];
+            }
+
             let color = this.config.heartRate.graph.useBackground.Value
                 ? this.config.colors.text.Value.toCss()
                 : this.config.heartRate.graph.useBackgroundColorForStroke.Value
@@ -1714,7 +1718,9 @@ namespace Freakylay.Ui {
                 return;
             }
 
+            let lastBpmString = lastBpm > 0 ? lastBpm.toString() : '?';
             let xMargin = 10;
+
             this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.smallFontSize.Value + 'px Montserrat';
             this.heartGraphGfx.textBaseline = 'top';
             this.heartGraphGfx.fillStyle = color;
@@ -1724,14 +1730,16 @@ namespace Freakylay.Ui {
             this.heartGraphGfx.fillText(minBpm.toString(), xMargin, canvasHeight - 5);
             this.heartGraphGfx.textBaseline = 'middle'
             this.heartGraphGfx.font = 'bold ' + this.config.heartRate.graph.bigFontSize.Value + 'px Montserrat';
-            this.heartGraphGfx.fillText(lastBpm.toString(), xMargin, canvasHeight / 2);
+            this.heartGraphGfx.fillText(lastBpmString, xMargin, canvasHeight / 2);
             this.heartGraphGfx.textAlign = 'right';
+
             if (lastY <= this.config.heartRate.graph.bigFontSize.Value) {
                 lastY = this.config.heartRate.graph.bigFontSize.Value;
             } else if (lastY >= canvasHeight - this.config.heartRate.graph.bigFontSize.Value) {
                 lastY = canvasHeight - this.config.heartRate.graph.bigFontSize.Value;
             }
-            this.heartGraphGfx.fillText(lastBpm.toString(), canvasWidth - xMargin, lastY + bigFontSizeHalf / 2);
+
+            this.heartGraphGfx.fillText(lastBpmString, canvasWidth - xMargin, lastY + bigFontSizeHalf / 2);
         }
     }
 }
