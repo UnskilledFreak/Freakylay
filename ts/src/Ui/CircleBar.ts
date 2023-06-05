@@ -10,6 +10,7 @@ namespace Freakylay.Ui {
         private readonly circumference: number;
         private readonly text: HTMLDivElement;
         private readonly bar: SVGCircleElement;
+        private currentValue: any;
 
         /**
          * constructor with basic settings
@@ -62,7 +63,8 @@ namespace Freakylay.Ui {
 
             if (typeof this.callback === 'function') {
                 // multiply first by 10k avoids rounding issues in string
-                this.setText(this.callback((Math.round(progress * 10000) / 100).toFixed(fractionDigits)));
+                this.currentValue = (Math.round(progress * 10000) / 100).toFixed(fractionDigits);
+                this.setText(this.callback(this.currentValue));
             }
         }
 
@@ -97,6 +99,16 @@ namespace Freakylay.Ui {
             c.r.baseVal.value = radius;
 
             return c;
+        }
+
+        /**
+         * refresh the circle bar to apply changes
+         * @private
+         */
+        public refresh(): void {
+            if (typeof this.callback === 'function') {
+                this.setText(this.callback(this.currentValue));
+            }
         }
     }
 }

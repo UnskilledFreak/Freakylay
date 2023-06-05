@@ -412,6 +412,7 @@ namespace Freakylay.Ui {
             // Pulsoid event on data receive
             this.heartRate.bpm.register((bpm: number) => {
                 let enabled = bpm > 0 && !this.config.heartRate.graph.disableCircleBar.Value;
+                let values = this.helper.localization.getLocalizedText('heartRateCircleBarLabel');
                 this.heartRateElement.display(enabled);
                 this.counterSection.toggleClassByValue(enabled, 'heartRate');
                 if (!enabled) {
@@ -419,7 +420,7 @@ namespace Freakylay.Ui {
                 }
 
                 this.heartRateCircleBar.setProgress(bpm, this.heartRate.maxBpm.Value);
-                this.heartRateCircleBar.setText('Heart<br>' + bpm);
+                this.heartRateCircleBar.setText(values['before'] + bpm + values['after']);
             });
 
             // start heart graph interval (even if it is disabled)
@@ -446,6 +447,13 @@ namespace Freakylay.Ui {
                 }
                 this.versionHint.removeClass('inactive');
             }
+
+            // Refresh UIs when language changes
+            this.config.language.register(() => {
+                this.timeCircleBar.refresh();
+                this.accuracyCircleBar.refresh();
+                this.healthCircleBar.refresh();
+            });
         }
 
         /**
@@ -476,7 +484,7 @@ namespace Freakylay.Ui {
             this.missValue = this.miss.children.item(1) as HTMLSpanElement;
             this.blockSpeedValue = this.blockSpeed.children.item(1) as HTMLSpanElement;
             this.bpmValue = this.bpm.children.item(1) as HTMLSpanElement;
-            this.starsValue = this.stars.children.item(0).children.item(1) as HTMLSpanElement;
+            this.starsValue = this.stars.children.item(0) as HTMLSpanElement;
 
             this.health = document.getDiv('healthHolder');
             this.accuracy = document.getDiv('accuracyHolder');
@@ -485,10 +493,12 @@ namespace Freakylay.Ui {
 
             this.timeCircleBar = new CircleBar(this.time);
             this.healthCircleBar = new CircleBar(this.health, (percent: string) => {
-                return '<small>Health</small>' + parseFloat(percent).toFixed(0) + '%';
+                let values = this.helper.localization.getLocalizedText('HealthLabel');
+                return '<small>' + values['before'] + '</small>' + parseFloat(percent).toFixed(0) + values['after'];
             });
             this.accuracyCircleBar = new CircleBar(this.accuracy, (percent: string) => {
-                return '<small>Accuracy</small>' + percent + '%';
+                let values = this.helper.localization.getLocalizedText('AccuracyLabel');
+                return '<small>' + values['before'] + '</small>' + percent + values['after'];
             });
             this.accuracyRank = document.getDiv('rank');
             this.heartRateCircleBar = new CircleBar(this.heartRateElement);
@@ -577,22 +587,22 @@ namespace Freakylay.Ui {
          * @private
          */
         private handleShortNames(enabled: boolean): void {
-            this.modifierNoFailOn0Energy.innerText = enabled ? 'NF' : 'No Fail';
-            this.modifierOneLife.innerText = enabled ? '1L' : 'One Life';
-            this.modifierFourLives.innerText = enabled ? '4L' : 'Four Lives';
-            this.modifierNoBombs.innerText = enabled ? 'NB' : 'No Bombs';
-            this.modifierNoWalls.innerText = enabled ? 'NW' : 'No Walls';
-            this.modifierNoArrows.innerText = enabled ? 'NA' : 'No Arrows';
-            this.modifierGhostNotes.innerText = enabled ? 'GN' : 'Ghost Notes';
-            this.modifierDisappearingArrows.innerText = enabled ? 'DA' : 'Disappearing Arrows';
-            this.modifierSmallNotes.innerText = enabled ? 'SN' : 'Small Notes';
-            this.modifierProMode.innerText = enabled ? 'PM' : 'Pro Mode';
-            this.modifierStrictAngles.innerText = enabled ? 'SA' : 'Strict Angles';
-            this.modifierZenMode.innerText = enabled ? 'ZM' : 'Zen Mode';
-            this.modifierSlowerSong.innerText = enabled ? 'SS' : 'Slower Song';
-            this.modifierFasterSong.innerText = enabled ? 'FS' : 'Faster Song';
-            this.modifierSuperFastSong.innerText = enabled ? 'SFS' : 'Super Fast Song';
-            this.practiceModeInfo.innerText = enabled ? 'PM' : 'Practice Mode';
+            this.modifierNoFailOn0Energy.innerText = enabled ? this.helper.localization.getLocalizedText('noFailOn0EnergyShort') : this.helper.localization.getLocalizedText('noFailOn0Energy');
+            this.modifierOneLife.innerText = enabled ? this.helper.localization.getLocalizedText('oneLifeShort') : this.helper.localization.getLocalizedText('oneLife');
+            this.modifierFourLives.innerText = enabled ? this.helper.localization.getLocalizedText('fourLivesShort') : this.helper.localization.getLocalizedText('fourLives');
+            this.modifierNoBombs.innerText = enabled ? this.helper.localization.getLocalizedText('noBombsShort') : this.helper.localization.getLocalizedText('noBombs');
+            this.modifierNoWalls.innerText = enabled ? this.helper.localization.getLocalizedText('noWallsShort') : this.helper.localization.getLocalizedText('noWalls');
+            this.modifierNoArrows.innerText = enabled ? this.helper.localization.getLocalizedText('noArrowsShort') : this.helper.localization.getLocalizedText('noArrows');
+            this.modifierGhostNotes.innerText = enabled ? this.helper.localization.getLocalizedText('ghostNotesShort') : this.helper.localization.getLocalizedText('ghostNotes');
+            this.modifierDisappearingArrows.innerText = enabled ? this.helper.localization.getLocalizedText('disappearingArrowsShort') : this.helper.localization.getLocalizedText('disappearingArrows');
+            this.modifierSmallNotes.innerText = enabled ? this.helper.localization.getLocalizedText('smallNotesShort') : this.helper.localization.getLocalizedText('smallNotes');
+            this.modifierProMode.innerText = enabled ? this.helper.localization.getLocalizedText('proModeShort') : this.helper.localization.getLocalizedText('proMode');
+            this.modifierStrictAngles.innerText = enabled ? this.helper.localization.getLocalizedText('strictAnglesShort') : this.helper.localization.getLocalizedText('strictAngles');
+            this.modifierZenMode.innerText = enabled ? this.helper.localization.getLocalizedText('zenModeShort') : this.helper.localization.getLocalizedText('zenMode');
+            this.modifierSlowerSong.innerText = enabled ? this.helper.localization.getLocalizedText('slowerSongShort') : this.helper.localization.getLocalizedText('slowerSong');
+            this.modifierFasterSong.innerText = enabled ? this.helper.localization.getLocalizedText('fasterSongShort') : this.helper.localization.getLocalizedText('fasterSong');
+            this.modifierSuperFastSong.innerText = enabled ? this.helper.localization.getLocalizedText('superFastSongShort') : this.helper.localization.getLocalizedText('superFastSong');
+            this.practiceModeInfo.innerText = enabled ? this.helper.localization.getLocalizedText('practiceModeShort') : this.helper.localization.getLocalizedText('practiceMode');
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName('100');
             this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName('0');
         }
@@ -1050,13 +1060,14 @@ namespace Freakylay.Ui {
         private onTimeElapsedChangeSetText(value: number, total: number): void {
             let currentTime = this.levelIsPaused && (new Date()).getSeconds() % 2 == 0 ? ' ' : value.toDateString(false);
             let text: string;
+            let values = this.helper.localization.getLocalizedText('timeLabel');
             if (this.config.looks.timeCircleLikeOtherCircles.Value) {
-                text = 'Time<br>' + currentTime;
+                text = values["circle"]["before"] + currentTime + values["circle"]["after"];
             } else {
                 if (total == undefined) {
                     total = 120;
                 }
-                text = currentTime + '<br>' + total.toDateString(false);
+                text = values["notCircle"]["before"] + currentTime + values["notCircle"]["middle"] + total.toDateString(false) + values["notCircle"]["after"];
             }
 
             this.timeCircleBar.setText(text);
@@ -1514,7 +1525,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongSpeedWithModifierName(speed: string): string {
-            return (this.config.looks.shortModifierNames.Value ? speed : 'Speed: ' + speed) + '%';
+            let values = this.helper.localization.getLocalizedText('practiceModeSongSpeedLabel');
+            return (this.config.looks.shortModifierNames.Value ? speed : values['before'] + speed) + values['after'];
         }
 
         /**
@@ -1523,7 +1535,8 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongTimeOffsetWithModifierName(offset: string): string {
-            return this.config.looks.shortModifierNames.Value ? offset : 'Start: ' + offset;
+            let values = this.helper.localization.getLocalizedText('practiceModeTimeOffsetLabel');
+            return (this.config.looks.shortModifierNames.Value ? offset : values['before'] + offset) + values['after'];
         }
 
         /**

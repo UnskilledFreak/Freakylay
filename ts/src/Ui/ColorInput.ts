@@ -16,6 +16,7 @@ namespace Freakylay.Ui {
 
         private readonly instance: number;
         private readonly name: string;
+        private readonly id: string;
 
         private alphaCheck: (number) => boolean;
         private rElement: HTMLInputElement;
@@ -28,12 +29,13 @@ namespace Freakylay.Ui {
         private bNumElement: HTMLSpanElement;
         private aNumElement: HTMLSpanElement;
 
-        constructor(name: string, color: Color, alphaCheck?: (number) => boolean) {
+        constructor(name: string, id: string, color: Color, alphaCheck?: (number) => boolean) {
 
             this.instance = ColorInput.Instance;
             ColorInput.Instance++;
 
             this.name = name;
+            this.id = id;
             this.color = new EventProperty<Color>(color);
             this.color.Value.onAlphaChange.register((alpha: number) => {
                 if (typeof this.alphaCheck === 'function') {
@@ -89,8 +91,10 @@ namespace Freakylay.Ui {
             // the actual appends for wrapper elements is here
             for (let x of lines) {
                 let line: HTMLDivElement = document.div().addClass('colorLine');
+                let label = document.label(x[0] + ':');
+                (label as HTMLElement).addClass('colorInputs' + x[0]);
                 line.append(
-                    document.label(x[0] + ':'),
+                    label,
                     x[1],
                     x[2]
                 );
@@ -98,7 +102,10 @@ namespace Freakylay.Ui {
             }
 
             // add name and alpha check info
-            name.innerHTML = this.name;
+            let title = document.span().addClass(this.id) as HTMLSpanElement;
+            title.textContent = this.name;
+            name.append(title);
+            // name.innerHTML = this.name;
             name.append(this.aInfoElement);
 
             // append everything to its given parent

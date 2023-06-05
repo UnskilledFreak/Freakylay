@@ -8,12 +8,12 @@
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-    <meta property="og:site_name" content="Freakylay">
-    <meta property="og:title" content="Freakylay - stream overlay for multiple games">
-    <meta property="title" content="Freakylay - stream overlay for multiple games">
-    <meta property="og:description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
-    <meta property="description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
-    <meta property="og:image" content="http://u.unskilledfreak.zone/overlay/freakylay/beta/img/Freakylay.png">
+    <meta name="og:site_name" content="Freakylay">
+    <meta name="og:title" content="Freakylay - stream overlay for multiple games">
+    <meta name="title" content="Freakylay - stream overlay for multiple games">
+    <meta name="og:description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
+    <meta name="description" content="An easy to use and customizable overlay with many features like colors, circular bars and many more.">
+    <meta name="og:image" content="http://u.unskilledfreak.zone/overlay/freakylay/beta/img/Freakylay.png">
 
     <link rel="stylesheet" type="text/css" href="css/freakylay.css">
     <link rel="stylesheet" type="text/css" href="css/fonts.css">
@@ -26,7 +26,7 @@
 <div id="songInfo">
     <div class="textBottom">
         <div class="previousBSRWrapper" id="previousBSR">
-            <div class="line">PREVIOUS BSR</div>
+            <div class="line" id="previousBSRLabel">PREVIOUS BSR</div>
         </div>
         <div id="beatMapCover">
             <div id="cover"></div>
@@ -50,34 +50,34 @@
 
 <div id="counterSection">
     <div class="ears" id="fullCombo">
-        <div>Full Combo</div>
+        <div id="fullComboLabel">Full Combo</div>
     </div>
     <div class="ears" id="ranked">
-        <div>Ranked</div>
+        <div id="rankedLabel">Ranked</div>
     </div>
     <div class="ears" id="stars">
-        <div><span>Stars&nbsp;</span><span>0.0</span></div>
+        <div><span id="starsLabel">Stars&nbsp;</span><span id="starsValue">0.0</span></div>
     </div>
     <div class="holders rightText">
         <div class="line">
             <div id="combo">
-                <span>Combo</span>
-                <span>0</span>
+                <span id="comboLabel">Combo</span>
+                <span id="comboValue">0</span>
             </div>
             <div id="miss">
-                <span>Miss</span>
-                <span>0</span>
+                <span id="missLabel">Miss</span>
+                <span id="missValue">0</span>
             </div>
         </div>
         <div class="line" id="score">SCORE</div>
         <div class="line">
             <div id="njs">
-                <span>NJS</span>
-                <span>0</span>
+                <span id="njsLabel">NJS</span>
+                <span id="njsValue">0</span>
             </div>
             <div id="bpm">
-                <span>BPM</span>
-                <span>0</span></div>
+                <span id="bpmLabel">BPM</span>
+                <span id="bpmValue">0</span></div>
         </div>
     </div>
     <div class="barHolder" id="timerHolder"></div>
@@ -113,36 +113,42 @@
 <div id="options">
     <div class="tabManager">
         <div class="tabs">
-            <div class="tab" data-tab-name="splash">Welcome</div>
-            <div class="tab" data-tab-name="connection">Game &amp; Connection</div>
-            <div class="tab" data-tab-name="colors">Colors</div>
-            <div class="tab" data-tab-name="settings">Settings</div>
-            <div class="tab" data-tab-name="heartRate">Heart Rate</div>
+            <div class="tab" data-tab-name="splash" id="tabs-Welcome">Welcome</div>
+            <div class="tab" data-tab-name="connection" id="tabs-Game-Connection">Game &amp; Connection</div>
+            <div class="tab" data-tab-name="colors" id="tabs-Colors">Colors</div>
+            <div class="tab" data-tab-name="settings" id="tabs-Settings">Settings</div>
+            <div class="tab" data-tab-name="heartRate" id="tabs-HeartRate">Heart Rate</div>
         </div>
         <div class="tabContents">
             <div class="tabContent" data-tab-content="splash">
-                <h2>Welcome to <span id="welcomeVersion"></span>!</h2>
-                <p>Please use 'Game & Connection' tab first to choose the correct game and mod you are using.</p>
-                <p>Version 3 was completely overhauled under its hood with focus of supporting multiple games and mods while still containing a bunch of useful features for content creators.</p>
-                <p>If you have any suggestions, issues or need help, let me know at <a href="https://github.com/UnskilledFreak/Freakylay/issues">Github issues</a>. Please provide as many infos as you can like what game and connection was in use and what went wrong.</p>
-                <p>Thanks! UnskilledFreak</p>
+                <h2><span id="welcomeLine1-1">Welcome to </span><span id="welcomeVersion"></span><span id="welcomeLine1-2">!</span></h2>
+                <p id="welcomeLine2">Please use 'Game & Connection' tab first to choose the correct game and mod you are using.</p>
+                <p id="welcomeLine3">Version 3 was completely overhauled under its hood with focus of supporting multiple games and mods while still containing a bunch of useful features for content creators.</p>
+                <p><span id="welcomeLine4-1">If you have any suggestions, issues or need help, let me know at </span><a href="https://github.com/UnskilledFreak/Freakylay/issues" id="welcomeLine4-2">Github issues</a><span id="welcomeLine4-3">. Please provide as many infos as you can like what game and connection was in use and what went wrong.</span></p>
+                <p id="welcomeLine5">Thanks! UnskilledFreak</p>
+                <div class="settingsLine">
+                    <label for="languageList" id="languageListLabel">Language:</label>
+                    <select id="languageList">
+                        <option value="English">English</option>
+                    </select>
+                </div>
             </div>
             <div class="tabContent" data-tab-content="connection">
                 <div class="settingsLine">
-                    <span>Status:</span>
+                    <span id="gameLinkStatusLabel">Status:</span>
                     <span id="gameLinkStatus"></span>
                 </div>
                 <div class="settingsLine">
-                    <sub>If this stays at 'Connecting...' for more than 20 seconds that means that something went wrong. Check the settings if any and make sure your game is running and mods are working.</sub>
+                    <sub id="gameLinkStatusNotice">If this stays at 'Connecting...' for more than 20 seconds that means that something went wrong. Check the settings if any and make sure your game is running and mods are working.</sub>
                 </div>
                 <div class="settingsLine">
-                    <label for="gameList">Select game:</label>
+                    <label for="gameList" id="gameListLabel">Select game:</label>
                     <select id="gameList">
                         <option value="None">choose</option>
                     </select>
                 </div>
                 <div class="settingsLine">
-                    <label for="connectionList">Connection:</label>
+                    <label for="connectionList" id="connectionListLabel">Connection:</label>
                     <select id="connectionList">
                         <option value="None">choose</option>
                     </select>
@@ -151,17 +157,20 @@
                 <button id="connectToGame">Connect!</button>
             </div>
             <div class="tabContent" data-tab-content="colors">
-                <h1>Color management</h1>
+                <h1 id="colorManagement">Color management</h1>
                 <div id="bgColor"></div>
                 <div id="color"></div>
             </div>
             <div class="tabContent" data-tab-content="settings">
             </div>
             <div class="tabContent" data-tab-content="heartRate">
-                <h1>Connection type</h1>
-                <div>Connection state: <span id="heartRateConnectionState"></span><input type="button" id="heartRateFeedButton" value="Apply"></div>
+                <h1 id="heartRateConnectionType">Connection type</h1>
+                <div><span id="heartRateConnectionStateLabel">Connection state: </span><span id="heartRateConnectionState"></span>
+                    <!--<input type="button" id="heartRateFeedButton" value="Apply">-->
+                    <button id="heartRateFeedButton">Apply</button>
+                </div>
                 <div>
-                    <label for="heartRateFeedType">Feed type:</label>
+                    <label for="heartRateFeedType" id="heartRateFeedTypeLabel">Feed type:</label>
                     <select id="heartRateFeedType">
                     </select>
                 </div>
@@ -169,19 +178,19 @@
                     <label for="heartRateFeed" id="heartRateFeedUrlText"></label>
                     <input id="heartRateFeed" class="long" type="text">
                 </div>
-                <div id="heartRateHintJson">See config for 'Feed reference' at <a target="_blank" href="https://pulsoid.net/ui/configuration">Pulsoid Configuration</a>.<br><br>WARNING! This feed type is deprecated and will be removed in future releases of Freakylay or by Pulsoid team. It may not function at any moment.</div>
-                <div id="heartRateHintToken">Get or refresh Token <button id="heartRateAuthLink">here</button>.<br>Paste generated token into the input field above.</div>
+                <div id="heartRateHintJson"><span id="heartRateHintJson-1">See config for 'Feed reference' at </span><a target="_blank" href="https://pulsoid.net/ui/configuration" id="heartRateHintJson-2">Pulsoid Configuration</a><span id="heartRateHintJson-3">.<br><br>WARNING! This feed type is deprecated and will be removed in future releases of Freakylay or by Pulsoid team. It may not function at any moment.</span></div>
+                <div id="heartRateHintToken"><span id="heartRateHintToken-1">Get or refresh Token </span><button id="heartRateAuthLink">here</button><span id="heartRateHintToken-2">.<br>Paste generated token into the input field above.</span></div>
                 <div id="heartRateHintSession">Paste your Session-ID given by the app.</div>
                 <div id="pulsoidThanks">Special thanks to the Pulsoid team for making this possible!</div>
                 <div id="hypeRateThanks">Special thanks to the HypeRate team for making this possible!</div>
-                <h2>Settings</h2>
+                <h2 id="settings">Settings</h2>
                 <div id="heartRateSettingList"></div>
             </div>
         </div>
     </div>
     <hr>
     <div class="urlText">
-        <label for="urlText">URL to use:</label><br>
+        <label for="urlText" id="urlTextLabel">URL to use:</label><br>
         <textarea readonly="readonly" id="urlText"></textarea>
     </div>
     <span id="huh">Who needs a fancy settings panel when it's not visible for 99.9% of usage time?</span>
@@ -189,10 +198,10 @@
 </div>
 
 <div id="versionHint" class="inactive">
-    <h2>Welcome & sorry to bother!</h2>
-    <p>You are using an old config for Freakylay.<br>This is the new version <span id="versionHintVersion"></span>!</p>
-    <p>While the new version is compatible with the old one's config, you have to change the game and connection in the options panel.</p>
-    <p>Please use the button bellow to open the option panel and make additional changes!</p>
+    <h2 id="versionHint1">Welcome & sorry to bother!</h2>
+    <p><span id="versionHint2-1">You are using an old config for Freakylay.<br>This is the new version </span><span id="versionHintVersion"></span><span id="versionHint2-2">!</span></p>
+    <p id="versionHint3">While the new version is compatible with the old one's config, you have to change the game and connection in the options panel.</p>
+    <p id="versionHint4">Please use the button bellow to open the option panel and make additional changes!</p>
     <p><button id="versionHintOptions">Open Options</button></p>
 </div>
 

@@ -170,6 +170,8 @@ namespace Freakylay {
             this.config.heartRate.graph.smallFontSize.trigger();
             this.config.heartRate.graph.bigFontSize.trigger();
 
+            this.config.language.trigger();
+
             if (includeGameAndConnection) {
                 this.config.game.trigger();
                 this.config.connection.trigger();

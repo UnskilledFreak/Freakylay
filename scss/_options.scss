@@ -90,6 +90,10 @@
   }
 
   div.settingsLine {
+    display: flex;
+    align-items: center;
+    line-height: 22px;
+
     > select {
       margin-right: 5px;
     }
@@ -128,11 +132,11 @@
 
   div[data-tab-content=colors] {
     #bgColor, #color {
-      margin-bottom: 25px;
+      margin-bottom: 16px;
     }
 
     input[type=range] {
-      width: 430px;
+      width: 100%;
     }
 
     .alphaInfo {
@@ -141,6 +145,10 @@
     }
 
     .colorLine {
+      display: flex;
+      align-items: center;
+      line-height: 22px;
+
       label {
         display: inline-block;
         width: 80px;

@@ -25,6 +25,7 @@ namespace Freakylay.Ui {
         private gameConnectionSettingElement: HTMLDivElement;
         private backgroundColorInput: ColorInput;
         private textColorInput: ColorInput;
+        private languageListElement: HTMLSelectElement;
 
         // heart rate
         private heartRate: AbstractHeartRate;
@@ -49,9 +50,14 @@ namespace Freakylay.Ui {
         public readonly onGameChange: EventProperty<BaseGame>;
         public readonly onGameConnectionChange: EventProperty<BaseConnection>;
         public readonly onConnection: EventProperty<boolean>;
+        public readonly onLanguageChange: EventProperty<Freakylay.Lang.Languages>;
+
+        // Localization
+        public readonly localization: Freakylay.Lang.Localization;
 
         get fullVersionString(): string {
-            return 'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');
+            let welcomeVersion = this.localization.getLocalizedText("welcomeVersion");
+            return welcomeVersion["before"] + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '') + welcomeVersion["after"];
         }
 
         constructor(config: Config, heartRate: AbstractHeartRate, gameList: BaseGame[], gameLinkState: EventProperty<GameLinkStatus>, isDev: boolean) {
@@ -61,14 +67,46 @@ namespace Freakylay.Ui {
             this.heartRate = heartRate;
             this.gameList = gameList;
             this.isDev = isDev;
+            this.localization = new Freakylay.Lang.Localization(Freakylay.Lang.Languages[this.config.language.Value]);
             this.urlText = document.get<HTMLTextAreaElement>('#urlText');
             this.backgroundImageTest = new EventProperty<boolean>(false);
             this.onGameChange = new EventProperty<BaseGame>();
             this.onGameConnectionChange = new EventProperty<BaseConnection>();
             this.onConnection = new EventProperty<boolean>(false);
 
+            this.onLanguageChange = new EventProperty<Freakylay.Lang.Languages>();
+
             document.getDiv('copyright').innerText = this.fullVersionString;
             document.getId<HTMLSpanElement>('welcomeVersion').innerText = this.fullVersionString;
+            let languageSelector = document.getId<HTMLSelectElement>('languageList');
+            languageSelector.removeChildren();
+
+            Freakylay.Lang.Languages.foreach((value: string) => {
+                if (!isNaN(Number(value))) {
+                    return;
+                }
+
+                let name;
+                switch (value) {
+                    case 'en':
+                        name = 'English';
+                        break;
+                    case 'zh_cn':
+                        name = '简体中文';
+                        break;
+                }
+
+                languageSelector.append(this.createOptionForSelect(
+                    value,
+                    name,
+                    Freakylay.Lang.Languages[value] == this.config.language.Value
+                ));
+            });
+
+            languageSelector.onchange = () => {
+                this.onLanguageChange.Value = Freakylay.Lang.Languages[languageSelector.value];
+            };
+
             document.body.ondblclick = () => {
                 this.toggleOptionPanel();
             };
@@ -80,6 +118,8 @@ namespace Freakylay.Ui {
             } else {
                 alphaWarning.display(false);
             }
+
+            this.languageListElement = document.getId<HTMLSelectElement>('languageList');
 
             this.gameListElement = document.getId<HTMLSelectElement>('gameList');
             this.connectionListElement = document.getId<HTMLSelectElement>('connectionList');
@@ -106,20 +146,175 @@ namespace Freakylay.Ui {
             });
 
             this.heartRate.connectionState.register((state: ConnectionState) => {
-                this.heartRateConnectionState.innerText = Freakylay.DataTransfer.HeartRate.ConnectionState[state];
+                this.heartRateConnectionState.innerText = this.localization.getLocalizedText('heartRateConnectionState')[Freakylay.DataTransfer.HeartRate.ConnectionState[state]];
             });
             this.heartRate.connectionState.trigger();
             this.checkHeartRateFeedType(true);
+
+            this.onLanguageChange.register((language: Freakylay.Lang.Languages) => {
+                if (language == null) {
+                    language = Freakylay.Lang.Languages.en;
+                }
+                if (this.config.language !== null)
+                {
+                    language = Freakylay.Lang.Languages[this.config.language.Value];
+                }
+
+                this.localization.import(language);
+                let meta = document.getElementsByTagName("meta");
+                let buttons = document.getElementsByTagName("button");
+                Object.keys(this.localization.localization_text).forEach(key => {
+                    let value = this.localization.localization_text[key];
+                    if (typeof(value) === "string")
+                    {
+                        if (key === "html_head_title")
+                        {
+                            for (let i = 0; i < meta.length; i++) {
+                                if (meta[i].name.toLowerCase() == "title" || meta[i].name.toLowerCase() == "og:title") {
+                                    meta[i].content = value;
+                                }
+                            }
+                            return;
+                        } else if (key === "html_meta_description")
+                        {
+                            for (let i = 0; i < meta.length; i++) {
+                                if (meta[i].name.toLowerCase() == "description" || meta[i].name.toLowerCase() == "og:description") {
+                                    meta[i].content = value;
+                                }
+                            }
+                            return;
+                        }
+                        else if (key === "heartRateFeedUrlText")
+                        {
+                            let value = "";
+                            let targetDom = document.getId<HTMLElement>("heartRateFeedUrlText");
+                            let selectDom = document.getId<HTMLSelectElement>("heartRateFeedType");
+                            switch (selectDom.value)
+                            {
+                                case "Token":
+                                    value = this.localization.getLocalizedText('heartRateFeedTextToken');
+                                    break;
+                                case "JSON":
+                                    value = this.localization.getLocalizedText('heartRateFeedTextJSON');
+                                    break;
+                                case "Dummy":
+                                    value = this.localization.getLocalizedText('heartRateFeedTextDummy');
+                                    break;
+                                default:
+                                    value = this.localization.getLocalizedText('heartRateFeedTextDisabled');
+                                    break;
+                            }
+                            targetDom.innerText = value;
+                        }
+                        else if (key === "alphaInfo" || key.startsWith("colorInputs") || key === "colorBackgroundColor" || key === "colorTextColor") {
+                            let classElements = document.getElementsByClassName(key);
+                            for (let i = 0; i < classElements.length; i++) {
+                                classElements[i].textContent = value;
+                            }
+                        }
+                        /*else if (key === "welcomeVersion") {
+
+                            'Freakylay ' + Overlay.Version + (Overlay.Branch.length > 0 ? ' ' + Overlay.Branch : '');
+                        } */
+                        else {
+                            let targetDom = document.getId<HTMLElement>(key);
+                            if (targetDom === null || targetDom === undefined) {
+                                return;
+                            }
+                            if (targetDom.tagName === 'button')
+                            {
+                                targetDom = targetDom as HTMLButtonElement;
+                                targetDom.textContent = value;
+                            } else if (targetDom.classList.contains('rangeSettingLine')) {
+                                let input_value;
+                                let idx = -1;
+                                for (let i = 0; i < targetDom.children.length; i++) {
+                                    if (targetDom.children[i].tagName.toLowerCase() === 'input')
+                                    {
+                                        input_value = (targetDom.children[i] as HTMLInputElement).value;
+                                    } else if (targetDom.children[i].tagName.toLowerCase() === 'span')
+                                    {
+                                        idx = i;
+                                    }
+                                }
+                                if (idx !== -1)
+                                {
+                                    targetDom.children[idx].textContent = input_value + ' - ' + value;
+                                }
+                            } else {
+                                targetDom.innerText = value;
+                            }
+                        }
+                    } else {
+                        let new_value = "";
+                        let targetDom = document.getId<HTMLElement>(key);
+                        if (targetDom === null)
+                        {
+                            return;
+                        }
+
+                        if (key === "welcomeVersion") {
+                            new_value = this.fullVersionString;
+                        } else if (key === "gameLinkStatus" || key === "heartRateConnectionState") {
+                            if (value.hasOwnProperty(targetDom.innerText))
+                            {
+                                new_value = value[targetDom.innerText];
+                            }
+                        } else if (key === "gameList" || key === "connectionList" || key === "heartRateFeedType") {
+                            let targetDom = document.getDiv(key);
+                            for(let i = 0; i < targetDom.children.length; i++)
+                            {
+                                let target_option = targetDom.children.item(i) as HTMLOptionElement;
+                                if (value.hasOwnProperty(target_option.value))
+                                {
+                                    target_option.text = value[target_option.value];
+                                }
+                            }
+                            return;
+                        } else {
+                            let targetDom = document.getId<HTMLElement>(key);
+                            if (targetDom === null || targetDom === undefined) {
+                                return;
+                            }
+                            if (targetDom.classList.contains('dropDownSettingLine')) {
+                                for (let i = 0; i < targetDom.children.length; i++) {
+                                    if (targetDom.children[i].tagName.toLowerCase() === 'select')
+                                    {
+                                        for (let j = 0; j < (targetDom.children[i] as HTMLSelectElement).length; j++)
+                                        {
+                                            targetDom.children[i][j].textContent = value['options'][(targetDom.children[i][j] as HTMLOptionElement).value.toString()];
+                                        }
+                                    } else if (targetDom.children[i].tagName.toLowerCase() === 'span')
+                                    {
+                                        targetDom.children[i].textContent = value['label'];
+                                    }
+                                }
+                                return;
+                            }
+                        }
+
+                        targetDom.innerText = new_value;
+                    }
+                });
+
+                let new_lang = Object.keys(Freakylay.Lang.Languages)[(<any>Object).values(Freakylay.Lang.Languages).indexOf(language)];
+                if (this.config.language.Value != new_lang) {
+
+                    this.config.language.Value = new_lang;
+                    this.generateUrlText();
+                }
+            });
 
             this.onGameChange.register((game: BaseGame) => {
                 if (game == null) {
                     return;
                 }
+                let connectionNames = this.localization.getLocalizedText('connectionList');
                 this.connectionListElement.removeChildren();
-                this.connectionListElement.append(this.createOptionForSelect('None', 'choose', true));
+                this.connectionListElement.append(this.createOptionForSelect('None', connectionNames['None'], true));
                 game.getConnections.forEach((connection: BaseConnection) => {
                     let name = connection.getName();
-                    this.connectionListElement.append(this.createOptionForSelect(name, name, name == this.config.connection.Value));
+                    this.connectionListElement.append(this.createOptionForSelect(name, connectionNames.hasOwnProperty(name) ? connectionNames['name'] : name, name == this.config.connection.Value));
                 });
                 this.connectionListElement.inline(true);
                 if (this.config.game.Value != game.getName()) {
@@ -158,7 +353,7 @@ namespace Freakylay.Ui {
                     let line = document.div();
                     line.addClass('settingsLine');
                     line.append(
-                        document.label('IP: ', 'customIp'),
+                        document.label(this.localization.getLocalizedText("connectionIP"), 'customIp'),
                         input
                     );
                     this.gameConnectionSettingElement.append(line);
@@ -177,7 +372,7 @@ namespace Freakylay.Ui {
                     let line = document.div();
                     line.addClass('settingsLine');
                     line.append(
-                        document.label('Port: ', 'customPort'),
+                        document.label(this.localization.getLocalizedText("connectionPort"), 'customPort'),
                         input
                     );
                     this.gameConnectionSettingElement.append(line);
@@ -188,7 +383,8 @@ namespace Freakylay.Ui {
 
             let gameLinkStatus = document.getDiv('gameLinkStatus');
             gameLinkState.register((newStatus: GameLinkStatus) => {
-                gameLinkStatus.innerText = newStatus.toString();
+                let status = this.localization.getLocalizedText('gameLinkStatus');
+                gameLinkStatus.innerText = status.hasOwnProperty(newStatus.toString())? status[newStatus.toString()]: newStatus.toString();
             });
 
             this.applyGameButton = document.getId<HTMLButtonElement>('connectToGame');
@@ -213,6 +409,11 @@ namespace Freakylay.Ui {
                 } catch {
                     // game not found
                 }
+            }
+
+            // search for selected language and update UI
+            if (this.config.language.Value !== null && (<any>Object).keys(Freakylay.Lang.Languages).includes(this.config.language.Value)) {
+                this.onLanguageChange.Value = Freakylay.Lang.Languages[this.config.language.Value];
             }
         }
 
@@ -259,10 +460,10 @@ namespace Freakylay.Ui {
          */
         private buildColorTab(): void {
             // color inputs
-            this.backgroundColorInput = new ColorInput('Background color', this.config.colors.background.Value, (alpha: number) => {
+            this.backgroundColorInput = new ColorInput(this.localization.getLocalizedText('colorBackgroundColor'), 'colorBackgroundColor', this.config.colors.background.Value, (alpha: number) => {
                 return alpha > .03 && (alpha < .49 || alpha > .9);
             });
-            this.textColorInput = new ColorInput('Text color', this.config.colors.text.Value, (alpha: number) => {
+            this.textColorInput = new ColorInput(this.localization.getLocalizedText('colorTextColor'), 'colorTextColor', this.config.colors.text.Value, (alpha: number) => {
                 return alpha < .49;
             });
 
@@ -279,14 +480,17 @@ namespace Freakylay.Ui {
             this.textColorInput.createInputMenu(document.getDiv('color'));
 
             // append generate random color buttons
+            let colorRandomBackgroundColorButton = document.button('Random background color', (_) => {
+                this.backgroundColorInput.color.Value = Color.random(.7);
+            });
+            let colorRandomTextColorButton = document.button('Random text color', (_) => {
+                this.textColorInput.color.Value = Color.random(1);
+            });
+            (colorRandomBackgroundColorButton as HTMLElement).id = 'colorRandomBackgroundColor';
+            (colorRandomTextColorButton as HTMLElement).id = 'colorRandomTextColor';
             this.getTabContentDom('colors').append(
-                document.button('Random background color', (_) => {
-                    this.backgroundColorInput.color.Value = Color.random(.7);
-
-                }),
-                document.button('Random text color', (_) => {
-                    this.textColorInput.color.Value = Color.random(1);
-                }),
+                colorRandomBackgroundColorButton,
+                colorRandomTextColorButton,
             );
         }
 
@@ -297,41 +501,49 @@ namespace Freakylay.Ui {
         private buildSettingsTab(): void {
             let info = document.div();
             let colorInfo = document.div();
-            let defaultColorInfoText = 'It will not change the alpha channel, only RGB will get used!';
+            colorInfo.id = 'defaultColorInfoText';
+            let defaultColorInfoText = this.localization.getLocalizedText("defaultColorInfoText");
 
-            info.innerText = 'Please note: Not all settings are supported by the selected game or connection.';
+            info.id = 'settingsBanner';
+            info.textContent = this.localization.getLocalizedText('settingsBanner');
             colorInfo.innerText = defaultColorInfoText;
 
+            let look = document.headline(this.localization.getLocalizedText('settingsLooks')) as HTMLElement;
+            let positions = document.headline(this.localization.getLocalizedText('settingsPositions')) as HTMLElement;
+            let misc = document.headline(this.localization.getLocalizedText('settingsMisc')) as HTMLElement;
+            look.id = 'settingsLooks';
+            positions.id = 'settingsPositions';
+            misc.id = 'settingsMisc';
+
             this.getTabContentDom('settings').append(
-                //document.headline('Info'),
                 info,
-                document.headline('Looks'),
-                this.booleanSettingLine('display short modifier names', this.config.looks.shortModifierNames),
-                this.booleanSettingLine('show previous map key (DataPuller)', this.config.looks.showPreviousKey),
-                this.booleanSettingLine('show miss/bad hit counter', this.config.looks.showMissCounter),
-                this.booleanSettingLine('show BPM', this.config.looks.showBpm),
-                this.booleanSettingLine('show block speed', this.config.looks.showBlockSpeed),
-                this.booleanSettingLine('show combo', this.config.looks.showCombo),
-                this.booleanSettingLine('hide full combo info', this.config.looks.hideFullComboModifier),
-                this.booleanSettingLine('hide default difficulty if difficulty has custom name (DataPuller)', this.config.looks.hideDefaultDifficultyOnCustomDifficulty),
-                this.booleanSettingLine('hide complete modifier section', this.config.looks.hideAllModifiers),
-                this.booleanSettingLine('hide complete counter section', this.config.looks.hideCounterSection),
-                this.booleanSettingLine('hide complete song info section', this.config.looks.hideSongInfo),
-                this.booleanSettingLine('time circle matches other circles', this.config.looks.timeCircleLikeOtherCircles),
-                this.booleanSettingLine('show if map is ranked (DataPuller)', this.config.looks.showRanked),
-                this.booleanSettingLine('show ranked star/difficulty info (DataPuller)', this.config.looks.showStars),
-                this.booleanSettingLine('show rank behind the accuracy circle (DataPuller)', this.config.looks.showAccuracyRank),
-                this.rangeSettingLine('border radius', this.config.looks.borderRadius, 0, 20, 1),
+                look,
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksDisplayShortModifierNames'), 'settingsLooksDisplayShortModifierNames', this.config.looks.shortModifierNames),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowPreviousMapKey'), 'settingsLooksShowPreviousMapKey', this.config.looks.showPreviousKey),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowMissBadHitCounter'), 'settingsLooksShowMissBadHitCounter', this.config.looks.showMissCounter),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowBPM'), 'settingsLooksShowBPM', this.config.looks.showBpm),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowBlockSpeed'), 'settingsLooksShowBlockSpeed', this.config.looks.showBlockSpeed),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowCombo'), 'settingsLooksShowCombo', this.config.looks.showCombo),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksHideFullComboInfo'), 'settingsLooksHideFullComboInfo', this.config.looks.hideFullComboModifier),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksHideDefaultDifficultyIfDifficultyHasCustomName'), 'settingsLooksHideDefaultDifficultyIfDifficultyHasCustomName', this.config.looks.hideDefaultDifficultyOnCustomDifficulty),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksHideCompleteModifierSection'), 'settingsLooksHideCompleteModifierSection', this.config.looks.hideAllModifiers),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksHideCompleteCounterSection'), 'settingsLooksHideCompleteCounterSection', this.config.looks.hideCounterSection),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksHideCompleteSongInfoSection'), 'settingsLooksHideCompleteSongInfoSection', this.config.looks.hideSongInfo),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksTimeCircleMatchesOtherCircles'), 'settingsLooksTimeCircleMatchesOtherCircles', this.config.looks.timeCircleLikeOtherCircles),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowIfMapIsRanked'), 'settingsLooksShowIfMapIsRanked', this.config.looks.showRanked),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowRankedStarDifficultyInfo'), 'settingsLooksShowRankedStarDifficultyInfo', this.config.looks.showStars),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsLooksShowRankBehindTheAccuracyCircle'), 'settingsLooksShowRankBehindTheAccuracyCircle', this.config.looks.showAccuracyRank),
+                this.rangeSettingLine('settingsLooksBorderRadius', this.config.looks.borderRadius, 0, 20, 1),
                 this.dropDownSettingLine(
-                    'override background color with map color (HttpSiraStatus)',
+                    'settingsLooksOverrideBackgroundColorWithMapColor',
                     [
-                        this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForBackgroundColor.Value == 0),
-                        this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForBackgroundColor.Value == 1),
-                        this.createOptionForSelect(2, 'Use right environment color', this.config.looks.useMapColorForBackgroundColor.Value == 2),
-                        this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
-                        this.createOptionForSelect(4, 'Use wall color (only Sira!)', this.config.looks.useMapColorForBackgroundColor.Value == 4),
-                        this.createOptionForSelect(5, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
-                        this.createOptionForSelect(6, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 6),
+                        this.createOptionForSelect(0, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['0'], this.config.looks.useMapColorForBackgroundColor.Value == 0),
+                        this.createOptionForSelect(1, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['1'], this.config.looks.useMapColorForBackgroundColor.Value == 1),
+                        this.createOptionForSelect(2, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['2'], this.config.looks.useMapColorForBackgroundColor.Value == 2),
+                        this.createOptionForSelect(3, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['3'], this.config.looks.useMapColorForBackgroundColor.Value == 3),
+                        this.createOptionForSelect(4, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['4'], this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['5'], this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(6, this.localization.getLocalizedText('settingsLooksOverrideBackgroundColorWithMapColor')['options']['6'], this.config.looks.useMapColorForBackgroundColor.Value == 6),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForBackgroundColor.Value = parseInt(newValue);
@@ -339,15 +551,15 @@ namespace Freakylay.Ui {
                     }
                 ),
                 this.dropDownSettingLine(
-                    'override text color with map color (HttpSiraStatus)',
+                    'settingsLooksOverrideTextColorWithMapColor',
                     [
-                        this.createOptionForSelect(0, 'No override', this.config.looks.useMapColorForTextColor.Value == 0),
-                        this.createOptionForSelect(1, 'Use left environment color', this.config.looks.useMapColorForTextColor.Value == 1),
-                        this.createOptionForSelect(2, 'Use right environment color', this.config.looks.useMapColorForTextColor.Value == 2),
-                        this.createOptionForSelect(3, 'Use obstacle color', this.config.looks.useMapColorForBackgroundColor.Value == 3),
-                        this.createOptionForSelect(4, 'Use wall color (only Sira!)', this.config.looks.useMapColorForBackgroundColor.Value == 4),
-                        this.createOptionForSelect(5, 'Use left saber color', this.config.looks.useMapColorForBackgroundColor.Value == 5),
-                        this.createOptionForSelect(6, 'Use right saber color', this.config.looks.useMapColorForBackgroundColor.Value == 6),
+                        this.createOptionForSelect(0, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['0'], this.config.looks.useMapColorForTextColor.Value == 0),
+                        this.createOptionForSelect(1, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['1'], this.config.looks.useMapColorForTextColor.Value == 1),
+                        this.createOptionForSelect(2, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['2'], this.config.looks.useMapColorForTextColor.Value == 2),
+                        this.createOptionForSelect(3, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['3'], this.config.looks.useMapColorForBackgroundColor.Value == 3),
+                        this.createOptionForSelect(4, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['4'], this.config.looks.useMapColorForBackgroundColor.Value == 4),
+                        this.createOptionForSelect(5, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['5'], this.config.looks.useMapColorForBackgroundColor.Value == 5),
+                        this.createOptionForSelect(6, this.localization.getLocalizedText('settingsLooksOverrideTextColorWithMapColor')['options']['6'], this.config.looks.useMapColorForBackgroundColor.Value == 6),
                     ],
                     (newValue: string) => {
                         this.config.looks.useMapColorForTextColor.Value = parseInt(newValue);
@@ -355,27 +567,27 @@ namespace Freakylay.Ui {
                     }
                 ),
                 colorInfo,
-                document.headline('Positions'),
-                this.booleanSettingLine('move song info to right side', this.config.looks.songInfoOnRightSide),
-                this.booleanSettingLine('move song into to top', this.config.looks.songInfoOnTopSide),
-                this.booleanSettingLine('move counter section to top', this.config.looks.counterSectionOnTop),
-                this.booleanSettingLine('move modifiers to right side', this.config.looks.modifiersOnRightSide),
-                this.rangeSettingLine('margin', this.config.looks.margin, -5, 50, 1),
-                document.headline('Misc'),
+                positions,
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsPositionsMoveSongInfoToRightSide'), 'settingsPositionsMoveSongInfoToRightSide', this.config.looks.songInfoOnRightSide),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsPositionsMoveSongInfoToTop'), 'settingsPositionsMoveSongInfoToTop', this.config.looks.songInfoOnTopSide),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsPositionsMoveCounterSectionToTop'), 'settingsPositionsMoveCounterSectionToTop', this.config.looks.counterSectionOnTop),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsPositionsMoveModifiersToRightSide'), 'settingsPositionsMoveModifiersToRightSide', this.config.looks.modifiersOnRightSide),
+                this.rangeSettingLine('settingsPositionsMargin', this.config.looks.margin, -5, 50, 1),
+                misc,
                 this.dropDownSettingLine(
-                    'compare score with last score (DataPuller)',
+                    'settingsMiscCompareScoreWithLastScore',
                     [
-                        this.createOptionForSelect(0, 'do not compare', this.config.looks.compareWithPreviousScore.Value == 0),
-                        this.createOptionForSelect(1, 'legacy - Freakylay 2 Arrow', this.config.looks.compareWithPreviousScore.Value == 1),
-                        this.createOptionForSelect(2, 'use offset', this.config.looks.compareWithPreviousScore.Value == 2)
+                        this.createOptionForSelect(0, this.localization.getLocalizedText('settingsMiscCompareScoreWithLastScore')['options']['0'], this.config.looks.compareWithPreviousScore.Value == 0),
+                        this.createOptionForSelect(1, this.localization.getLocalizedText('settingsMiscCompareScoreWithLastScore')['options']['1'], this.config.looks.compareWithPreviousScore.Value == 1),
+                        this.createOptionForSelect(2, this.localization.getLocalizedText('settingsMiscCompareScoreWithLastScore')['options']['2'], this.config.looks.compareWithPreviousScore.Value == 2)
                     ],
                     (value: string) => {
                         this.config.looks.compareWithPreviousScore.Value = parseInt(value);
                     }
                 ),
-                this.booleanSettingLine('animate score increment', this.config.looks.animateScore),
-                this.booleanSettingLine('show song speed as relative values (-20% instead of 80%)', this.config.looks.speedDisplayRelative),
-                this.booleanSettingLine('test with background image', this.backgroundImageTest),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsMiscAnimateScoreIncrement'), 'settingsMiscAnimateScoreIncrement', this.config.looks.animateScore),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsMiscShowSongSpeedAsRelativeValues'), 'settingsMiscShowSongSpeedAsRelativeValues', this.config.looks.speedDisplayRelative),
+                this.booleanSettingLine(this.localization.getLocalizedText('settingsMiscTestWithBackgroundImage'), 'settingsMiscTestWithBackgroundImage', this.backgroundImageTest),
             );
         }
 
@@ -392,7 +604,7 @@ namespace Freakylay.Ui {
             }
 
             if (this.config.looks.useMapColorForBackgroundColor.Value == this.config.looks.useMapColorForTextColor.Value) {
-                element.innerText = defaultText + ' ....... this does not make any sense at all to set both to the same color...';
+                element.innerText = defaultText + this.localization.getLocalizedText("UserOverrideColorSetting");
             }
         }
 
@@ -402,6 +614,7 @@ namespace Freakylay.Ui {
          */
         private buildHeartRateTab(): void {
             let selector = document.getId<HTMLSelectElement>('heartRateFeedType');
+            let names = this.localization.getLocalizedText('heartRateFeedType');
 
             Freakylay.DataTransfer.HeartRate.FeedType.foreach((value: string) => {
                 if (!isNaN(Number(value))) {
@@ -409,22 +622,16 @@ namespace Freakylay.Ui {
                 }
 
                 let name;
-                switch (value) {
-                    default:
-                        name = value;
-                        break;
-                    case 'JSON':
-                        name = 'Pulsoid JSON (deprecated)';
-                        break;
-                    case 'Token':
-                        name = 'Pulsoid Token';
-                        break;
-                    case 'Dummy':
-                        if (!this.isDev) {
-                            return;
-                        }
-                        name = value;
-                        break;
+
+                if (names.hasOwnProperty(value))
+                {
+                    name = names[value];
+                } else if (value === 'Dummy' && !this.isDev)
+                {
+                    return;
+                } else
+                {
+                    name = value;
                 }
 
                 selector.append(this.createOptionForSelect(
@@ -455,42 +662,48 @@ namespace Freakylay.Ui {
             }
 
             let offsetHint = document.div();
-            offsetHint.innerHTML = 'If it does not show up, it might be out of bounds. Try adjusting the offset values and make sure the connection is in fetching state.';
+            offsetHint.id = 'heartRateOffsetHint';
+            offsetHint.innerHTML = this.localization.getLocalizedText("heartRateOffsetHint");
 
             let pullInfo = document.div();
-            pullInfo.innerHTML = 'A higher number means more data to show, lower will show a more fast paced graph. Normally a bpm event is received about every second but it can vary.';
+            pullInfo.id = 'heartRatePullInfo';
+            pullInfo.innerHTML = this.localization.getLocalizedText("heartRatePullInfo");
 
             let settings = document.getDiv('heartRateSettingList');
+            let graph = document.headline(this.localization.getLocalizedText('heartRateSettingsGraph')) as HTMLElement;
+            graph.id = 'heartRateSettingsGraph';
+
             settings.append(
-                this.booleanSettingLine('use dynamic max bpm', this.config.heartRate.useDynamicBpm),
-                this.numberSettingLine('maximum bpm to display (affects circle)', this.config.heartRate.maxStaticBpm, 30, 500, 1),
-                document.headline('Graph'),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsUseDynamicMaxBPM'), 'heartRateSettingsUseDynamicMaxBPM', this.config.heartRate.useDynamicBpm),
+                this.numberSettingLine(this.localization.getLocalizedText('heartRateSettingsMaximumBPMToDisplay'), 'heartRateSettingsMaximumBPMToDisplay', this.config.heartRate.maxStaticBpm, 30, 500, 1),
+                graph,
                 offsetHint,
-                this.booleanSettingLine('display graph', this.config.heartRate.graph.enabled),
-                this.booleanSettingLine('use background', this.config.heartRate.graph.useBackground),
-                this.booleanSettingLine('stroke line with background color in no background mode', this.config.heartRate.graph.useBackgroundColorForStroke),
-                this.rangeSettingLine('width', this.config.heartRate.graph.width, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerWidth, 1),
-                this.rangeSettingLine('height', this.config.heartRate.graph.height, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight, 1),
-                this.booleanSettingLine('disable circle bar in counter section', this.config.heartRate.graph.disableCircleBar),
-                this.booleanSettingLine('display numbers', this.config.heartRate.graph.displayNumbers),
-                this.rangeSettingLine('font size for min and max bpm', this.config.heartRate.graph.smallFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
-                this.rangeSettingLine('font size for current bpm', this.config.heartRate.graph.bigFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsDisplayGraph'), 'heartRateSettingsDisplayGraph', this.config.heartRate.graph.enabled),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsUseBackground'), 'heartRateSettingsUseBackground', this.config.heartRate.graph.useBackground),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsStrokeLineWithBackgroundColorInNoBackgroundMode'), 'heartRateSettingsStrokeLineWithBackgroundColorInNoBackgroundMode', this.config.heartRate.graph.useBackgroundColorForStroke),
+                this.rangeSettingLine('heartRateSettingsGraphWidth', this.config.heartRate.graph.width, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerWidth, 1),
+                this.rangeSettingLine('heartRateSettingsGraphHeight', this.config.heartRate.graph.height, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight, 1),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsDisableCircleBarInCounterSection'), 'heartRateSettingsDisableCircleBarInCounterSection', this.config.heartRate.graph.disableCircleBar),
+                this.booleanSettingLine(this.localization.getLocalizedText('heartRateSettingsDisplayNumbers'), 'heartRateSettingsDisplayNumbers', this.config.heartRate.graph.displayNumbers),
+                this.rangeSettingLine('heartRateSettingsFontSizeForMinAndMaxBPM', this.config.heartRate.graph.smallFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
+                this.rangeSettingLine('heartRateSettingsFontSizeForCurrentBPM', this.config.heartRate.graph.bigFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
                 this.dropDownSettingLine(
-                    'anchor',
+                    'heartRateSettingsAnchor',
                     [
-                        this.createOptionForSelect(0, 'top left', this.config.heartRate.graph.anchor.Value == 0),
-                        this.createOptionForSelect(1, 'top right', this.config.heartRate.graph.anchor.Value == 1),
-                        this.createOptionForSelect(2, 'bottom left', this.config.heartRate.graph.anchor.Value == 2),
-                        this.createOptionForSelect(3, 'bottom right', this.config.heartRate.graph.anchor.Value == 3),
-                        this.createOptionForSelect(4, 'center screen', this.config.heartRate.graph.anchor.Value == 4),
+                        this.createOptionForSelect(0, this.localization.getLocalizedText('heartRateSettingsAnchor')['options']['0'], this.config.heartRate.graph.anchor.Value == 0),
+                        this.createOptionForSelect(1, this.localization.getLocalizedText('heartRateSettingsAnchor')['options']['1'], this.config.heartRate.graph.anchor.Value == 1),
+                        this.createOptionForSelect(2, this.localization.getLocalizedText('heartRateSettingsAnchor')['options']['2'], this.config.heartRate.graph.anchor.Value == 2),
+                        this.createOptionForSelect(3, this.localization.getLocalizedText('heartRateSettingsAnchor')['options']['3'], this.config.heartRate.graph.anchor.Value == 3),
+                        this.createOptionForSelect(4, this.localization.getLocalizedText('heartRateSettingsAnchor')['options']['4'], this.config.heartRate.graph.anchor.Value == 4),
                     ],
                     (change) => {
+                        console.log(change);
                         this.config.heartRate.graph.anchor.Value = parseInt(change);
                     }
                 ),
-                this.rangeSettingLine('offset X', this.config.heartRate.graph.offsetX, 0, window.outerWidth, 1),
-                this.rangeSettingLine('offset Y', this.config.heartRate.graph.offsetY, 0, window.outerHeight, 1),
-                this.rangeSettingLine('events to show', this.config.heartRate.graph.eventsToShow, Freakylay.Internal.Config.HeartGraph.MinTimespan, Freakylay.Internal.Config.HeartGraph.MaxTimespan, 10),
+                this.rangeSettingLine('heartRateSettingsOffsetX', this.config.heartRate.graph.offsetX, 0, window.outerWidth, 1),
+                this.rangeSettingLine('heartRateSettingsOffsetY', this.config.heartRate.graph.offsetY, 0, window.outerHeight, 1),
+                this.rangeSettingLine('heartRateSettingsEventsToShow', this.config.heartRate.graph.eventsToShow, Freakylay.Internal.Config.HeartGraph.MinTimespan, Freakylay.Internal.Config.HeartGraph.MaxTimespan, 10),
                 pullInfo
             );
         }
@@ -522,7 +735,7 @@ namespace Freakylay.Ui {
 
             switch (this.config.heartRate.type.Value) {
                 case Freakylay.DataTransfer.HeartRate.FeedType.Disabled:
-                    this.heartRateFeedText.innerText = 'URL or token';
+                    this.heartRateFeedText.innerText = this.localization.getLocalizedText("heartRateFeedTextDisabled");
 
                     this.heartRateFeedInput.disabled = true;
 
@@ -530,7 +743,7 @@ namespace Freakylay.Ui {
                     this.heartRateHintJson.display(false);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.JSON:
-                    this.heartRateFeedText.innerText = 'JSON URL';
+                    this.heartRateFeedText.innerText = this.localization.getLocalizedText("heartRateFeedTextJSON");
 
                     if (!firstStart) {
                         this.heartRateFeedInput.value = '';
@@ -543,7 +756,7 @@ namespace Freakylay.Ui {
                     this.heartRatePulsoidThanks.display(true);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.Token:
-                    this.heartRateFeedText.innerText = 'Token';
+                    this.heartRateFeedText.innerText = this.localization.getLocalizedText("heartRateFeedTextToken");
 
                     if (!firstStart) {
                         this.heartRateFeedInput.value = '';
@@ -556,16 +769,16 @@ namespace Freakylay.Ui {
                     this.heartRatePulsoidThanks.display(true);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.Dummy:
-                    this.heartRateFeedText.innerText = 'Token';
+                    this.heartRateFeedText.innerText = this.localization.getLocalizedText("heartRateFeedTextDummy");
                     this.heartRateFeedInput.disabled = true;
-                    this.heartRateFeedInput.value = 'not needed =)';
+                    this.heartRateFeedInput.value = this.localization.getLocalizedText("heartRateFeedTextDummyValue");
                     this.heartRateFeedInput.type = 'text';
 
                     this.heartRateHintJson.display(false);
                     this.heartRateHintToken.display(false);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.HypeRate:
-                    this.heartRateFeedText.innerText = 'Session-ID';
+                    this.heartRateFeedText.innerText = this.localization.getLocalizedText("heartRateFeedTextHypeRate");
 
                     if (!firstStart) {
                         this.heartRateFeedInput.value = '';
@@ -608,12 +821,14 @@ namespace Freakylay.Ui {
         /**
          * helper to generate a UI line for boolean setting
          * @param name
+         * @param id
          * @param property
          * @private
          */
-        public booleanSettingLine(name: string, property: EventProperty<boolean>): HTMLDivElement {
+        public booleanSettingLine(name: string, id: string, property: EventProperty<boolean>): HTMLDivElement {
             let line = document.div().addClass<HTMLDivElement>('settingsLine');
             let info = document.span();
+            info.id = id;
             let input = document.create<HTMLInputElement>('input');
 
             input.type = 'checkbox';
@@ -636,15 +851,17 @@ namespace Freakylay.Ui {
         /**
          * helper to generate a UI line for number setting
          * @param name
+         * @param id
          * @param property
          * @param min
          * @param max
          * @param step
          * @private
          */
-        private numberSettingLine(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
+        private numberSettingLine(name: string, id: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
             let line = document.div().addClass<HTMLDivElement>('settingLine');
             let info = document.span();
+            info.id = id;
             let input = document.create<HTMLInputElement>('input');
 
             input.type = 'number';
@@ -658,7 +875,7 @@ namespace Freakylay.Ui {
 
             info.innerText = name;
 
-            line.append(input, name);
+            line.append(input, info);
 
             return line;
         }
@@ -671,11 +888,12 @@ namespace Freakylay.Ui {
          * @private
          */
         private dropDownSettingLine(name: string, valueArray: HTMLOptionElement[], changeCallback: (value: string) => void): HTMLDivElement {
-            let line = document.div().addClass<HTMLDivElement>('settingsLine');
+            let line = document.div().addClass<HTMLDivElement>('settingsLine').addClass<HTMLDivElement>('dropDownSettingLine');
             let info = document.span();
             let select = document.create<HTMLSelectElement>('select');
 
-            info.innerText = name;
+            line.id = name;
+            info.innerText = this.localization.getLocalizedText(name)["label"];
 
             select.append(...valueArray);
 
@@ -750,15 +968,16 @@ namespace Freakylay.Ui {
          * @private
          */
         private rangeSettingLine(name: string, property: EventProperty<number>, min: number, max: number, step: number): HTMLDivElement {
-            let line = document.div().addClass<HTMLDivElement>('settingsLine');
+            let line = document.div().addClass<HTMLDivElement>('settingsLine').addClass<HTMLDivElement>('rangeSettingLine');
             let info = document.span();
+            line.id = name;
 
-            info.innerText = property.Value + ' - ' + name;
+            info.innerText = property.Value + ' - ' + this.localization.getLocalizedText(name);
 
             let input = document.inputRange(property.Value, min, max, step);
             input.oninput = () => {
                 property.Value = parseInt(input.value);
-                info.innerText = property.Value + ' - ' + name;
+                info.innerText = property.Value + ' - ' + this.localization.getLocalizedText(name);
             };
 
             line.append(input, info);

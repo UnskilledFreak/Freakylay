@@ -132,7 +132,7 @@ namespace Freakylay.Game.BeatSaber {
          */
         public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
             settingsTab.append(
-                helper.booleanSettingLine('use ScoreWithMultipliers', this.onUseScoreWithMultipliers)
+                helper.booleanSettingLine(helper.localization.getLocalizedText("connectionUseScoreWithMultipliers"), "connectionUseScoreWithMultipliers", this.onUseScoreWithMultipliers)
             );
 
             this.onUseScoreWithMultipliers.register(() => {
