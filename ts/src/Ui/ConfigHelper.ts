@@ -152,14 +152,6 @@ namespace Freakylay.Ui {
             this.checkHeartRateFeedType(true);
 
             this.onLanguageChange.register((language: Freakylay.Lang.Languages) => {
-                if (language == null) {
-                    language = Freakylay.Lang.Languages.en;
-                }
-                if (this.config.language !== null)
-                {
-                    language = Freakylay.Lang.Languages[this.config.language.Value];
-                }
-
                 this.localization.import(language);
                 let meta = document.getElementsByTagName("meta");
                 let buttons = document.getElementsByTagName("button");
