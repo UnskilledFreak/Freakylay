@@ -176,6 +176,12 @@ namespace Freakylay.Ui {
                             }
                             return;
                         }
+                        else if (key === "languageListTranslatorLabel")
+                        {
+                            let targetDom = document.getId<HTMLElement>(key);
+                            targetDom.innerHTML = value;
+                            return;
+                        }
                         else if (key === "heartRateFeedUrlText")
                         {
                             let value = "";

@@ -103,7 +103,9 @@ namespace Freakylay.Lang {
                 "welcomeLine4-2": "Github issues",
                 "welcomeLine4-3": "提交问题。同时也请提供尽可能多的关于你在哪个游戏使用哪种连接遇到问题的信息。",
                 "welcomeLine5": "感谢！-- UnskilledFreak",
-                "languageListLabel": "语言:",
+                "languageListLabel": "🌐语言:",
+                "languageListTranslatorLabel": "翻译贡献者: <a href=\"https://github.com/baoziii\">baoziii</a>",
+
                 "gameLinkStatusLabel": "状态:",
                 "gameLinkStatus": {
                     "Not Connected": "未连接",

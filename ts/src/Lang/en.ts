@@ -104,7 +104,8 @@ namespace Freakylay.Lang {
                 "welcomeLine4-2": "Github issues",
                 "welcomeLine4-3": ". Please provide as many infos as you can like what game and connection was in use and what went wrong.",
                 "welcomeLine5": "Thanks! UnskilledFreak",
-                "languageListLabel": "Language:",
+                "languageListLabel": "🌐Language:",
+                // "languageListTranslatorLabel": "Translation Contributor(s): <a href=\"https://github.com/UnskilledFreak\">Freakylay</a>",
 
                 "gameLinkStatusLabel": "Status:",
                 "gameLinkStatus": {
