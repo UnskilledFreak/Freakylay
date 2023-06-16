@@ -99,7 +99,7 @@ namespace Freakylay.Ui {
                 languageSelector.append(this.createOptionForSelect(
                     value,
                     name,
-                    Freakylay.Lang.Languages[value] == this.config.language.Value
+                    value == this.config.language.Value
                 ));
             });
 

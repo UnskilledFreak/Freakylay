@@ -34,7 +34,7 @@ namespace Freakylay.Internal.Config {
         constructor() {
             this.game = new EventProperty<string>('');
             this.connection = new EventProperty<string>('');
-            this.language = new EventProperty<string>('en');
+            this.language = new EventProperty<string>(Freakylay.Lang.GetDefaultLanguage());
             this.colors = new Colors();
             this.looks = new Looks();
             this.heartRate = new HeartRate();
@@ -145,7 +145,7 @@ namespace Freakylay.Internal.Config {
                 this.shouldOpenOptionsAfterLoad = this.urlSearchParams.has('options');
             }
 
-            this.language.Value = this.getConfig('language', 'en');
+            this.language.Value = this.getConfig('language', Freakylay.Lang.GetDefaultLanguage());
         }
 
         /**
@@ -185,7 +185,7 @@ namespace Freakylay.Internal.Config {
             this.looks.load(data.isset('d', {}));
             this.heartRate.load(data.isset('e', {}));
             this.connectionSetting = data.isset('f', {});
-            this.language.Value = data.isset('l', 'en');
+            this.language.Value = data.isset('l', Freakylay.Lang.GetDefaultLanguage());
         }
 
         /**
