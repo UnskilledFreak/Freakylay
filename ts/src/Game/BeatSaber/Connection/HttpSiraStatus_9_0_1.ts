@@ -241,7 +241,6 @@ namespace Freakylay.Game.BeatSaber.Connection {
             let paused: null | number = data.isset('paused', null);
             this.onLevelPausedChange.Value = typeof paused == 'number' && paused > 0;
             this.author = data.isset('songAuthorName', '');
-            this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
             this.onBpmChange.Value = data.isset('songBPM', 120);
 
             let cover = data.isset('songCover', '');
@@ -255,6 +254,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
 
             this.onSongInfoSongNameChange.Value = data.isset('songName', '???');
             this.songSubName = data.isset('songSubName', '');
+            // has to be down here to have song sub name available at this time
+            this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
             // no songTimeOffset
             let start = data.isset('start', 0);
             this.onPracticeModeTimeOffset.Value = Math.floor((time - start) / 1000);
