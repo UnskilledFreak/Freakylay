@@ -120,7 +120,7 @@
 
   &:not(.flip) {
     .ears {
-      margin-top: -29px;
+      transform: translateY(-100%);
       > div {
         border-radius: var(--radius) var(--radius) 0 0;
       }

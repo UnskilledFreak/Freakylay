@@ -429,7 +429,7 @@ Document.prototype.span = function (): HTMLSpanElement {
  * @param onClick event
  */
 Document.prototype.button = function (name: string, onClick: (HTMLInputElement) => void): HTMLButtonElement {
-    let button = document.create<HTMLInputElement>('button');
+    let button = document.create<HTMLButtonElement>('button');
     button.innerText = name;
     button.onclick = onClick;
     return button;

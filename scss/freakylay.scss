@@ -64,7 +64,7 @@
   #counterSection {
     &:not(.flip) {
       .ears {
-        margin-top: -30px;
+        transform: translateY(-100%);
       }
     }
   }
