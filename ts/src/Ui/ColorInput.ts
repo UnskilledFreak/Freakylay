@@ -17,6 +17,7 @@ namespace Freakylay.Ui {
         private readonly instance: number;
         private readonly name: string;
         private readonly id: string;
+        private readonly languageManager: LanguageManager;
 
         private alphaCheck: (number) => boolean;
         private rElement: HTMLInputElement;
@@ -29,11 +30,12 @@ namespace Freakylay.Ui {
         private bNumElement: HTMLSpanElement;
         private aNumElement: HTMLSpanElement;
 
-        constructor(name: string, id: string, color: Color, alphaCheck?: (number) => boolean) {
+        constructor(languageManager: LanguageManager, name: string, id: string, color: Color, alphaCheck?: (number) => boolean) {
 
             this.instance = ColorInput.Instance;
             ColorInput.Instance++;
 
+            this.languageManager = languageManager;
             this.name = name;
             this.id = id;
             this.color = new EventProperty<Color>(color);
@@ -70,7 +72,7 @@ namespace Freakylay.Ui {
 
             // info element, will get displayed if alpha check returns true
             this.aInfoElement = document.span().addClass('alphaInfo');
-            this.aInfoElement.visibility<HTMLSpanElement>(false).innerHTML = 'Not recommended but might work great ;)';
+            this.aInfoElement.visibility<HTMLSpanElement>(false).innerHTML = this.languageManager.getLocalizedText('alphaInfo');
 
             // register events when color inputs get changed
             this.handleChange(this.rElement, this.rNumElement, (value: number) => this.color.Value.red = value);
@@ -91,7 +93,7 @@ namespace Freakylay.Ui {
             // the actual appends for wrapper elements is here
             for (let x of lines) {
                 let line: HTMLDivElement = document.div().addClass('colorLine');
-                let label = document.label(x[0] + ':');
+                let label = document.label(this.languageManager.getLocalizedText('colorInputs' + x[0]) + ':');
                 (label as HTMLElement).addClass('colorInputs' + x[0]);
                 line.append(
                     label,

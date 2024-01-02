@@ -23,6 +23,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - [Older Versions](#Versions)
 - [Known Issues](#Issues)
 - [FAQ](#FAQ)
+- [Translators](#Translators)
 - [Special Thanks](#Testers)
 - [Changelog](#changelog)
 
@@ -47,7 +48,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 Freakylay supports multiple games and mods:
 - Beat Saber
   - [DataPuller 2.0.12](https://github.com/ReadieFur/BSDataPuller/releases/tag/2.0.12)
-  - [DataPuller 2.1.0](https://github.com/ReadieFur/BSDataPuller)
+  - [DataPuller 2.1.0+](https://github.com/ReadieFur/BSDataPuller)
   - [HttpStatus 1.20.0+](https://github.com/opl-/beatsaber-http-status)
   - [HttpSiraStatus 9.0.1+](https://github.com/denpadokei/HttpSiraStatus)
   - BeatSaberPlus: *I will **not** add support for BeatSaberPlus by HardCpp. I do not care if licencing and all of its legal stuff is sorted by now, it all started by copying (I would rather say stealing) other mods without permission and claiming to be done by himself which is just a no-go. I may be wrong but this is as far as I know. If I am wrong just tell me. If you want to use Freakylay with BeatSaberPlus implement the connection yourself. PR might be possible.*
@@ -133,7 +134,9 @@ It is possible to access unreleased or unstable versions by using its number in 
 
 | Freakylay Version        | State                 | Url                                                                                                            |
 |--------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------|
-| 3.0.0                    | beta testing          | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
+| 3.1.0                    | in development        | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/) |
+| 3.0.1                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/) |
+| 3.0.0                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
 | 2.2.3 (DataPuller 2.0.9) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/) |
 | 2.2.2 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.2/) |
 | 2.2.1 (DataPuller 2.0.3) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.1/) |
@@ -170,7 +173,21 @@ Special thanks and much love to everyone who helped me on developing and testing
 - [Mr_Laubsauger](https://www.twitch.tv/mr_laubsauger)
 - [Fefeland](https://www.twitch.tv/fefeland)
 
+## Translators
+Thank you so much for your work!
+- chinese - [baoziii](https://github.com/baoziii/Freakylay)
+- spanish - [Fefeland](https://www.twitch.tv/fefeland)
+- english and german - UnskilledFreak
+
 ## Changelog
+- 3.1.0
+  - added chinese translation (thanks to [baoziii](https://github.com/baoziii/Freakylay))
+  - added german translation
+  - added spanish translation (thanks to [Fefeland](https://www.twitch.tv/fefeland))
+  - fixed minor styling issues (thanks to [baoziii](https://github.com/baoziii/Freakylay))
+- 3.0.1
+  - fixed heart graph shows infinity when no heart rate was broadcasted
+  - fixed song sub name not visible
 - 3.0.0
   - completely rewritten but kept all features of version 2.2.3
   - added support for Http(Sira)Status 9.0.1+

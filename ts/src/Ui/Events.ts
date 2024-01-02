@@ -14,6 +14,7 @@ namespace Freakylay.Ui {
         private helper: ConfigHelper;
         private connection: BaseConnection;
         private heartRate: HeartRate;
+        private languageManager: LanguageManager;
 
         // html elements
         private cssRootVariables: HTMLHtmlElement;
@@ -122,13 +123,15 @@ namespace Freakylay.Ui {
          * @param config
          * @param helper
          * @param heartRate
+         * @param languageManager
          */
-        constructor(config: Config, helper: ConfigHelper, heartRate: HeartRate) {
+        constructor(config: Config, helper: ConfigHelper, heartRate: HeartRate, languageManager: LanguageManager) {
             // init
             this.logger = new Logger('Events');
             this.config = config;
             this.helper = helper;
             this.heartRate = heartRate;
+            this.languageManager = languageManager;
             this.levelIsPaused = false;
 
             this.showElements = new EventProperty<boolean>(false);
@@ -170,6 +173,7 @@ namespace Freakylay.Ui {
             // internal
             this.showElements.register((show: boolean) => {
                 const className = 'inactive';
+                // todo :: reason why all modifiers will "replopp"
                 this.allModifiers.forEach((ar: HTMLDivElement[]) => {
                     ar.forEach((element: HTMLDivElement) => {
                         this.displayModifier(element, true);
@@ -412,7 +416,7 @@ namespace Freakylay.Ui {
             // Pulsoid event on data receive
             this.heartRate.bpm.register((bpm: number) => {
                 let enabled = bpm > 0 && !this.config.heartRate.graph.disableCircleBar.Value;
-                let values = this.helper.localization.getLocalizedText('heartRateCircleBarLabel');
+                let values = this.languageManager.getLocalizedText('heartRateCircleBarLabel');
                 this.heartRateElement.display(enabled);
                 this.counterSection.toggleClassByValue(enabled, 'heartRate');
                 if (!enabled) {
@@ -493,11 +497,11 @@ namespace Freakylay.Ui {
 
             this.timeCircleBar = new CircleBar(this.time);
             this.healthCircleBar = new CircleBar(this.health, (percent: string) => {
-                let values = this.helper.localization.getLocalizedText('HealthLabel');
+                let values = this.languageManager.getLocalizedText('HealthLabel');
                 return '<small>' + values['before'] + '</small>' + parseFloat(percent).toFixed(0) + values['after'];
             });
             this.accuracyCircleBar = new CircleBar(this.accuracy, (percent: string) => {
-                let values = this.helper.localization.getLocalizedText('AccuracyLabel');
+                let values = this.languageManager.getLocalizedText('AccuracyLabel');
                 return '<small>' + values['before'] + '</small>' + percent + values['after'];
             });
             this.accuracyRank = document.getDiv('rank');
@@ -587,22 +591,22 @@ namespace Freakylay.Ui {
          * @private
          */
         private handleShortNames(enabled: boolean): void {
-            this.modifierNoFailOn0Energy.innerText = enabled ? this.helper.localization.getLocalizedText('noFailOn0EnergyShort') : this.helper.localization.getLocalizedText('noFailOn0Energy');
-            this.modifierOneLife.innerText = enabled ? this.helper.localization.getLocalizedText('oneLifeShort') : this.helper.localization.getLocalizedText('oneLife');
-            this.modifierFourLives.innerText = enabled ? this.helper.localization.getLocalizedText('fourLivesShort') : this.helper.localization.getLocalizedText('fourLives');
-            this.modifierNoBombs.innerText = enabled ? this.helper.localization.getLocalizedText('noBombsShort') : this.helper.localization.getLocalizedText('noBombs');
-            this.modifierNoWalls.innerText = enabled ? this.helper.localization.getLocalizedText('noWallsShort') : this.helper.localization.getLocalizedText('noWalls');
-            this.modifierNoArrows.innerText = enabled ? this.helper.localization.getLocalizedText('noArrowsShort') : this.helper.localization.getLocalizedText('noArrows');
-            this.modifierGhostNotes.innerText = enabled ? this.helper.localization.getLocalizedText('ghostNotesShort') : this.helper.localization.getLocalizedText('ghostNotes');
-            this.modifierDisappearingArrows.innerText = enabled ? this.helper.localization.getLocalizedText('disappearingArrowsShort') : this.helper.localization.getLocalizedText('disappearingArrows');
-            this.modifierSmallNotes.innerText = enabled ? this.helper.localization.getLocalizedText('smallNotesShort') : this.helper.localization.getLocalizedText('smallNotes');
-            this.modifierProMode.innerText = enabled ? this.helper.localization.getLocalizedText('proModeShort') : this.helper.localization.getLocalizedText('proMode');
-            this.modifierStrictAngles.innerText = enabled ? this.helper.localization.getLocalizedText('strictAnglesShort') : this.helper.localization.getLocalizedText('strictAngles');
-            this.modifierZenMode.innerText = enabled ? this.helper.localization.getLocalizedText('zenModeShort') : this.helper.localization.getLocalizedText('zenMode');
-            this.modifierSlowerSong.innerText = enabled ? this.helper.localization.getLocalizedText('slowerSongShort') : this.helper.localization.getLocalizedText('slowerSong');
-            this.modifierFasterSong.innerText = enabled ? this.helper.localization.getLocalizedText('fasterSongShort') : this.helper.localization.getLocalizedText('fasterSong');
-            this.modifierSuperFastSong.innerText = enabled ? this.helper.localization.getLocalizedText('superFastSongShort') : this.helper.localization.getLocalizedText('superFastSong');
-            this.practiceModeInfo.innerText = enabled ? this.helper.localization.getLocalizedText('practiceModeShort') : this.helper.localization.getLocalizedText('practiceMode');
+            this.modifierNoFailOn0Energy.innerText = enabled ? this.languageManager.getLocalizedText('noFailOn0EnergyShort') : this.languageManager.getLocalizedText('noFailOn0Energy');
+            this.modifierOneLife.innerText = enabled ? this.languageManager.getLocalizedText('oneLifeShort') : this.languageManager.getLocalizedText('oneLife');
+            this.modifierFourLives.innerText = enabled ? this.languageManager.getLocalizedText('fourLivesShort') : this.languageManager.getLocalizedText('fourLives');
+            this.modifierNoBombs.innerText = enabled ? this.languageManager.getLocalizedText('noBombsShort') : this.languageManager.getLocalizedText('noBombs');
+            this.modifierNoWalls.innerText = enabled ? this.languageManager.getLocalizedText('noWallsShort') : this.languageManager.getLocalizedText('noWalls');
+            this.modifierNoArrows.innerText = enabled ? this.languageManager.getLocalizedText('noArrowsShort') : this.languageManager.getLocalizedText('noArrows');
+            this.modifierGhostNotes.innerText = enabled ? this.languageManager.getLocalizedText('ghostNotesShort') : this.languageManager.getLocalizedText('ghostNotes');
+            this.modifierDisappearingArrows.innerText = enabled ? this.languageManager.getLocalizedText('disappearingArrowsShort') : this.languageManager.getLocalizedText('disappearingArrows');
+            this.modifierSmallNotes.innerText = enabled ? this.languageManager.getLocalizedText('smallNotesShort') : this.languageManager.getLocalizedText('smallNotes');
+            this.modifierProMode.innerText = enabled ? this.languageManager.getLocalizedText('proModeShort') : this.languageManager.getLocalizedText('proMode');
+            this.modifierStrictAngles.innerText = enabled ? this.languageManager.getLocalizedText('strictAnglesShort') : this.languageManager.getLocalizedText('strictAngles');
+            this.modifierZenMode.innerText = enabled ? this.languageManager.getLocalizedText('zenModeShort') : this.languageManager.getLocalizedText('zenMode');
+            this.modifierSlowerSong.innerText = enabled ? this.languageManager.getLocalizedText('slowerSongShort') : this.languageManager.getLocalizedText('slowerSong');
+            this.modifierFasterSong.innerText = enabled ? this.languageManager.getLocalizedText('fasterSongShort') : this.languageManager.getLocalizedText('fasterSong');
+            this.modifierSuperFastSong.innerText = enabled ? this.languageManager.getLocalizedText('superFastSongShort') : this.languageManager.getLocalizedText('superFastSong');
+            this.practiceModeInfo.innerText = enabled ? this.languageManager.getLocalizedText('practiceModeShort') : this.languageManager.getLocalizedText('practiceMode');
             this.practiceModeSongSpeed.innerText = this.getSongSpeedWithModifierName('100');
             this.practiceModeTimeOffset.innerText = this.getSongTimeOffsetWithModifierName('0');
         }
@@ -947,7 +951,7 @@ namespace Freakylay.Ui {
          * @param ifNotCallback callback if value is false
          * @private
          */
-        private checkCompatibility<T>(value: boolean, isModifier: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (T) => void, ifNotCallback: () => void = null): void {
+        private checkCompatibility<T>(value: boolean, isModifier: boolean, element: HTMLDivElement | HTMLSpanElement, event: EventProperty<T>, callback: (arg: T) => void, ifNotCallback: () => void = null): void {
             if (!isModifier) {
                 if (element.tagName.toLowerCase() == 'div') {
                     element.display(value);
@@ -1060,7 +1064,7 @@ namespace Freakylay.Ui {
         private onTimeElapsedChangeSetText(value: number, total: number): void {
             let currentTime = this.levelIsPaused && (new Date()).getSeconds() % 2 == 0 ? ' ' : value.toDateString(false);
             let text: string;
-            let values = this.helper.localization.getLocalizedText('timeLabel');
+            let values = this.languageManager.getLocalizedText('timeLabel');
             if (this.config.looks.timeCircleLikeOtherCircles.Value) {
                 text = values["circle"]["before"] + currentTime + values["circle"]["after"];
             } else {
@@ -1525,7 +1529,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongSpeedWithModifierName(speed: string): string {
-            let values = this.helper.localization.getLocalizedText('practiceModeSongSpeedLabel');
+            let values = this.languageManager.getLocalizedText('practiceModeSongSpeedLabel');
             return (this.config.looks.shortModifierNames.Value ? speed : values['before'] + speed) + values['after'];
         }
 
@@ -1535,7 +1539,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private getSongTimeOffsetWithModifierName(offset: string): string {
-            let values = this.helper.localization.getLocalizedText('practiceModeTimeOffsetLabel');
+            let values = this.languageManager.getLocalizedText('practiceModeTimeOffsetLabel');
             return (this.config.looks.shortModifierNames.Value ? offset : values['before'] + offset) + values['after'];
         }
 
@@ -1753,6 +1757,40 @@ namespace Freakylay.Ui {
             }
 
             this.heartGraphGfx.fillText(lastBpmString, canvasWidth - xMargin, lastY + bigFontSizeHalf / 2);
+        }
+
+        /**
+         * hmm?
+         * @private
+         */
+        private test(): void {
+            if (!this.connection) {
+                return
+            }
+
+            this.onLevelChange(true);
+
+            this.connection.onModifierDisappearingArrowsChange.Value = false;
+            this.connection.onModifierOneLifeChange.Value = false;
+            this.connection.onModifierFourLivesChange.Value = false;
+            this.connection.onModifierNoBombsChange.Value = false;
+            this.connection.onPracticeModeChange.Value = false;
+            this.connection.onModifierProModeChange.Value = false;
+            this.connection.onModifierGhostNotesChange.Value = false;
+
+            window.setTimeout(() => {
+                this.onLevelChange(false);
+
+                window.setTimeout(() => {
+                    this.connection.onModifierDisappearingArrowsChange.Value = true;
+                    this.connection.onModifierOneLifeChange.Value = true;
+                    this.connection.onModifierFourLivesChange.Value = true;
+                    this.connection.onModifierNoBombsChange.Value = true;
+                    this.connection.onPracticeModeChange.Value = true;
+                    this.connection.onModifierProModeChange.Value = true;
+                    this.connection.onModifierGhostNotesChange.Value = true;
+                }, 5000);
+            }, 2000);
         }
     }
 }

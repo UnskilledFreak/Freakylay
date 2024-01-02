@@ -1,6 +1,7 @@
 ///<reference path="Internal/Config/Config.ts"/>
 ///<reference path="Game/BaseGame.ts"/>
 ///<reference path="Game/BeatSaber/BeatSaber.ts"/>
+///<reference path="Ui/LanguageManager.ts"/>
 ///<reference path="Ui/TabManager.ts"/>
 ///<reference path="Ui/ConfigHelper.ts"/>
 ///<reference path="Ui/Events.ts"/>
@@ -18,12 +19,13 @@ namespace Freakylay {
     import Logger = Freakylay.Internal.Logger;
     import GameLinkStatus = Freakylay.Game.GameLinkStatus;
     import HeartRate = Freakylay.DataTransfer.HeartRate.HeartRate;
+    import LanguageManager = Freakylay.Ui.LanguageManager;
 
     /**
      * main overlay class
      */
     export class Overlay {
-        public static Version: string = '3.0.1';
+        public static Version: string = '3.1.0';
         public static Branch: string = 'Release';
 
         private isDev: boolean = false; //window.location.protocol == undefined || window.location.protocol == 'file:';
@@ -35,6 +37,7 @@ namespace Freakylay {
         private readonly heartRate: HeartRate;
         private readonly gameLinkState: EventProperty<GameLinkStatus>;
         private readonly events: Events;
+        private readonly languageManager: LanguageManager;
         private tabManager: TabManager;
 
         constructor() {
@@ -43,13 +46,14 @@ namespace Freakylay {
                 document.querySelector('body').append(this.logger.element);
             }
 
+            this.languageManager = new LanguageManager();
             this.gameLinkState = new EventProperty<GameLinkStatus>();
             this.config = new Config();
             this.heartRate = new HeartRate(this.config);
             this.gameList = this.loadGameList();
 
-            this.helper = new ConfigHelper(this.config, this.heartRate, this.gameList, this.gameLinkState, this.isDev);
-            this.events = new Events(this.config, this.helper, this.heartRate);
+            this.helper = new ConfigHelper(this.config, this.heartRate, this.gameList, this.gameLinkState, this.languageManager, this.isDev);
+            this.events = new Events(this.config, this.helper, this.heartRate, this.languageManager);
 
             this.tabManager = new TabManager(this.isDev, this.events, this.config, this.gameLinkState);
 
