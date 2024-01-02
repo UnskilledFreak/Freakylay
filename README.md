@@ -163,7 +163,7 @@ For most stability, use DataPuller 2.0.12 (which does not have the double-combo 
 **A:** This is a normal behaviour. The overlay will hide itself when you are in the menus. It will show everything you set it up to when you start playing a song.
 
 **Q:** The overlay won't show anything even when I play a song!  
-**A:** Make sure the overlay is set up correctly. Double-check the selected game and connection, especially correct version, and copy the URL to your application. Also check if your mods ar up and running.
+**A:** Make sure the overlay is set up correctly. Double-check the selected game and connection, especially correct version, and copy the URL to your application. Also check if your mods are up and running.
 
 ## Testers
 
