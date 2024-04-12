@@ -1,10 +1,11 @@
 ///<reference path="../AbstractDataPuller.ts"/>
 namespace Freakylay.Game.BeatSaber.Connection {
     import Config = Freakylay.Internal.Config.Config;
+    import LanguageManager = Freakylay.Ui.LanguageManager;
 
     export class DataPuller_2_1_0 extends AbstractDataPuller {
-        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
-            super(gameLinkStatus, config);
+        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config, languageManager: LanguageManager) {
+            super(gameLinkStatus, config, languageManager);
         }
 
         /**

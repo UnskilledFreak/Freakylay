@@ -15,7 +15,7 @@ namespace Freakylay.Ui {
     export class TabManager {
         private tabs: Tab[];
 
-        constructor(developmentMode: boolean, events: Events, config: Config, gameLinkState: EventProperty<GameLinkStatus>) {
+        constructor(developmentMode: boolean, events: Events, config: Config, gameLinkState: EventProperty<GameLinkStatus>, languageManager: LanguageManager) {
             this.tabs = [];
 
             document.getAll<HTMLDivElement[]>('div[data-tab-name]').forEach((element: HTMLDivElement) => {
@@ -30,14 +30,14 @@ namespace Freakylay.Ui {
                 let content = this.addTab('TEST');
                 content.append(
                     document.button('DP2_0_12_PAUSE', () => {
-                        let c = new DataPuller_2_0_12(gameLinkState, config);
+                        let c = new DataPuller_2_0_12(gameLinkState, config, languageManager);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(true);
                         c.testLiveData();
                     }),
                     document.button('DP2_0_12_NO_PAUSE', () => {
-                        let c = new DataPuller_2_0_12(gameLinkState, config);
+                        let c = new DataPuller_2_0_12(gameLinkState, config, languageManager);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData(false);
@@ -45,7 +45,7 @@ namespace Freakylay.Ui {
                     }),
                     document.create('hr'),
                     document.button('DP2_1_0', () => {
-                        let c = new DataPuller_2_1_0(gameLinkState, config);
+                        let c = new DataPuller_2_1_0(gameLinkState, config, languageManager);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testMapData();
@@ -53,13 +53,13 @@ namespace Freakylay.Ui {
                     }),
                     document.create('hr'),
                     document.button('HSS_9_0_1', () => {
-                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config);
+                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config, languageManager);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.test();
                     }),
                     document.button('HSS_9_0_1_noKeyAfterKeyMap', () => {
-                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config);
+                        let c = new HttpSiraStatus_9_0_1(gameLinkState, config, languageManager);
                         c.loadConfig(config.connectionSetting);
                         events.registerConnection(c);
                         c.testNoKeyAfterKeyMap();

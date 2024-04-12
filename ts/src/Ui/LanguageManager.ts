@@ -3,12 +3,18 @@ namespace Freakylay.Ui {
     import Languages = Freakylay.Ui.Languages;
     import Logger = Freakylay.Internal.Logger;
 
+    /**
+     * localisation manager
+     */
     export class LanguageManager {
 
         private logger: Logger;
         private currentLanguage: Languages;
         private currentLanguageObject: Object;
 
+        /**
+         * gets the current langauge in use by the browser
+         */
         static GetDefaultLanguage() {
             switch (navigator.language.toLowerCase()) {
                 case 'de':
@@ -27,11 +33,18 @@ namespace Freakylay.Ui {
             }
         }
 
+        /**
+         * @constructor
+         */
         constructor() {
             this.logger = new Logger('LanguageManager');
             this.import(LanguageManager.GetDefaultLanguage());
         }
 
+        /**
+         * loads the selected language file
+         * @param language
+         */
         public import(language: Languages): void {
             this.currentLanguage = language;
             switch (this.currentLanguage) {
@@ -41,6 +54,7 @@ namespace Freakylay.Ui {
                 case Freakylay.Ui.Languages.es:
                     this.loadData('es');
                     break;
+                default:
                 case Freakylay.Ui.Languages.en:
                     this.loadData('en');
                     break;
@@ -50,6 +64,10 @@ namespace Freakylay.Ui {
             }
         }
 
+        /**
+         * gets a translated string from the given localisation id
+         * @param id
+         */
         public getLocalizedText(id: string): any {
             if (this.currentLanguageObject === null || this.currentLanguageObject === undefined) {
                 this.logger.log('unable to get localized text for id: ' + id);
@@ -58,6 +76,10 @@ namespace Freakylay.Ui {
             return this.currentLanguageObject.hasOwnProperty(id) ? this.currentLanguageObject[id] : '';
         }
 
+        /**
+         * refreshes the whole UI, only needed when a language change was made
+         * @param fullVersionString
+         */
         public refreshLanguage(fullVersionString: string): void {
             let meta = document.getElementsByTagName("meta");
             let targetDom: HTMLElement;
@@ -203,6 +225,11 @@ namespace Freakylay.Ui {
             });
         }
 
+        /**
+         * tries to load translation data from a json file
+         * @param lang
+         * @private
+         */
         private loadData(lang: string): void {
             let request = new XMLHttpRequest();
             request.open('GET', 'language/' + lang + '.json', false);

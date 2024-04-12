@@ -4,6 +4,7 @@ namespace Freakylay.Game {
     import Color = Freakylay.Internal.Color;
     import ConfigHelper = Freakylay.Ui.ConfigHelper;
     import Config = Freakylay.Internal.Config.Config;
+    import LanguageManager = Freakylay.Ui.LanguageManager;
 
     export abstract class BaseConnection {
         public ip: string;
@@ -13,6 +14,7 @@ namespace Freakylay.Game {
         protected isConnected: boolean = false;
         protected linkStatus: EventProperty<Freakylay.Game.GameLinkStatus>;
         protected readonly config: Config;
+        protected readonly languageManager: LanguageManager;
 
         /**
          * returns the unique name of the connection
@@ -148,11 +150,13 @@ namespace Freakylay.Game {
          * internal constructor, will also register the generic modifier change event to all modifier events
          * @param gameLinkStatus
          * @param config
+         * @param languageManager
          * @protected
          */
-        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config, languageManager: LanguageManager) {
             this.linkStatus = gameLinkStatus;
             this.config = config;
+            this.languageManager = languageManager;
 
             this.setCompatibility();
 

@@ -23,22 +23,12 @@ namespace Freakylay.DataTransfer.HeartRate.Connector {
             this.socket.onopen = () => {
                 this.connectionState.Value = Freakylay.DataTransfer.HeartRate.ConnectionState.Ready;
                 // seems we are connected, request session channel
-                this.socket.send(JSON.stringify({
-                    //'topic': 'hr:internal-testing',
-                    'topic': 'hr:' + this.config.heartRate.tokenOrUrl.Value,
-                    'event': 'phx_join',
-                    'payload': {},
-                    'ref': this.ref
-                }));
+                //this.sendToServer('hr:internal-testing', 'phx_join')
+                this.sendToServer('hr:' + this.config.heartRate.tokenOrUrl.Value, 'phx_join')
 
                 this.heartBeat = window.setInterval(() => {
-                    this.socket.send(JSON.stringify({
-                        'topic': 'phoenix',
-                        'event': 'heartbeat',
-                        'payload': {},
-                        'ref': this.ref
-                    }));
-                }, 29000);
+                    this.sendToServer('phoenix', 'heartbeat');
+                }, 25000);
             };
             this.socket.onerror = () => {
                 this.connectionState.Value = Freakylay.DataTransfer.HeartRate.ConnectionState.Error;
@@ -74,8 +64,24 @@ namespace Freakylay.DataTransfer.HeartRate.Connector {
 
             if (this.heartBeat != null) {
                 window.clearInterval(this.heartBeat);
-                this.heartBeat = null;
             }
+
+            this.socket = null;
+            this.heartBeat = null;
+        }
+        
+        private sendToServer(topic: string, event: string): void
+        {
+            if (!(this.socket instanceof window.WebSocket)) {
+                return;
+            }
+
+            this.socket.send(JSON.stringify({
+                'topic': topic,
+                'event': event,
+                'payload': {},
+                'ref': this.ref
+            }));
         }
     }
 }

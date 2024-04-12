@@ -14,8 +14,8 @@ namespace Freakylay.Internal.Config {
         public smallFontSize: EventProperty<number> = new EventProperty<number>(12);
         public bigFontSize: EventProperty<number> = new EventProperty<number>(20);
 
-        public static MinTimespan = 10;
-        public static MaxTimespan = 600;
+        public static MinTimespan = 100;
+        public static MaxTimespan = 1000;
         public static MinGraphSize = 50;
         public static MaxFontSize = 72;
 

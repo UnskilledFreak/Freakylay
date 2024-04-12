@@ -1664,6 +1664,7 @@ namespace Freakylay.Ui {
                 return;
             }
 
+            // read current bpm and detect if value is not a "dead" one
             let bpm = this.heartRate.bpm.Value;
             if (bpm <= 0) {
                 let deathCheck = this.heartGraphList.length > 0
@@ -1674,28 +1675,34 @@ namespace Freakylay.Ui {
                 this.heartGraphList.push(bpm);
             }
 
+            // only keep a specific amount of events to not overflow memory
             while (this.heartGraphList.length > Freakylay.Internal.Config.HeartGraph.MaxTimespan) {
                 this.heartGraphList.shift();
             }
 
+            // get the users max shown events
             let eventCount = this.config.heartRate.graph.eventsToShow.Value;
 
+            // calculate a list of events, so it only contains actual data
             let data = (
                 this.heartGraphList.length > eventCount
                     ? this.heartGraphList.slice(-eventCount)
                     : this.heartGraphList
             ).filter(x => x > 0);
 
+            // check if list was empty, it's here because after overlay start, drawing graph and connecting to any heart info there might be a significant delay without data
             if (data.length == 0) {
                 data = [0];
             }
 
+            // color calculation
             let color = this.config.heartRate.graph.useBackground.Value
                 ? this.config.colors.text.Value.toCss()
                 : this.config.heartRate.graph.useBackgroundColorForStroke.Value
                     ? this.config.colors.background.Value.toCss()
                     : this.config.colors.text.Value.toCss();
 
+            // some value initializers
             let minBpm = Math.min(...data);
             let maxBpm = this.config.heartRate.useDynamicBpm.Value
                 ? Math.max(...data)
@@ -1708,33 +1715,68 @@ namespace Freakylay.Ui {
             let boundary = 20;
             let fakeHeightMargin = 10;
 
+            // values for a stuck heart rate connection detection
+            let lastSameBpm = 0;
+            let lastSameBpmCount = 0;
+
+            // make sure that the graph always will draw a line by having enough vertical space by adding a boundary if necessary
             if (maxBpm - boundary < minBpm) {
                 maxBpm = minBpm + boundary;
             }
 
+            // calculate the actual drawing height by subtracting a boundary to make sure it will never hit the top border
             let fakeHeight = canvasHeight - fakeHeightMargin;
 
+            // clear the drawing zone and beginn a path
             this.heartGraphGfx.clearRect(0, 0, canvasWidth, canvasHeight);
             this.heartGraphGfx.beginPath();
 
             for (let x = 0; x < data.length; x++) {
+                // greater 0 check to prevent reconnects because something else went wrong (outside overlays scope)
+                if (x > 0) {
+                    if (lastSameBpm == x) {
+                        lastSameBpmCount++;
+                    } else {
+                        lastSameBpmCount = 0;
+                        lastSameBpm = x;
+                    }
+                }
+
+                // calculate height in pixel by bpm offsets and boundary margins
                 let y = fakeHeight - (((data[x] - minBpm) / (maxBpm - minBpm)) * fakeHeight) + fakeHeightMargin / 2;
                 if (x == 0) {
+                    // first point always start at x position 0
                     this.heartGraphGfx.moveTo(0, y);
                 } else {
+                    // every other point will use x + 1 divided by the data events length by respecting drawing zone width
+                    // this will make sure that the whole graph width is always filled
                     this.heartGraphGfx.lineTo((x + 1) / data.length * canvasWidth, y);
                 }
                 lastY = y;
                 lastBpm = data[x];
             }
+
+            // styling and drawing the actual line
             this.heartGraphGfx.strokeStyle = color;
             this.heartGraphGfx.lineWidth = 2;
             this.heartGraphGfx.stroke();
 
+
+            // check if we have a "stuck" line, if so we simply reconnect to the heart service to force a refresh
+            if (lastSameBpmCount > 100) {
+                this.heartRate.stop();
+                // a small delay so the connection will be closed
+                window.setTimeout(() => {
+                    this.heartRate.start();
+                }, 200);
+            }
+
+            // do we have to draw numbers? if not just return from here
             if (!this.config.heartRate.graph.displayNumbers.Value) {
                 return;
             }
 
+            // drawing max, min and current bpm onto the graph
             let lastBpmString = lastBpm > 0 ? lastBpm.toString() : '?';
             let xMargin = 10;
 

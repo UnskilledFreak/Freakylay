@@ -1,8 +1,8 @@
 namespace Freakylay.Ui {
     export enum Languages {
         de = 'Deutsch',
-        es = 'Español',
         en = 'English',
+        es = 'Español',
         zh_cn = '简体中文'
     }
 }

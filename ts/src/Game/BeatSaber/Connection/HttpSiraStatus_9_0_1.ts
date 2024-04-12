@@ -4,6 +4,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
     import Color = Freakylay.Internal.Color;
     import Config = Freakylay.Internal.Config.Config;
     import BeatSaver = Freakylay.DataTransfer.MapData.BeatSaver;
+    import LanguageManager = Freakylay.Ui.LanguageManager;
 
     export class HttpSiraStatus_9_0_1 extends BaseConnection {
         private connection: WebSocketConnection = null;
@@ -14,8 +15,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private beatSaver: BeatSaver
         private lastCombo: number;
 
-        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
-            super(gameLinkStatus, config);
+        constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config, languageManager: LanguageManager) {
+            super(gameLinkStatus, config, languageManager);
             this.author = '';
             this.songSubName = '';
             this.nullColor = new Color(0, 0, 0);
@@ -134,6 +135,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             let event: string = data.isset('event', '');
             let time = data.isset('time', 0);
             let status = data.isset('status', {});
+            let game = status.isset('game', {});
             let beatMap = status.isset('beatmap', {});
             // no game
             let modifier = status.isset('mod', {});
@@ -145,6 +147,10 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 case 'hello':
                     this.reset();
                     this.linkStatus.Value = Freakylay.Game.GameLinkStatus.Connected;
+                    let scene = game.isset('scene', 'menu');
+                    if (scene.toLowerCase() != 'menu') {
+                        this.onLevelChange.Value = true;
+                    }
                     this.parseBeatMapData(beatMap, time);
                     this.parseModifiers(modifier);
                     this.parsePerformance(performance);
@@ -152,15 +158,18 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 case 'songStart':
                     this.onLevelChange.Value = true;
                     this.lastCombo = 0;
+                    this.onHealthChange.Value = 50;
                     this.parseBeatMapData(beatMap, time);
                     this.parseModifiers(modifier);
                     this.parsePerformance(performance);
                     break;
                 case 'pause':
+                    this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = true;
                     this.clearInternalTimeTimeout();
                     break;
                 case 'resume':
+                    this.onLevelChange.Value = true;
                     this.onLevelPausedChange.Value = false;
                     this.clearInternalTimeTimeout();
                     break;
@@ -328,7 +337,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.timeTimeout = window.setInterval(() => {
                 this.internalTimeTimeout();
             }, 1000);
-            this.onHealthChange.Value = Math.floor(data.isset('energy', 1) * 100);
+            this.onHealthChange.Value = Math.floor(data.isset('energy', .5) * 100);
             // no hitBombs
             // no hitNotes
             // no lastNoteScore

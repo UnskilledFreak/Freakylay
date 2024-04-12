@@ -20,6 +20,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - [Customizing](#Customizing)
 - [Configuration](#Configuration)
 - [List of Parameters](#Parameters)
+- [HeartRate Implemenation](#HeartRate)
 - [Older Versions](#Versions)
 - [Known Issues](#Issues)
 - [FAQ](#FAQ)
@@ -39,7 +40,7 @@ I am planning to implement HTTPStatus as well so the overlay would work with bot
 - it hides itself when in menus
 - flip elements independently
 - test it with a preview image of Beat Saber without having the game to run
-- Pulsoid & HypeRate heart rate fully integrated to match style including a graph if you want that
+- [Pulsoid & HypeRate](#HeartRate) heart rate fully integrated to match style including a graph if you want that
 - completely event-driven
 
 ## Games
@@ -122,6 +123,13 @@ Version 2 URL parameters:
 | t         | hide complete counter section                                                                                        | 2.0.3              | 2.2.2             |
 | u         | hide complete song info section                                                                                      | 2.0.3              | 2.2.2             |
 
+## HeartRate
+The implementation for heart rate supports Pulsoid and HypeRate. 
+
+### Pulsoid
+An always up-to-date list of _**supported devices**_ can be found at https://www.blog.pulsoid.net/monitors.  
+There are nice of easy to follow tutorials at https://www.blog.pulsoid.net/.  
+
 ## Versions
 
 Older versions of Freakylay are available via there tags inside the master branch. The tags are ~~based on the compatible DataPuller~~ basically the Overlay's Version at that time.
@@ -134,7 +142,7 @@ It is possible to access unreleased or unstable versions by using its number in 
 
 | Freakylay Version        | State                 | Url                                                                                                            |
 |--------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------|
-| 3.1.0                    | in development        | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/) |
+| 3.1.0                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/) |
 | 3.0.1                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/) |
 | 3.0.0                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
 | 2.2.3 (DataPuller 2.0.9) | released              | [http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/](http://u.unskilledfreak.zone/overlay/freakylay/2.2.3/) |
@@ -185,6 +193,10 @@ Thank you so much for your work!
   - added german translation
   - added spanish translation (thanks to [Fefeland](https://www.twitch.tv/fefeland))
   - fixed minor styling issues (thanks to [baoziii](https://github.com/baoziii/Freakylay))
+  - fixed typos
+  - fixed default health is now 50 instead of 0
+  - fixed overlay not showing map when using Http(Sira)Status and loading the overlay while a map is played
+  - removed Pulsoid JSON HeartRate type because they removed it as announced
 - 3.0.1
   - fixed heart graph shows infinity when no heart rate was broadcasted
   - fixed song sub name not visible

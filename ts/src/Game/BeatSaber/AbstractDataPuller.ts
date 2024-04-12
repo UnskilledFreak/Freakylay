@@ -6,6 +6,7 @@ namespace Freakylay.Game.BeatSaber {
     import EventProperty = Freakylay.Internal.EventProperty;
     import ConfigHelper = Freakylay.Ui.ConfigHelper;
     import Config = Freakylay.Internal.Config.Config;
+    import LanguageManager = Freakylay.Ui.LanguageManager;
 
     /**
      * abstract DataPuller class because there are breaking changes between version 2.0.12 and 2.1.0
@@ -28,8 +29,8 @@ namespace Freakylay.Game.BeatSaber {
 
         private readonly onUseScoreWithMultipliers: EventProperty<boolean>;
 
-        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config) {
-            super(gameLinkStatus, config);
+        protected constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config, languageManager: LanguageManager) {
+            super(gameLinkStatus, config, languageManager);
             // todo :: idea :: check plugin version return on connect to auto-select correct connection?
             // todo :: idea :: this would also mean that both versions would share the same file... hm...
             // todo :: idea :: let me think about this...
@@ -132,7 +133,7 @@ namespace Freakylay.Game.BeatSaber {
          */
         public displayConnectionSettings(settingsTab: HTMLDivElement, helper: ConfigHelper): void {
             settingsTab.append(
-                helper.booleanSettingLine(helper.localization.getLocalizedText("connectionUseScoreWithMultipliers"), "connectionUseScoreWithMultipliers", this.onUseScoreWithMultipliers)
+                helper.booleanSettingLine(this.languageManager.getLocalizedText("connectionUseScoreWithMultipliers"), "connectionUseScoreWithMultipliers", this.onUseScoreWithMultipliers)
             );
 
             this.onUseScoreWithMultipliers.register(() => {
@@ -226,7 +227,7 @@ namespace Freakylay.Game.BeatSaber {
 
             this.onAccuracyChange.Value = data.isset('Accuracy', 0);
             // no BlockHitScore
-            this.onHealthChange.Value = data.isset('PlayerHealth', 0);
+            this.onHealthChange.Value = data.isset('PlayerHealth', 50);
             this.onTimeElapsedChange.Value = data.isset('TimeElapsed', 0);
             // no unixTimestamp
         }

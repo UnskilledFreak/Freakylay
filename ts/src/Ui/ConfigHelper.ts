@@ -31,8 +31,7 @@ namespace Freakylay.Ui {
         private heartRate: AbstractHeartRate;
         private heartRateFeedText: HTMLLabelElement;
         private heartRateFeedInput: HTMLInputElement;
-        private heartRateHintJson: HTMLDivElement;
-        private heartRateHintToken: HTMLDivElement;
+        private heartRateHintPulsoid: HTMLDivElement;
         private heartRateHintSession: HTMLDivElement;
         private heartRatePulsoidThanks: HTMLDivElement;
         private heartRateHypeRateThanks: HTMLDivElement;
@@ -75,7 +74,11 @@ namespace Freakylay.Ui {
             this.onConnection = new EventProperty<boolean>(false);
             this.onLanguageChange = new EventProperty<Freakylay.Ui.Languages>();
 
-            document.getDiv('copyright').innerText = this.fullVersionString;
+            window.setTimeout(() => {
+                // ok this is weird, why do I have to delay that line by 1ms to make it work?
+                // it won't work without that delay...
+                document.getDiv('copyright').innerText = this.fullVersionString;
+            }, 1);
             document.getId<HTMLSpanElement>('welcomeVersion').innerText = this.fullVersionString;
             let languageSelector = document.getId<HTMLSelectElement>('languageList');
             languageSelector.removeChildren();
@@ -118,8 +121,7 @@ namespace Freakylay.Ui {
             // heart rate elements
             this.heartRateFeedText = document.getId<HTMLLabelElement>('heartRateFeedUrlText');
             this.heartRateFeedInput = document.getId<HTMLInputElement>('heartRateFeed');
-            this.heartRateHintJson = document.getDiv('heartRateHintJson');
-            this.heartRateHintToken = document.getDiv('heartRateHintToken');
+            this.heartRateHintPulsoid = document.getDiv('heartRateHintPulsoid');
             this.heartRateHintSession = document.getDiv('heartRateHintSession');
             this.heartRateConnectionState = document.getDiv('heartRateConnectionState');
             this.heartRatePulsoidThanks = document.getDiv('pulsoidThanks');
@@ -232,7 +234,7 @@ namespace Freakylay.Ui {
             let gameLinkStatus = document.getDiv('gameLinkStatus');
             gameLinkState.register((newStatus: GameLinkStatus) => {
                 let status = this.languageManager.getLocalizedText('gameLinkStatus');
-                gameLinkStatus.innerText = status.hasOwnProperty(newStatus.toString())? status[newStatus.toString()]: newStatus.toString();
+                gameLinkStatus.innerText = status.hasOwnProperty(newStatus.toString()) ? status[newStatus.toString()] : newStatus.toString();
             });
 
             this.applyGameButton = document.getId<HTMLButtonElement>('connectToGame');
@@ -470,15 +472,14 @@ namespace Freakylay.Ui {
                 }
 
                 let name: string;
-
-                if (names.hasOwnProperty(value))
-                {
-                    name = names[value];
-                } else if (value === 'Dummy' && !this.isDev)
-                {
+                if (
+                    (value === 'Dummy' && !this.isDev)
+                    || value == 'JSON'
+                ) {
                     return;
-                } else
-                {
+                } else if (names.hasOwnProperty(value)) {
+                    name = names[value];
+                } else {
                     name = value;
                 }
 
@@ -561,8 +562,7 @@ namespace Freakylay.Ui {
          * @private
          */
         private checkHeartRateFeedType(firstStart: boolean): void {
-            this.heartRateHintToken.display(false);
-            this.heartRateHintJson.display(false);
+            this.heartRateHintPulsoid.display(false);
             this.heartRateHintSession.display(false);
             this.heartRatePulsoidThanks.display(false);
             this.heartRateHypeRateThanks.display(false);
@@ -586,8 +586,7 @@ namespace Freakylay.Ui {
 
                     this.heartRateFeedInput.disabled = true;
 
-                    this.heartRateHintToken.display(false);
-                    this.heartRateHintJson.display(false);
+                    this.heartRateHintPulsoid.display(false);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.JSON:
                     this.heartRateFeedText.innerText = this.languageManager.getLocalizedText("heartRateFeedTextJSON");
@@ -599,7 +598,6 @@ namespace Freakylay.Ui {
                     this.heartRateFeedInput.disabled = false;
                     this.heartRateFeedInput.type = 'text';
 
-                    this.heartRateHintJson.display(true);
                     this.heartRatePulsoidThanks.display(true);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.Token:
@@ -612,7 +610,7 @@ namespace Freakylay.Ui {
                     this.heartRateFeedInput.disabled = false;
                     this.heartRateFeedInput.type = 'password';
 
-                    this.heartRateHintToken.display(true);
+                    this.heartRateHintPulsoid.display(true);
                     this.heartRatePulsoidThanks.display(true);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.Dummy:
@@ -621,8 +619,7 @@ namespace Freakylay.Ui {
                     this.heartRateFeedInput.value = this.languageManager.getLocalizedText("heartRateFeedTextDummyValue");
                     this.heartRateFeedInput.type = 'text';
 
-                    this.heartRateHintJson.display(false);
-                    this.heartRateHintToken.display(false);
+                    this.heartRateHintPulsoid.display(false);
                     break;
                 case Freakylay.DataTransfer.HeartRate.FeedType.HypeRate:
                     this.heartRateFeedText.innerText = this.languageManager.getLocalizedText("heartRateFeedTextHypeRate");
