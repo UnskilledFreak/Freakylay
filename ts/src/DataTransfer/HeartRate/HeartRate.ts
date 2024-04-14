@@ -13,8 +13,9 @@ namespace Freakylay.DataTransfer.HeartRate {
     import HypeRate = Freakylay.DataTransfer.HeartRate.Connector.HypeRate;
 
     export class HeartRate {
+        private readonly config: Config;
+
         private logger: Logger;
-        private config: Config;
         private internalMaxBpm: number;
         private connector: AbstractConnector;
 

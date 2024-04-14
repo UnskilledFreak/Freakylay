@@ -7,10 +7,11 @@ namespace Freakylay.Game.BeatSaber.Connection {
     import LanguageManager = Freakylay.Ui.LanguageManager;
 
     export class HttpSiraStatus_9_0_1 extends BaseConnection {
+        private readonly nullColor: Color;
+
         private connection: WebSocketConnection = null;
         private author: string;
         private songSubName: string;
-        private nullColor: Color;
         private timeTimeout: number;
         private beatSaver: BeatSaver
         private lastCombo: number;

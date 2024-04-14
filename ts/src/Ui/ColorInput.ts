@@ -18,8 +18,8 @@ namespace Freakylay.Ui {
         private readonly name: string;
         private readonly id: string;
         private readonly languageManager: LanguageManager;
+        private readonly alphaCheck: (number: number) => boolean;
 
-        private alphaCheck: (number) => boolean;
         private rElement: HTMLInputElement;
         private gElement: HTMLInputElement;
         private bElement: HTMLInputElement;
