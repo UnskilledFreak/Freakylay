@@ -46,16 +46,16 @@ namespace Freakylay {
                 document.querySelector('body').append(this.logger.element);
             }
 
-            this.languageManager = new LanguageManager();
             this.gameLinkState = new EventProperty<GameLinkStatus>();
             this.config = new Config();
+            this.languageManager = new LanguageManager(this.config);
             this.heartRate = new HeartRate(this.config);
             this.gameList = this.loadGameList();
 
             this.helper = new ConfigHelper(this.config, this.heartRate, this.gameList, this.gameLinkState, this.languageManager, this.isDev);
             this.events = new Events(this.config, this.helper, this.heartRate, this.languageManager);
 
-            this.tabManager = new TabManager(this.isDev, this.events, this.config, this.gameLinkState);
+            this.tabManager = new TabManager(this.isDev, this.events, this.config, this.gameLinkState, this.languageManager);
 
             this.gameLinkState.Value = Freakylay.Game.GameLinkStatus.NotConnected;
 

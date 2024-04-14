@@ -2,6 +2,7 @@
 namespace Freakylay.Ui {
     import Languages = Freakylay.Ui.Languages;
     import Logger = Freakylay.Internal.Logger;
+    import Config = Freakylay.Internal.Config.Config;
 
     /**
      * localisation manager
@@ -11,34 +12,15 @@ namespace Freakylay.Ui {
         private logger: Logger;
         private currentLanguage: Languages;
         private currentLanguageObject: Object;
-
-        /**
-         * gets the current langauge in use by the browser
-         */
-        static GetDefaultLanguage() {
-            switch (navigator.language.toLowerCase()) {
-                case 'de':
-                case 'de-de':
-                case 'de-at':
-                case 'de-ch':
-                    return Freakylay.Ui.Languages.de;
-                case 'es':
-                    return Freakylay.Ui.Languages.es;
-                case 'zh':
-                case 'zh-hans':
-                case 'zh-cn':
-                    return Freakylay.Ui.Languages.zh_cn;
-                default:
-                    return Freakylay.Ui.Languages.en;
-            }
-        }
+        private config: Config;
 
         /**
          * @constructor
          */
-        constructor() {
+        constructor(config: Config) {
             this.logger = new Logger('LanguageManager');
-            this.import(LanguageManager.GetDefaultLanguage());
+            this.config = config;
+            this.import(this.getDefaultLanguage());
         }
 
         /**
@@ -61,6 +43,28 @@ namespace Freakylay.Ui {
                 case Freakylay.Ui.Languages.zh_cn:
                     this.loadData('zh_cn');
                     break;
+            }
+        }
+
+        /**
+         * gets the current langauge in use by the browser or from config if it exists
+         */
+        public getDefaultLanguage() {
+            let lang = this.config.language.Value == '' ? navigator.language.toLowerCase() : this.config.language.Value;
+            switch (lang) {
+                case 'de':
+                case 'de-de':
+                case 'de-at':
+                case 'de-ch':
+                    return Freakylay.Ui.Languages.de;
+                case 'es':
+                    return Freakylay.Ui.Languages.es;
+                case 'zh':
+                case 'zh-hans':
+                case 'zh-cn':
+                    return Freakylay.Ui.Languages.zh_cn;
+                default:
+                    return Freakylay.Ui.Languages.en;
             }
         }
 
