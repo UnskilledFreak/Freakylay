@@ -91,7 +91,7 @@ namespace Freakylay.Ui {
                 languageSelector.append(this.createOptionForSelect(
                     value,
                     Freakylay.Ui.Languages[value],
-                    Freakylay.Ui.Languages[value] == this.config.language.Value
+                    value == this.config.language.Value
                 ));
 
                 this.languageManager.refreshLanguage(this.fullVersionString);
