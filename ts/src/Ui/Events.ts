@@ -113,6 +113,7 @@ namespace Freakylay.Ui {
         private currentAnimScore: number;
         private scoreAnimateInterval: number;
         private heartGraphInterval: number;
+        private heartRateReconnectWasTriggered: boolean = false;
 
         // heart rate graph data array
         private readonly heartGraphList: number[];
@@ -1761,13 +1762,15 @@ namespace Freakylay.Ui {
             this.heartGraphGfx.lineWidth = 2;
             this.heartGraphGfx.stroke();
 
-
             // check if we have a "stuck" line, if so we simply reconnect to the heart service to force a refresh
-            if (lastSameBpmCount > 100) {
+            if (lastSameBpmCount > 100 && !this.heartRateReconnectWasTriggered) {
                 this.heartRate.stop();
+                this.heartRateReconnectWasTriggered = true;
+
                 // a small delay so the connection will be closed
                 window.setTimeout(() => {
                     this.heartRate.start();
+                    this.heartRateReconnectWasTriggered = false;
                 }, 200);
             }
 
