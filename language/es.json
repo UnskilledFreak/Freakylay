@@ -236,6 +236,10 @@
   "heartRateSettingsGraphHeight": "Altura.",
   "heartRateSettingsDisableCircleBarInCounterSection": "Deshabilitar la barra circular en la sección de contadores.",
   "heartRateSettingsDisplayNumbers": "Mostrar números.",
+  "heartRateSettingsDisplayNumbersMaxBpm": "display maximum BPM",
+  "heartRateSettingsDisplayNumbersMinBPM": "display minimum BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMLeft": "display left current BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMRight": "display right current BPM",
   "heartRateSettingsFontSizeForMinAndMaxBPM": "Tamaño de texto para BPM mínimo y máximo.",
   "heartRateSettingsFontSizeForCurrentBPM": "Tamaño de texto para bpm actual.",
   "heartRateSettingsAnchor": {

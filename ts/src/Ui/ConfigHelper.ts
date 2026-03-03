@@ -10,6 +10,7 @@ namespace Freakylay.Ui {
     import BaseGame = Freakylay.Game.BaseGame;
     import BaseConnection = Freakylay.Game.BaseConnection;
     import GameLinkStatus = Freakylay.Game.GameLinkStatus;
+    import FakeEnum = Freakylay.Internal.FakeEnum;
 
     /**
      * helper for config <-> option panel
@@ -534,6 +535,30 @@ namespace Freakylay.Ui {
                 this.rangeSettingLine('heartRateSettingsGraphHeight', this.config.heartRate.graph.height, Freakylay.Internal.Config.HeartGraph.MinGraphSize, window.outerHeight, 1),
                 this.booleanSettingLine(this.languageManager.getLocalizedText('heartRateSettingsDisableCircleBarInCounterSection'), 'heartRateSettingsDisableCircleBarInCounterSection', this.config.heartRate.graph.disableCircleBar),
                 this.booleanSettingLine(this.languageManager.getLocalizedText('heartRateSettingsDisplayNumbers'), 'heartRateSettingsDisplayNumbers', this.config.heartRate.graph.displayNumbers),
+                this.booleanSettingLineCustom(
+                    this.languageManager.getLocalizedText('heartRateSettingsDisplayNumbersMaxBpm'),
+                    'heartRateSettingsDisplayNumbersMaxBpm',
+                    this.config.heartRate.graph.displayNumbersSpecific.Value.hasFlag(Freakylay.Internal.Config.HeartGraph.displayNumberMaxBPM),
+                    input => this.handleDisplayNumbersEnum(input, this.config.heartRate.graph.displayNumbersSpecific, Freakylay.Internal.Config.HeartGraph.displayNumberMaxBPM)
+                ),
+                this.booleanSettingLineCustom(
+                    this.languageManager.getLocalizedText('heartRateSettingsDisplayNumbersMinBPM'),
+                    'heartRateSettingsDisplayNumbersMinBPM',
+                    this.config.heartRate.graph.displayNumbersSpecific.Value.hasFlag(Freakylay.Internal.Config.HeartGraph.displayNumberMinBPM),
+                    input => this.handleDisplayNumbersEnum(input, this.config.heartRate.graph.displayNumbersSpecific, Freakylay.Internal.Config.HeartGraph.displayNumberMinBPM)
+                ),
+                this.booleanSettingLineCustom(
+                    this.languageManager.getLocalizedText('heartRateSettingsDisplayNumbersCurrentBPMLeft'),
+                    'heartRateSettingsDisplayNumbersCurrentBPMLeft',
+                    this.config.heartRate.graph.displayNumbersSpecific.Value.hasFlag(Freakylay.Internal.Config.HeartGraph.displayNumberCurrentBPMLeft),
+                    input => this.handleDisplayNumbersEnum(input, this.config.heartRate.graph.displayNumbersSpecific, Freakylay.Internal.Config.HeartGraph.displayNumberCurrentBPMLeft))
+                ,
+                this.booleanSettingLineCustom(
+                    this.languageManager.getLocalizedText('heartRateSettingsDisplayNumbersCurrentBPMRight'),
+                    'heartRateSettingsDisplayNumbersCurrentBPMRight',
+                    this.config.heartRate.graph.displayNumbersSpecific.Value.hasFlag(Freakylay.Internal.Config.HeartGraph.displayNumberCurrentBPMRight),
+                    input => this.handleDisplayNumbersEnum(input, this.config.heartRate.graph.displayNumbersSpecific, Freakylay.Internal.Config.HeartGraph.displayNumberCurrentBPMRight)
+                ),
                 this.rangeSettingLine('heartRateSettingsFontSizeForMinAndMaxBPM', this.config.heartRate.graph.smallFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
                 this.rangeSettingLine('heartRateSettingsFontSizeForCurrentBPM', this.config.heartRate.graph.bigFontSize, 0, Freakylay.Internal.Config.HeartGraph.MaxFontSize, 1),
                 this.dropDownSettingLine(
@@ -662,6 +687,29 @@ namespace Freakylay.Ui {
             return document.get<HTMLDivElement>('.tabContent[data-tab-content=' + contentName + ']');
         }
 
+        public booleanSettingLineCustom(name: string, id: string, check: boolean, callback: (input: HTMLInputElement) => void): HTMLDivElement {
+            let line = document.div().addClass<HTMLDivElement>('settingsLine');
+            let info = document.span();
+            info.id = id;
+            let input = document.create<HTMLInputElement>('input');
+
+            input.type = 'checkbox';
+            input.checked = check;
+
+            info.innerText = name;
+            info.onclick = () => {
+                callback(input);
+            };
+
+            input.onchange = () => {
+                callback(input);
+            };
+
+            line.append(input, info);
+
+            return line;
+        }
+
         /**
          * helper to generate a UI line for boolean setting
          * @param name
@@ -670,26 +718,7 @@ namespace Freakylay.Ui {
          * @private
          */
         public booleanSettingLine(name: string, id: string, property: EventProperty<boolean>): HTMLDivElement {
-            let line = document.div().addClass<HTMLDivElement>('settingsLine');
-            let info = document.span();
-            info.id = id;
-            let input = document.create<HTMLInputElement>('input');
-
-            input.type = 'checkbox';
-            input.checked = property.Value;
-
-            info.innerText = name;
-            info.onclick = () => {
-                this.toggleProperty(input, property);
-            };
-
-            input.onchange = () => {
-                this.toggleProperty(input, property);
-            };
-
-            line.append(input, info);
-
-            return line;
+            return this.booleanSettingLineCustom(name, id, property.Value, input => this.toggleProperty(input, property));
         }
 
         /**
@@ -759,6 +788,23 @@ namespace Freakylay.Ui {
         private toggleProperty(input: HTMLInputElement, property: EventProperty<boolean>): void {
             property.Value = !property.Value;
             input.checked = property.Value;
+        }
+
+        /**
+         * handles fake enum inputs on event properties based on given flag
+         * @param input
+         * @param property
+         * @param flag
+         * @private
+         */
+        private handleDisplayNumbersEnum(input: HTMLInputElement, property: EventProperty<FakeEnum>, flag: number): void {
+            if (property.Value.hasFlag(flag)) {
+                property.Value.removeFlag(flag);
+            } else {
+                property.Value.addFlag(flag);
+            }
+            input.checked = property.Value.hasFlag(flag);
+            property.trigger();
         }
 
         /**

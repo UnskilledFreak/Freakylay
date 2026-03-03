@@ -235,6 +235,10 @@
   "heartRateSettingsGraphHeight": "Höhe",
   "heartRateSettingsDisableCircleBarInCounterSection": "Verstecke Kreisbalken in der Zählerbox",
   "heartRateSettingsDisplayNumbers": "Zeige Nummern",
+  "heartRateSettingsDisplayNumbersMaxBpm": "Zeige maximale BPM",
+  "heartRateSettingsDisplayNumbersMinBPM": "Zeige minimale BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMLeft": "Zeige aktuelle BPM links",
+  "heartRateSettingsDisplayNumbersCurrentBPMRight": "Zeige aktuelle BPM rechts",
   "heartRateSettingsFontSizeForMinAndMaxBPM": "Schriftgröße für min und max BPM",
   "heartRateSettingsFontSizeForCurrentBPM": "Schriftgröße für aktuelle BPM",
   "heartRateSettingsAnchor": {

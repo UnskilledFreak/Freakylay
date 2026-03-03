@@ -1,5 +1,11 @@
 namespace Freakylay.Internal.Config {
     export class HeartGraph implements IConfigable {
+        // this is ugly, should be its own implementation on an EventProperty
+        public static displayNumberMaxBPM: number = 1;
+        public static displayNumberMinBPM: number = 2;
+        public static displayNumberCurrentBPMLeft: number = 4;
+        public static displayNumberCurrentBPMRight: number = 8;
+
         public enabled: EventProperty<boolean> = new EventProperty<boolean>(false);
         public anchor: EventProperty<number> = new EventProperty<number>(4);
         public offsetX: EventProperty<number> = new EventProperty<number>(window.outerWidth / 2);
@@ -13,6 +19,7 @@ namespace Freakylay.Internal.Config {
         public useBackgroundColorForStroke: EventProperty<boolean> = new EventProperty<boolean>(false);
         public smallFontSize: EventProperty<number> = new EventProperty<number>(12);
         public bigFontSize: EventProperty<number> = new EventProperty<number>(20);
+        public displayNumbersSpecific: EventProperty<FakeEnum> = new EventProperty<FakeEnum>(new FakeEnum(15))
 
         public static MinTimespan = 100;
         public static MaxTimespan = 1000;
@@ -33,6 +40,7 @@ namespace Freakylay.Internal.Config {
             this.useBackgroundColorForStroke.Value = data.isset('k', this.useBackgroundColorForStroke.Value);
             this.smallFontSize.Value = data.isset('l', this.smallFontSize.Value);
             this.bigFontSize.Value = data.isset('m', this.bigFontSize.Value);
+            this.displayNumbersSpecific.Value = new FakeEnum(data.isset('n', this.displayNumbersSpecific.Value.Value));
         }
 
         public save(): {} {
@@ -49,7 +57,8 @@ namespace Freakylay.Internal.Config {
                 j: this.height.Value,
                 k: this.useBackgroundColorForStroke.Value,
                 l: this.smallFontSize.Value,
-                m: this.bigFontSize.Value
+                m: this.bigFontSize.Value,
+                n: this.displayNumbersSpecific.Value.Value
             };
         }
     }

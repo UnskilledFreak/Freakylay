@@ -236,6 +236,10 @@
   "heartRateSettingsGraphHeight": "height",
   "heartRateSettingsDisableCircleBarInCounterSection": "disable circle bar in counter section",
   "heartRateSettingsDisplayNumbers": "display numbers",
+  "heartRateSettingsDisplayNumbersMaxBpm": "display maximum BPM",
+  "heartRateSettingsDisplayNumbersMinBPM": "display minimum BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMLeft": "display left current BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMRight": "display right current BPM",
   "heartRateSettingsFontSizeForMinAndMaxBPM": "font size for min and max bpm",
   "heartRateSettingsFontSizeForCurrentBPM": "font size for current bpm",
   "heartRateSettingsAnchor": {

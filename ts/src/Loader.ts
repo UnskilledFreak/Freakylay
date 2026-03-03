@@ -24,7 +24,7 @@ Object.prototype.isset = function <T>(key: number | string, defaultValue: T): T 
  * shorter way to iterate over objects but is limited by only names
  * @param callback string parameter is name itself, not the full qualifier
  */
-Object.prototype.foreach = function <T>(callback: (string) => void): void {
+Object.prototype.foreach = function <T>(callback: (data: string) => void): void {
     Object.keys(this).filter(callback);
 }
 

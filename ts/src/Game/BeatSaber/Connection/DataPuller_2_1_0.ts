@@ -39,7 +39,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * @protected
          */
         protected handleModifiers(data: {}): void {
-            this.onModifierNoFailChange.Value = data.isset('NoFailOn0Energy', false);
+            this.onModifierNoFailChange.Value = data.isset('NoFailOn0Energy', false) && this.onHealthChange.Value == 0;
             this.onModifierOneLifeChange.Value = data.isset('OneLife', false);
             this.onModifierFourLivesChange.Value = data.isset('FourLives', false);
             this.onModifierNoBombsChange.Value = data.isset('NoBombs', false);

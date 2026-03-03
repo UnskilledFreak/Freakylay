@@ -235,6 +235,10 @@
   "heartRateSettingsGraphHeight": "高度",
   "heartRateSettingsDisableCircleBarInCounterSection": "在计数器栏中禁用圆形进度条",
   "heartRateSettingsDisplayNumbers": "显示数字",
+  "heartRateSettingsDisplayNumbersMaxBpm": "display maximum BPM",
+  "heartRateSettingsDisplayNumbersMinBPM": "display minimum BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMLeft": "display left current BPM",
+  "heartRateSettingsDisplayNumbersCurrentBPMRight": "display right current BPM",
   "heartRateSettingsFontSizeForMinAndMaxBPM": "最大/最小心率的字体大小",
   "heartRateSettingsFontSizeForCurrentBPM": "当前心率的字体大小",
   "heartRateSettingsAnchor": {

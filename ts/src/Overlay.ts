@@ -25,8 +25,8 @@ namespace Freakylay {
      * main overlay class
      */
     export class Overlay {
-        public static Version: string = '3.1.0';
-        public static Branch: string = 'Release';
+        public static Version: string = '3.1.2';
+        public static Branch: string = 'Test';
 
         private isDev: boolean = false; //window.location.protocol == undefined || window.location.protocol == 'file:';
 
@@ -173,6 +173,7 @@ namespace Freakylay {
             this.config.heartRate.graph.useBackgroundColorForStroke.trigger();
             this.config.heartRate.graph.smallFontSize.trigger();
             this.config.heartRate.graph.bigFontSize.trigger();
+            this.config.heartRate.graph.displayNumbersSpecific.trigger();
 
             this.config.language.trigger();
 
