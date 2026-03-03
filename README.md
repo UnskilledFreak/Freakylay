@@ -142,6 +142,8 @@ It is possible to access unreleased or unstable versions by using its number in 
 
 | Freakylay Version        | State                 | Url                                                                                                            |
 |--------------------------|-----------------------|----------------------------------------------------------------------------------------------------------------|
+| 3.1.2                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.2/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.2/) |
+| 3.1.1                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.1/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.1/) |
 | 3.1.0                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.1.0/) |
 | 3.0.1                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.1/) |
 | 3.0.0                    | released              | [http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/](http://u.unskilledfreak.zone/overlay/freakylay/3.0.0/) |
@@ -188,6 +190,19 @@ Thank you so much for your work!
 - english and german - UnskilledFreak
 
 ## Changelog
+- 3.1.2
+  - added support for Http(Sira)Status V14.1.0+
+  - added lighter names
+  - added more options for heart graph number display
+  - added a fallback to English in case a language file could not be loaded
+  - changed how heart graph number style is stored in config (compatible with existing configs)
+  - adapted the No-Fail behavior of the game so the NoFail-Modifier will only show up when the game switches to NoFail instead of showing it the whole run
+  - fixed typos (again...)
+- 3.1.1
+  - simplified language handling
+  - fixed heart rate implementation running into potential endless reconnect loop
+  - fixed saved language was not selected by default
+  - removed dead and unused code
 - 3.1.0
   - added chinese translation (thanks to [baoziii](https://github.com/baoziii/Freakylay))
   - added german translation
