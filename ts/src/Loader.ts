@@ -512,8 +512,11 @@ Array.prototype.last = function <T>(): T {
     return this[this.length - 1];
 }
 
+/**
+ * returns a array with unique values
+ */
 Array.prototype.distinct = function <T>(): T[] {
-    return this.filter((item: T, pos: number, self: T[]) => self.indexOf(item) == pos).join(', ');
+    return [...new Set(this)] as T[];
 }
 
 /**
