@@ -15,6 +15,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         private timeTimeout: number;
         private beatSaver: BeatSaver
         private lastCombo: number;
+        private noFail: boolean = false;
 
         constructor(gameLinkStatus: Freakylay.Internal.EventProperty<Freakylay.Game.GameLinkStatus>, config: Config, languageManager: LanguageManager) {
             super(gameLinkStatus, config, languageManager);
@@ -217,6 +218,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             this.onLevelPausedChange.Value = false;
             this.onFullComboChange.Value = true;
             this.lastCombo = 0;
+            this.noFail = false;
+            this.onHealthChange.Value = 50;
 
             this.clearInternalTimeTimeout();
         }
@@ -287,7 +290,8 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no multiplier
             this.onModifierNoArrowsChange.Value = data.isset('noArrows', false);
             this.onModifierNoBombsChange.Value = data.isset('noBombs', false);
-            this.onModifierNoFailChange.Value = data.isset('noFail', false) && this.onHealthChange.Value == 0;
+            this.noFail = data.isset('noFail', false);
+            this.onModifierNoFailChange.Value = false;
             let noObstacles: boolean | string = data.isset('obstacles', false);
             this.onModifierNoWallsChange.Value = typeof noObstacles == 'boolean' && !noObstacles;
             this.onModifierProModeChange.Value = data.isset('proMode', false);
@@ -339,6 +343,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
                 this.internalTimeTimeout();
             }, 1000);
             this.onHealthChange.Value = Math.floor(data.isset('energy', .5) * 100);
+            this.onModifierNoFailChange.Value = this.noFail && this.onHealthChange.Value == 0;
             // no hitBombs
             // no hitNotes
             // no lastNoteScore

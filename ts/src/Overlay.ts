@@ -26,7 +26,7 @@ namespace Freakylay {
      */
     export class Overlay {
         public static Version: string = '3.1.2';
-        public static Branch: string = 'Test';
+        public static Branch: string = 'Release';
 
         private isDev: boolean = false; //window.location.protocol == undefined || window.location.protocol == 'file:';
 
