@@ -260,7 +260,7 @@ namespace Freakylay.Game.BeatSaber {
             this.songSubName = data.isset('SongSubName', '');
             this.author = data.isset('SongAuthor', '');
             this.onSongInfoSongAuthorChange.Value = this.getCompleteAuthorLine();
-            this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '');
+            this.onSongInfoMapperNameChange.Value = data.isset('Mapper', '').split(', ').distinct().join(', ');
             this.onKeyChange.Value = data.isset('BSRKey', '');
             this.onPreviousKeyChange.Value = data.isset('PreviousKey', '');
             // no MapType

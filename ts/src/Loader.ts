@@ -485,6 +485,8 @@ interface Array<T> {
     firstOrError(check?: (T) => boolean): T;
 
     last(): T;
+
+    distinct(): T[];
 }
 
 /**
@@ -508,6 +510,10 @@ Array.prototype.firstOrError = function <T>(check: (T) => boolean = null): T {
  */
 Array.prototype.last = function <T>(): T {
     return this[this.length - 1];
+}
+
+Array.prototype.distinct = function <T>(): T[] {
+    return this.filter((item: T, pos: number, self: T[]) => self.indexOf(item) == pos).join(', ');
 }
 
 /**

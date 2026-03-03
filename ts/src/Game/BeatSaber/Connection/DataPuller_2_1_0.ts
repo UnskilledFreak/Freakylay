@@ -34,7 +34,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
         }
 
         /**
-         * event handler for modifiers sinde DataPuller 2.1.0
+         * event handler for modifiers since DataPuller 2.1.0
          * @param data
          * @protected
          */

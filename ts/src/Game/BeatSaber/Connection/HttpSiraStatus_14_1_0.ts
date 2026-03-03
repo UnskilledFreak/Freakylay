@@ -6,7 +6,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
     import BeatSaver = Freakylay.DataTransfer.MapData.BeatSaver;
     import LanguageManager = Freakylay.Ui.LanguageManager;
 
-    export class HttpSiraStatus_9_0_1 extends BaseConnection {
+    export class HttpSiraStatus_14_1_0 extends BaseConnection {
         private readonly nullColor: Color;
 
         private connection: WebSocketConnection = null;
@@ -54,7 +54,7 @@ namespace Freakylay.Game.BeatSaber.Connection {
          * returns unique name for the connection
          */
         public getName(): string {
-            return 'Http(Sira)Status 9.0.1+';
+            return 'Http(Sira)Status 14.1.0+';
         }
 
         /**
@@ -238,7 +238,9 @@ namespace Freakylay.Game.BeatSaber.Connection {
             // no difficultyEnum
             // no environmentName
             this.onTimeLengthChange.Value = Math.floor(data.isset('length', 12000) / 1000);
-            this.onSongInfoMapperNameChange.Value = data.isset('levelAuthorName', '');
+            const mappers = data.isset<string[]>('levelAuthorNamesArray', []);
+            mappers.push(...data.isset<string[]>('lighterNamesArray', []));
+            this.onSongInfoMapperNameChange.Value = mappers.distinct().join(', ');
             // no levelId
             // no maxRank
             this.onMaxScoreChange.Value = data.isset('maxScore', 0);
